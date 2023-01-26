@@ -39,11 +39,9 @@
     "jest": "^29.4.0",
     "jet-logger": "^1.2.6",
     "jet-validator": "^1.0.4",
-    "jsonfile": "^6.1.0",
-    "jsonwebtoken": "^9.0.0",
     "module-alias": "^2.2.2",
     "morgan": "^1.10.0",
-    "youtube-playlists-js": "^1.0.2"
+    "youtube-playlists-js": "^1.0.3"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
