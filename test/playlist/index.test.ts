@@ -56,7 +56,6 @@ describe("playlist page", () => {
             });
         });
         describe("Correct 2", () => {
-            const length = 30;
             const id = "PLy1bC-662HHKXOVHInxvhSRReDz0d4xCI";
             let data;
             let res;

@@ -66,5 +66,10 @@ const staticDir = path.join(__dirname, "public");
 app.use(express.static(staticDir));
 
 // **** Export default **** //
+app.use((req, res) => {
+    return res
+        .status(HttpStatusCodes.NOT_FOUND)
+        .sendFile(path.join(__dirname,'public/404.html'));
+});
 
 export default app;
