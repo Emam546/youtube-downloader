@@ -1,8 +1,4 @@
 import supertest from "supertest";
-import findData from "../../src/util/youtube-playlist/getData";
-import {getContent,parseInfo} from "../../src/util/youtube-playlist";
-import fs from "fs";
-import path from "path";
 
 const agent = supertest("http://localhost:3000/api/");
 describe("playlist page", () => {
@@ -95,15 +91,4 @@ describe("playlist page", () => {
         });
     });
 });
-describe("findData", () => {
-    test("case 1", async() => {
-        const url =
-            "https://www.youtube.com/playlist?list=PL1Wxz8hJM8HlUKSD2A1PngkTqI_Ai0B3y";
-        const json =await findData(url);
-        expect(()=>getContent(json.data)).not.toThrow(Error)
-        const content=getContent(json.data)
-        expect(content).not.toBeUndefined()
-        expect(content).toBeInstanceOf(Array)
-        expect(()=>parseInfo(content)).not.toThrow(Error)
-    });
-});
+

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import getData from "@src/util/youtube-playlist";
+import getData from "youtube-playlists-js";
 import HttpStatusCodes from "@src/declarations/major/HttpStatusCodes";
 const router = Router();
 function MergeUrl(id: string) {
@@ -10,13 +10,19 @@ router.get("/", async function (req, res) {
         return res
             .status(HttpStatusCodes.BAD_REQUEST)
             .json({ status: false, msg: "the list id must be existed" });
-    const result = await getData(MergeUrl(req.query.list));
-    if (!result)
-        return res
-            .status(HttpStatusCodes.NOT_FOUND)
-            .json({ status: false, msg: "the list id is not exist" });
-    const { res: preres, data } = result;
-    res.status(preres.status).json({ msg: "Success", status: true, data });
+    try {
+        const data = await getData(MergeUrl(req.query.list));
+        if (!data)
+            return res
+                .status(HttpStatusCodes.NOT_FOUND)
+                .json({ status: false, msg: "the list id is not exist" });
+        res.status(200).json({ msg: "Success", status: true, data });
+    } catch (err) {
+        res.status(HttpStatusCodes.BAD_REQUEST).json({
+            msg: "Success",
+            status: false,
+        });
+    }
 });
 
 export default router;
