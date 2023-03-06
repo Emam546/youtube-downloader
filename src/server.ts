@@ -46,17 +46,17 @@ app.use(
         _: Request,
         res: Response,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        next: NextFunction
+        next: NextFunction,
     ) => {
         logger.err(err, true);
         let status = HttpStatusCodes.BAD_REQUEST;
-        if (err instanceof RouteError) {
+        if (err instanceof RouteError) 
             status = err.status;
-        }
+        
         return res
             .status(status)
             .json({ msg: "error", status: false, error: err.message });
-    }
+    },
 );
 
 // **** Serve front-end content **** //

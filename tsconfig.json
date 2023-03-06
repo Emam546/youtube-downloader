@@ -78,6 +78,6 @@
   ],
   "exclude": [
     "src/public/",
-    "test/"
+    "spec"
   ]
 }
