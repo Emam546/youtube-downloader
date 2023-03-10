@@ -1,6 +1,7 @@
 import { Router } from "express";
 import playListRouter from "./playlist";
 import videoDownloader from "./videoDownloader";
+import search from "./search";
 import cache from "@src/util/cache";
 import nodeCache from "node-cache";
 import EnvVars from "@src/declarations/major/EnvVars";
@@ -17,4 +18,5 @@ if (EnvVars.nodeEnv === NodeEnvs.Production)
     );
 router.use("/playlist", playListRouter);
 router.use("/watch", videoDownloader);
+router.use("/search", search);
 export default router;

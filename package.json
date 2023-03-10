@@ -38,6 +38,8 @@
     "morgan": "^1.10.0",
     "node-cache": "^5.1.2",
     "youtube-playlists-js": "^1.0.3",
+    "youtube-search-without-api-key": "^1.1.0",
+    "youtube-searches": "^1.0.1",
     "ytdl-core": "^4.11.2"
   },
   "devDependencies": {
