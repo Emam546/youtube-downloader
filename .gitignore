@@ -1,5 +1,6 @@
 **/node_modules
 **/**/*.log
-dist/
+dist/*
+dist
 res.json
 **/**/res.json
