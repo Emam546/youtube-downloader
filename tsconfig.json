@@ -29,8 +29,7 @@
   },
   "include": [
     "src",
-    "server",
-    "types"
+    "server"
   ],
   "exclude": [
     "node_modules"

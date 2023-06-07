@@ -11,16 +11,14 @@
   },
   "nodemonConfig": {
     "watch": [
-      "src"
+      "./server/src"
     ],
     "ext": "ts, html",
-    "ignore": [
-      "src/public"
-    ],
-    "exec": "./node_modules/.bin/ts-node --files -r tsconfig-paths/register ./src"
+    "exec": "./node_modules/.bin/ts-node --project tsconfig.server.json --files -r tsconfig-paths/register ./server/src"
   },
   "_moduleAliases": {
-    "@src": "dist"
+    "@serv": "dist/server/src",
+    "@src": "dist/src"
   },
   "dependencies": {
     "axios": "^1.2.4",
@@ -38,7 +36,6 @@
     "morgan": "^1.10.0",
     "node-cache": "^5.1.2",
     "youtube-playlists-js": "^1.0.3",
-    "youtube-search-without-api-key": "^1.1.0",
     "youtube-searches": "^1.0.1",
     "ytdl-core": "^4.11.2"
   },
