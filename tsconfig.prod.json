@@ -1,11 +1,12 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "./tsconfig.server.json",
   "compilerOptions": {
     "sourceMap": false,
     "removeComments": true
   },
   "exclude": [
-    "spec/",
+    "server/spec",
+    "src",
     "build.ts"
   ]
 }

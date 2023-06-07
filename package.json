@@ -2,9 +2,10 @@
   "name": "youtube-playlist-server",
   "version": "0.0.0",
   "scripts": {
-    "build": "npx ts-node build.ts",
-    "lint": "npx eslint --ext .ts src/",
-    "lint:tests": "npx eslint --ext .ts spec/",
+    "build:server": "npx ts-node build.ts",
+    "build": "npm run build:server",
+    "lint": "next lint",
+    "lint:server": "npx eslint -c server/.eslintrc.json --ext .ts server/src/",
     "start": "node -r module-alias/register ./dist --env=production",
     "dev": "nodemon",
     "test": "jest"
@@ -17,8 +18,7 @@
     "exec": "./node_modules/.bin/ts-node --project tsconfig.server.json --files -r tsconfig-paths/register ./server/src"
   },
   "_moduleAliases": {
-    "@serv": "dist/server/src",
-    "@src": "dist/src"
+    "@serv": "dist/server/src"
   },
   "dependencies": {
     "axios": "^1.2.4",

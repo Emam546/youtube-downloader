@@ -10,6 +10,7 @@ router.get("/", async function (req, res) {
             .status(HttpStatusCodes.BAD_REQUEST)
             .json({ status: false, msg: "the video id must be exist" });
     try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const data: any = await getInfo(req.query.v);
         delete data.response;
         delete data.player_response;
