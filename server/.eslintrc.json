@@ -10,7 +10,7 @@
     "plugin:node/recommended"
   ],
   "parserOptions": {
-    "project": "./tsconfig.json"
+    "project": "./tsconfig.server.json"
   },
   "rules": {
     "max-len": [
@@ -28,16 +28,26 @@
     "node/no-process-env": 1,
     "node/no-unsupported-features/es-syntax": [
       "error",
-      { "ignores" : ["modules"] }
+      {
+        "ignores": [
+          "modules"
+        ]
+      }
     ],
     "node/no-missing-import": 0,
     "node/no-unpublished-import": 0
-    
   },
   "settings": {
     "node": {
-      "tryExtensions": [".js", ".json", ".node", ".ts"]
-    
+      "tryExtensions": [
+        ".js",
+        ".json",
+        ".node",
+        ".ts"
+      ]
     }
-  }
+  },
+  "ignorePatterns": [
+    "spec"
+  ]
 }

@@ -2,10 +2,12 @@ import { Router } from "express";
 import playListRouter from "./playlist";
 import videoDownloader from "./videoDownloader";
 import search from "./search";
-import cache from "@src/util/cache";
+import cache from "@serv/util/cache";
 import nodeCache from "node-cache";
-import EnvVars from "@src/declarations/major/EnvVars";
-import { NodeEnvs } from "@src/declarations/enums";
+import EnvVars from "@serv/declarations/major/EnvVars";
+import { NodeEnvs } from "@serv/declarations/enums";
+import cors from "cors";
+
 const router = Router();
 if (EnvVars.nodeEnv === NodeEnvs.Production)
     router.use(
@@ -16,6 +18,7 @@ if (EnvVars.nodeEnv === NodeEnvs.Production)
             })
         )
     );
+router.use(cors({ origin: "*" }));
 router.use("/playlist", playListRouter);
 router.use("/watch", videoDownloader);
 router.use("/search", search);

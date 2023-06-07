@@ -1,3 +1,2 @@
-src/public/
-spec/
-jest.config.js
+jest.config.ts
+build.ts

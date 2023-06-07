@@ -1,6 +1,6 @@
 import { Router } from "express";
-import {MergeUrl,GetData} from "youtube-playlists-js";
-import HttpStatusCodes from "@src/declarations/major/HttpStatusCodes";
+import { MergeUrl, GetData } from "youtube-playlists-js";
+import HttpStatusCodes from "@serv/declarations/major/HttpStatusCodes";
 const router = Router();
 
 router.get("/", async function (req, res) {

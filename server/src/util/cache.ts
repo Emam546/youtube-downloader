@@ -4,8 +4,8 @@
 import nodeCache from "node-cache";
 import { RequestHandler } from "express";
 
-export default (cache:nodeCache,timeToLive?: number) => {
-    timeToLive = timeToLive || cache.options.stdTTL;
+export default (cache: nodeCache, timeToLive?: number) => {
+    const t = timeToLive || cache.options.stdTTL || 20;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sendFun: RequestHandler = function (req, res: any, next) {
         if (req.method != "GET") return next();
@@ -16,9 +16,9 @@ export default (cache:nodeCache,timeToLive?: number) => {
             res.send(result);
         } else {
             res.originalSend = res.send;
-            res.send = (body) => {
+            res.send = (body: string) => {
                 res.originalSend(body);
-                cache.set(url, body, timeToLive);
+                cache.set(url, body, t);
             };
             next();
         }

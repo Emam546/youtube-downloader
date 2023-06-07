@@ -5,8 +5,7 @@
     "removeComments": true
   },
   "exclude": [
-    "test/",
-    "src/public/",
+    "spec/",
     "build.ts"
   ]
 }

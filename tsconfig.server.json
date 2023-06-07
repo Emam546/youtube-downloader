@@ -1,0 +1,23 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "target": "ES2015",
+        "module": "commonjs",
+        "outDir": "dist",
+        "noEmit": false,
+        "baseUrl": "./",
+        "paths": {
+            "@serv/*": [
+                "./server/src/*"
+            ],
+            "@src/*": [
+                "./src/*"
+            ],
+        }
+    },
+    "include": [
+        "server",
+        "src",
+        "./build.ts"
+    ]
+}

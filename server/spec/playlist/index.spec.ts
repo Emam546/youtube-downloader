@@ -1,6 +1,5 @@
-import supertest from "supertest";
-
-const agent = supertest("http://localhost:3000/api/");
+import agent from "../index";
+import { Response } from "supertest";
 describe("playlist page", () => {
     describe("GET", () => {
         describe("Correct 1", () => {
@@ -22,10 +21,10 @@ describe("playlist page", () => {
                 durations: [4 * 60 + 51, 3 * 60 + 57, 2 * 60 + 44, 5 * 60 + 9],
             };
 
-            let data;
-            let res;
+            let data: any;
+            let res: Response;
             beforeAll(async () => {
-                res = await agent.get(`playlist?list=${id}`);
+                res = await agent.get(`/api/playlist?list=${id}`);
                 data = res.body.data;
             });
             test("should get data", () => {
@@ -34,7 +33,7 @@ describe("playlist page", () => {
             });
             it("getId", async () => {
                 expect(data).not.toBeUndefined();
-                data.videos.forEach(({ videoId }) => {
+                data.videos.forEach(({ videoId }: any) => {
                     expect(mock.ids).toContain(videoId);
                 });
             });
@@ -44,26 +43,22 @@ describe("playlist page", () => {
             });
             it("names", async () => {
                 expect(data).not.toBeUndefined();
-                data.videos.forEach(({ title }) => {
+                data.videos.forEach(({ title }: any) => {
                     expect(mock.names).toContain(title);
                 });
             });
             it("durations", async () => {
                 expect(data).not.toBeUndefined();
-                data.videos.forEach(({ lengthSeconds }) => {
+                data.videos.forEach(({ lengthSeconds }: any) => {
                     expect(mock.durations).toContain(lengthSeconds);
                 });
             });
         });
         describe("Correct 2", () => {
-            const id = "PLy1bC-662HHKXOVHInxvhSRReDz0d4xCI";
-            let data;
-            let res;
-            beforeAll(async () => {
-                res = await agent.get(`playlist?list=${id}`);
-                data = res.body.data;
-            });
-            test("should get data", () => {
+            test("should get data", async () => {
+                const id = "PLy1bC-662HHKXOVHInxvhSRReDz0d4xCI";
+                const res = await agent.get(`/api/playlist?list=${id}`);
+                const data = res.body.data;
                 expect(res.statusCode).toBe(200);
                 expect(data).not.toStrictEqual({});
                 expect(data.videos.length).toBe(29);
@@ -74,7 +69,7 @@ describe("playlist page", () => {
             const id = "PL1Wxz8hJM8HlUKSD2A1PngkTqI_Ai0B3y";
             let data;
             let res;
-            res = await agent.get(`playlist?list=${id}`);
+            res = await agent.get(`/api/playlist?list=${id}`);
             data = res.body.data;
             expect(res.statusCode).toBe(200);
             expect(data).not.toStrictEqual({});
@@ -83,11 +78,10 @@ describe("playlist page", () => {
 
         test("should get data", async () => {
             const id = "bad_id";
-            let res = await agent.get(`playlist?list=${id}`);
+            let res = await agent.get(`/api/playlist?list=${id}`);
             let data = res.body.data;
             console.log(data);
             expect(res.statusCode).toBe(404);
         });
     });
 });
-
