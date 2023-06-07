@@ -1,6 +1,5 @@
 **/node_modules
 **/**/*.log
-dist/*
 dist
 res.json
 **/**/res.json
