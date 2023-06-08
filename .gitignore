@@ -3,3 +3,5 @@
 dist
 res.json
 **/**/res.json
+.next
+next-env.d.ts

@@ -18,7 +18,7 @@
     "exec": "./node_modules/.bin/ts-node --project tsconfig.server.json --files -r tsconfig-paths/register ./server/src"
   },
   "_moduleAliases": {
-    "@serv": "dist/server/src"
+    "@serv": "dist"
   },
   "dependencies": {
     "axios": "^1.2.4",
