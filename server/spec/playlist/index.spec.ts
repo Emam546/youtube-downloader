@@ -80,7 +80,6 @@ describe("playlist page", () => {
             const id = "bad_id";
             let res = await agent.get(`/api/playlist?list=${id}`);
             let data = res.body.data;
-            console.log(data);
             expect(res.statusCode).toBe(404);
         });
     });

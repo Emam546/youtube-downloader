@@ -4,7 +4,7 @@
 import nodeCache from "node-cache";
 import { RequestHandler } from "express";
 
-export default (cache: nodeCache, timeToLive?: number) => {
+const cache = (cache: nodeCache, timeToLive?: number) => {
     const t = timeToLive || cache.options.stdTTL || 20;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sendFun: RequestHandler = function (req, res: any, next) {
@@ -25,3 +25,4 @@ export default (cache: nodeCache, timeToLive?: number) => {
     };
     return sendFun;
 };
+export default cache;
