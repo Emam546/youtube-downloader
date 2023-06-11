@@ -51,11 +51,13 @@ export default function RelatedVideos() {
                         key={i}
                         className="d-block text-decoration-none link-primary hover:tw-text-primary tw-cursor-pointer"
                     >
-                        <img
-                            src={video.thumbnails.at(-1)?.url}
-                            alt={video.title}
-                            className="w-100 tw-aspect-video "
-                        />
+                        <div>
+                            <img
+                                src={video.thumbnails.at(-1)?.url}
+                                alt={video.title}
+                                className="tw-w-full tw-aspect-video tw-block"
+                            />
+                        </div>
                         <p className="tw-leading-5 pt-2 text-black tw-text-ellipsis hover:tw-text-primary tw-cursor-pointer ">
                             {video.title}
                         </p>
