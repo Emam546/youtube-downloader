@@ -92,12 +92,15 @@ export default function YoutubeResult() {
     }, [id]);
     if (!id) return null;
     if (paramQuery.isLoading) return <Loading />;
-    if (paramQuery.isError)
+    if (paramQuery.isError) {
+        console.error(paramQuery.error);
         return (
             <span className="text-warning">
-                {JSON.stringify(paramQuery.error)}
+                There is a problem that occurred on the server.
             </span>
         );
+    }
+
     const data = paramQuery.data;
     const formats = data.formats.sort((a, b) => {
         return parseInt(b.contentLength) - parseInt(a.contentLength);
