@@ -8,6 +8,12 @@ import Loading from "../Loading";
 import classnames from "classnames";
 import { getVideoData } from "@src/API";
 import { useRouter } from "next/router";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+    faDownload,
+    faMusic,
+    faVideo,
+} from "@fortawesome/free-solid-svg-icons";
 function formatBytes(bytes: number, decimals = 2) {
     if (!+bytes) return "0 Bytes";
 
@@ -37,7 +43,7 @@ function MapDataVideo(video: videoFormat, i: number, title: string) {
                     download={`YoutubeDownloader - ${title}_${video.qualityLabel}`}
                 >
                     <div className="btn btn-success">
-                        <i className="fa-solid fa-download"></i>
+                        <FontAwesomeIcon icon={faDownload} />
                         <span>Download</span>
                     </div>
                 </a>
@@ -61,7 +67,7 @@ function MapDataAudio(video: videoFormat, i: number, title: string) {
                     download={`YoutubeDownloader - ${title}`}
                 >
                     <div className="btn btn-success">
-                        <i className="fa-solid fa-download"></i>
+                        <FontAwesomeIcon icon={faDownload} />
                         <span>Download</span>
                     </div>
                 </a>
@@ -130,7 +136,7 @@ export default function YoutubeResult() {
                                 })}
                                 onClick={() => setState("VIDEO")}
                             >
-                                <i className="fa-solid fa-video"></i>
+                                <FontAwesomeIcon icon={faVideo} />
                                 Video
                             </li>
                             <li
@@ -139,7 +145,7 @@ export default function YoutubeResult() {
                                 })}
                                 onClick={() => setState("AUDIO")}
                             >
-                                <i className="fa-solid fa-music"></i>
+                                <FontAwesomeIcon icon={faMusic} />
                                 Audio
                             </li>
                         </ul>

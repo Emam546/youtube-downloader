@@ -1,5 +1,5 @@
 import { Html, Head, Main, NextScript } from "next/document";
-import Script from "next/script";
+
 
 export default function Document() {
     return (
@@ -10,10 +10,11 @@ export default function Document() {
                     name="viewport"
                     content="width=device-width, initial-scale=1.0"
                 />
-                <Script
-                    src="https://kit.fontawesome.com/3c47151b26.js"
-                    crossOrigin="anonymous"
-                ></Script>
+                <link
+                    rel="icon"
+                    href="/images/logo.png"
+                    type="image/png"
+                />
                 {/* <!-- Fonts --> */}
                 <link
                     rel="preconnect"
@@ -28,8 +29,6 @@ export default function Document() {
                     href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap"
                     rel="stylesheet"
                 />
-
-                
             </Head>
             <body>
                 <Main />

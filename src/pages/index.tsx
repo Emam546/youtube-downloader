@@ -1,5 +1,7 @@
 import { useContext } from "react";
 import { UserContext } from "@src/context/info";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faClapperboard, faDownload, faGift } from "@fortawesome/free-solid-svg-icons";
 export function TextFun() {
     const data = useContext(UserContext);
     return (
@@ -59,7 +61,10 @@ export function TextFun() {
                 <div className="row my-5 ">
                     <div className="col-sm-4">
                         <div className="text-center tw-py-5 tw-px-3">
-                            <i className="fa-solid fa-gift tw-text-4xl tw-mb-3"></i>
+                            <FontAwesomeIcon
+                                icon={faGift}
+                                className="tw-text-4xl tw-mb-3"
+                            />
                             <h4 className="tw-text-primary tw-font-semibold tw-my-2">
                                 Free Download
                             </h4>
@@ -70,7 +75,10 @@ export function TextFun() {
                     </div>
                     <div className="col-sm-4">
                         <div className="text-center tw-py-5 tw-px-3">
-                            <i className="fa-solid fa-clapperboard tw-text-4xl tw-mb-3"></i>
+                            <FontAwesomeIcon
+                                icon={faClapperboard}
+                                className="tw-text-4xl tw-mb-3"
+                            />
                             <h4 className="tw-text-primary tw-font-semibold tw-my-2">
                                 Video & Audio
                             </h4>
@@ -81,7 +89,10 @@ export function TextFun() {
                     </div>
                     <div className="col-sm-4">
                         <div className="text-center tw-py-5 tw-px-3">
-                            <i className="fa-solid fa-download tw-text-4xl tw-mb-3"></i>
+                            <FontAwesomeIcon
+                                icon={faDownload}
+                                className="tw-text-4xl tw-mb-3"
+                            />
                             <h4 className="tw-text-primary tw-font-semibold tw-my-2">
                                 Easy Download
                             </h4>
