@@ -1,14 +1,15 @@
 import { useContext, useState } from "react";
 import { UserContext } from "@src/context/info";
+import Link from "next/link";
 
 export default function Header() {
     const { siteName } = useContext(UserContext);
     return (
         <nav className="navbar navbar-expand-lg bg-light overflow-hidden">
             <div className="container">
-                <a
+                <Link
                     className="navbar-brand"
-                    href="#"
+                    href="/"
                 >
                     <img
                         src="/images/logo.png"
@@ -16,7 +17,7 @@ export default function Header() {
                         alt="logo"
                     />
                     <span className="tw-font-bold">{siteName}</span>
-                </a>
+                </Link>
                 <button
                     className="navbar-toggler tw-border-4"
                     type="button"
@@ -34,31 +35,31 @@ export default function Header() {
                 >
                     <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
                         <li className="nav-item hover:tw-bg-black/10">
-                            <a
+                            <Link
                                 className="nav-link p-2 p-lg-4"
                                 aria-current="page"
                                 href="#"
                             >
                                 YouTube Downloader
-                            </a>
+                            </Link>
                         </li>
                         <li className="nav-item hover:tw-bg-black/10">
-                            <a
+                            <Link
                                 className="nav-link p-2 p-lg-4"
                                 aria-current="page"
                                 href="#"
                             >
                                 YouTube Converter
-                            </a>
+                            </Link>
                         </li>
                         <li className="nav-item hover:tw-bg-black/10">
-                            <a
+                            <Link
                                 className="nav-link p-2 p-lg-4"
                                 aria-current="page"
                                 href="#"
                             >
                                 YouTube to MP3English
-                            </a>
+                            </Link>
                         </li>
                     </ul>
                 </div>
