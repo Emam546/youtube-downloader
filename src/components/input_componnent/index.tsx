@@ -4,7 +4,7 @@ import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { useForm } from "react-hook-form";
-import { useLayoutEffect } from "react";
+import { ChangeEvent, useLayoutEffect } from "react";
 import { useParams, usePathname } from "next/navigation";
 interface DataFrom {
     search: string;
@@ -35,10 +35,10 @@ export default function InputHolder() {
             className="text-center tw-px-2 sm:tw-px-10  tw-py-10 main-form"
             autoComplete="off"
             onSubmit={handleSubmit((data) => {
-                const video = data.search;
-                if (validateURL(video))
-                    return navigate(`/youtube/${youtube_parser(video)}`);
-                else return navigate(`/search/${video}`);
+                const value = data.search;
+                if (validateURL(value))
+                    return navigate(`/youtube/${youtube_parser(value)}`);
+                else return navigate(`/search/${value}`);
             })}
         >
             <h2 className="tw-font-medium">
@@ -49,8 +49,14 @@ export default function InputHolder() {
                     <input
                         type="text"
                         {...register("search", {
-                            onChange(e) {
-                                console.log(e);
+                            onChange(e: ChangeEvent<HTMLInputElement>) {
+                                const value = e.currentTarget.value;
+                                if(validateURL(e.currentTarget.value))
+                                    return navigate(
+                                        `/youtube/${youtube_parser(value)}`
+                                    );
+                                
+                                
                             },
                         })}
                     />
