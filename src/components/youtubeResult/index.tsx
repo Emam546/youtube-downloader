@@ -3,10 +3,10 @@ import { useQuery } from "@tanstack/react-query";
 import { getVideoID, validateID } from "@src/utils";
 import { useDispatch } from "react-redux";
 import { videoActions } from "@src/store/res-slice";
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import Loading from "../Loading";
 import classnames from "classnames";
-import { getVideoData } from "@src/API";
+import { convertVideoData, getVideoData } from "@src/API";
 import { useRouter } from "next/router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -14,6 +14,9 @@ import {
     faMusic,
     faVideo,
 } from "@fortawesome/free-solid-svg-icons";
+import ModelPopUp from "../Model";
+import React from "react";
+import { DownloadButton } from "../downloadButton";
 function formatBytes(bytes: number, decimals = 2) {
     if (!+bytes) return "0 Bytes";
 
@@ -25,65 +28,56 @@ function formatBytes(bytes: number, decimals = 2) {
 
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 }
-function MapDataVideo(video: videoFormat, i: number, title: string) {
-    if (!video.hasVideo) return null;
-    if (!parseInt(video.contentLength)) return null;
+
+interface VideoData {
+    sizeText: ReactNode;
+    fileTypeText: ReactNode;
+    download: () => any;
+}
+function MapDataVideo({ video }: { video: VideoData }) {
     return (
-        <tr key={i}>
-            <td className="flex-shrink-1">
-                {video.qualityLabel} (.{video.container})
-                {!video.hasAudio && (
-                    <span className="label bg-danger">NO AUDIO</span>
-                )}
-            </td>
-            <td>{formatBytes(parseInt(video.contentLength), 0)}</td>
+        <tr>
+            <td className="flex-shrink-1">{video.fileTypeText}</td>
+            <td>{video.sizeText}</td>
             <td className="button-column">
-                <a
-                    href={video.url}
-                    download={`YoutubeDownloader - ${title}_${video.qualityLabel}`}
-                >
-                    <div className="btn btn-success">
-                        <FontAwesomeIcon icon={faDownload} />
-                        <span>Download</span>
-                    </div>
-                </a>
+                <DownloadButton
+                    onClick={video.download}
+                    className="btn btn-success"
+                />
             </td>
         </tr>
     );
 }
-function MapDataAudio(video: videoFormat, i: number, title: string) {
-    if (!video.hasAudio) return null;
-    if (video.hasVideo) return null;
-    if (!parseInt(video.contentLength)) return null;
+
+function MapDataAudio({ video }: { video: VideoData }) {
     return (
-        <tr key={i}>
-            <td>
-                {video.container.toUpperCase()} - {video.audioBitrate}kbps
-            </td>
-            <td>{formatBytes(parseInt(video.contentLength), 0)}</td>
+        <tr>
+            <td>{video.fileTypeText}</td>
+            <td>{video.sizeText}</td>
             <td className="button-column">
-                <a
-                    href={video.url}
-                    download={`YoutubeDownloader - ${title}`}
-                >
-                    <div className="btn btn-success">
-                        <FontAwesomeIcon icon={faDownload} />
-                        <span>Download</span>
-                    </div>
-                </a>
+                <DownloadButton
+                    onClick={video.download}
+                    className="btn btn-success"
+                />
             </td>
         </tr>
     );
 }
 type TabsType = "VIDEO" | "AUDIO";
+interface ModelStateType {
+    key: string;
+    vid: string;
+    quality: string;
+    dlink?: string;
+}
 export default function YoutubeResult() {
     const [state, setState] = useState<TabsType>("VIDEO");
     const { id } = useRouter().query as { id: string };
-
+    const [modelState, setModelState] = useState<ModelStateType | null>(null);
     const dispatch = useDispatch();
     const paramQuery = useQuery({
         queryKey: ["video", id],
-        queryFn: () => getVideoData(getVideoID(id || "")),
+        queryFn: ({ signal }) => getVideoData(getVideoID(id), signal),
         enabled: id != undefined && validateID(id),
         cacheTime: 1 * 1000 * 60,
         staleTime: 1 * 1000 * 60,
@@ -91,6 +85,20 @@ export default function YoutubeResult() {
             dispatch(videoActions.setData(data.related_videos));
         },
     });
+    const convertQuery = useQuery({
+        queryKey: ["video", "convert", modelState?.vid, modelState?.key],
+        queryFn: ({ signal }) =>
+            convertVideoData(getVideoID(id), modelState!.key, signal),
+        enabled: modelState != null,
+        cacheTime: 3 * 1000 * 60,
+        staleTime: 3 * 1000 * 60,
+        onSuccess(data) {
+            setModelState({ ...modelState!, dlink: data.dlink });
+        },
+    });
+    useEffect(() => {
+        if (!modelState) convertQuery.remove();
+    }, [modelState]);
     useEffect(() => {
         if (paramQuery.data)
             dispatch(videoActions.setData(paramQuery.data.related_videos));
@@ -99,109 +107,203 @@ export default function YoutubeResult() {
     if (!id) return null;
     if (paramQuery.isLoading) return <Loading />;
     if (paramQuery.isError) {
-        console.error(paramQuery.error);
         return (
-            <span className="text-warning">
+            <p className="tw-text-red-500 tw-text-center tw-text-xl">
                 There is a problem that occurred on the server.
-            </span>
+            </p>
         );
     }
-
     const data = paramQuery.data;
-    const formats = data.formats.sort((a, b) => {
-        return parseInt(b.contentLength) - parseInt(a.contentLength);
+    const videos: VideoData[] = [
+        ...Object.values(data.links.mp4)
+            .filter((v) => v.q != "auto")
+            .filter(
+                (v) =>
+                    !data.formats.some(
+                        (ov) =>
+                            ov.hasVideo && ov.hasAudio && ov.qualityLabel == v.q
+                    )
+            )
+            .map((video) => {
+                return {
+                    sizeText: video.size,
+                    fileTypeText: (
+                        <>
+                            {video.q} (.{video.f})
+                        </>
+                    ),
+                    q: video.q,
+                    download() {
+                        setModelState({
+                            key: video.k,
+                            quality: video.q,
+                            vid: data.videoDetails.videoId,
+                        });
+                    },
+                };
+            }),
+        ...data.formats
+            .filter((v) => v.hasVideo && v.hasAudio)
+            .map((video) => {
+                return {
+                    sizeText: parseInt(video.contentLength)
+                        ? formatBytes(parseInt(video.contentLength), 0)
+                        : "MB",
+                    fileTypeText: (
+                        <>
+                            {video.qualityLabel} (.{video.container})
+                            <span className="label bg-primary">Original</span>
+                        </>
+                    ),
+                    q: video.qualityLabel,
+                    download() {
+                        const a = document.createElement("a");
+                        a.href = video.url;
+                        a.download = `YoutubeDownloader - ${data.videoDetails.title}`;
+                        a.click();
+                    },
+                };
+            }),
+    ].sort((a, b) => {
+        return parseInt(b.q) - parseInt(a.q);
     });
+    const audios: VideoData[] = data.formats
+        .filter((v) => v.hasAudio && !v.hasVideo)
+        .map((video) => {
+            return {
+                sizeText: `${formatBytes(parseInt(video.contentLength), 0)}`,
+                fileTypeText: `${video.container.toUpperCase()} - ${
+                    video.audioBitrate
+                }kbps`,
+                download() {
+                    const a = document.createElement("a");
+                    a.href = video.url;
+                    a.download = `YoutubeDownloader - ${data.videoDetails.title}`;
+                    a.click();
+                },
+            };
+        });
     return (
-        <section className="download-result">
-            <div className="row">
-                <div className="col-md-4">
-                    <div>
-                        <div className="thumb-nail">
-                            <img
-                                src={data.videoDetails.thumbnails.at(-1)?.url}
-                                alt={data.videoDetails.title}
-                            />
-                        </div>
-                        <div className="thumb-nail-caption">
-                            <b>{data.videoDetails.title}</b>
-                        </div>
-                    </div>
+        <>
+            <ModelPopUp
+                open={modelState != null}
+                title={data.videoDetails.title}
+                onClose={() => setModelState(null)}
+            >
+                <div className="tw-flex tw-items-center tw-justify-center tw-mb-4">
+                    {modelState?.dlink ? (
+                        <DownloadButton
+                            onClick={() => {
+                                if (!modelState.dlink) return;
+                                const a = document.createElement("a");
+                                a.href = modelState.dlink;
+                                a.rel = "noopener noreferrer";
+                                a.download = `YoutubeDownloader - ${data.videoDetails.title}`;
+                                a.click();
+                            }}
+                            className="tw-min-w-[10rem]"
+                        />
+                    ) : (
+                        <Loading />
+                    )}
                 </div>
-                <div className="col-md-8">
-                    <div>
-                        <ul className="icon-nav">
-                            <li
-                                className={classnames({
-                                    active: state == "VIDEO",
-                                })}
-                                onClick={() => setState("VIDEO")}
-                            >
-                                <FontAwesomeIcon icon={faVideo} />
-                                Video
-                            </li>
-                            <li
-                                className={classnames({
-                                    active: state == "AUDIO",
-                                })}
-                                onClick={() => setState("AUDIO")}
-                            >
-                                <FontAwesomeIcon icon={faMusic} />
-                                Audio
-                            </li>
-                        </ul>
-                        <div className="tab-content">
-                            <div
-                                className={classnames({
-                                    "tw-hidden": state != "VIDEO",
-                                })}
-                            >
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>File type</th>
-                                            <th>File size</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {formats.map((v, i) =>
-                                            MapDataVideo(
-                                                v,
-                                                i,
-                                                data.videoDetails.title
-                                            )
-                                        )}
-                                    </tbody>
-                                </table>
+                <p>
+                    Thank you for using our service. If you could share our
+                    website with your friends, that would be a great help. Thank
+                    you.
+                </p>
+            </ModelPopUp>
+            <section className="download-result">
+                <div className="row">
+                    <div className="col-md-4">
+                        <div>
+                            <div className="thumb-nail">
+                                <img
+                                    src={
+                                        data.videoDetails.thumbnails.at(-1)?.url
+                                    }
+                                    alt={data.videoDetails.title}
+                                />
                             </div>
-                            <div
-                                className={classnames({
-                                    "tw-hidden": state != "AUDIO",
-                                })}
-                            >
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>File type</th>
-                                            <th>File size</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {formats.map((v, i) =>
-                                            MapDataAudio(
-                                                v,
-                                                i,
-                                                data.videoDetails.title
-                                            )
-                                        )}
-                                    </tbody>
-                                </table>
+                            <div className="thumb-nail-caption">
+                                <b>{data.videoDetails.title}</b>
                             </div>
                         </div>
                     </div>
+                    <div className="col-md-8">
+                        <div>
+                            <ul className="icon-nav">
+                                <li
+                                    className={classnames({
+                                        active: state == "VIDEO",
+                                    })}
+                                    onClick={() => setState("VIDEO")}
+                                >
+                                    <FontAwesomeIcon icon={faVideo} />
+                                    Video
+                                </li>
+                                <li
+                                    className={classnames({
+                                        active: state == "AUDIO",
+                                    })}
+                                    onClick={() => setState("AUDIO")}
+                                >
+                                    <FontAwesomeIcon icon={faMusic} />
+                                    Audio
+                                </li>
+                            </ul>
+                            <div className="tab-content">
+                                <div
+                                    className={classnames({
+                                        "tw-hidden": state != "VIDEO",
+                                    })}
+                                >
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>File type</th>
+                                                <th>File size</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {videos.map((video, i) => (
+                                                <MapDataVideo
+                                                    key={`${data.vid}-${i}`}
+                                                    video={video}
+                                                />
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div
+                                    className={classnames({
+                                        "tw-hidden": state != "AUDIO",
+                                    })}
+                                >
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>File type</th>
+                                                <th>File size</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {audios.map((v, i) => (
+                                                <MapDataAudio
+                                                    video={v}
+                                                    key={`${data.vid}-${i}`}
+                                                />
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        </>
     );
 }

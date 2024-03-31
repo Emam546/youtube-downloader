@@ -1,9 +1,9 @@
 @tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 @import "./custom";
 @import "./loader";
+@tailwind components;
+@tailwind utilities;
 :root {
     --main-color: #2d86ff;
     --main-transition: 0.3s;
@@ -205,28 +205,8 @@ p {
         a {
             text-decoration: none !important;
         }
-        .btn {
+        .btn.download {
             width: 100%;
-            color: $white;
-            background-color: #5cb85c;
-            border-color: #4cae4c;
-            margin-bottom: 0;
-            font-weight: normal;
-            text-align: center;
-            vertical-align: middle;
-            touch-action: manipulation;
-            cursor: pointer;
-            background-image: none;
-            border: rem(1) solid transparent;
-            white-space: nowrap;
-            padding: rem(6) rem(12);
-            font-size: rem(16);
-            line-height: 1.4;
-            border-radius: rem(4);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: rem(5);
             @media (max-width: 400px) {
                 span {
                     display: none;
@@ -236,4 +216,26 @@ p {
     }
     .video-content {
     }
+}
+.btn.download {
+    color: $white;
+    background-color: #5cb85c;
+    border-color: #4cae4c;
+    margin-bottom: 0;
+    font-weight: normal;
+    text-align: center;
+    vertical-align: middle;
+    touch-action: manipulation;
+    cursor: pointer;
+    background-image: none;
+    border: rem(1) solid transparent;
+    white-space: nowrap;
+    padding: rem(6) rem(12);
+    font-size: rem(16);
+    line-height: 1.4;
+    border-radius: rem(4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: rem(5);
 }
