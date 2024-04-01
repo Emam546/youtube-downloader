@@ -90,6 +90,7 @@ export default function YoutubeResult() {
 
     useQuery({
         retry: 1,
+        
         queryKey: ["video", "convert", modelState?.vid, modelState?.key],
         queryFn: ({ signal }) => {
             const controller = new AbortController();
@@ -109,8 +110,8 @@ export default function YoutubeResult() {
             });
         },
         enabled: modelState != null,
-        cacheTime: 3 * 1000 * 60,
-        staleTime: 3 * 1000 * 60,
+        cacheTime: 0.5 * 1000 * 60,
+        staleTime: 0.5 * 1000 * 60,
         onSuccess(data) {
             setModelState({ ...modelState!, active: true });
         },
