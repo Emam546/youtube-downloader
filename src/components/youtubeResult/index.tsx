@@ -6,7 +6,7 @@ import { videoActions } from "@src/store/res-slice";
 import { ReactNode, useEffect, useState } from "react";
 import Loading from "../Loading";
 import classnames from "classnames";
-import { convertVideoData, getVideoData, instance } from "@src/API";
+import { getVideoData, instance } from "@src/API";
 import { useRouter } from "next/router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
