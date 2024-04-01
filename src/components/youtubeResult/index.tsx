@@ -110,8 +110,8 @@ export default function YoutubeResult() {
             });
         },
         enabled: modelState != null,
-        cacheTime: 0.5 * 1000 * 60,
-        staleTime: 0.5 * 1000 * 60,
+        cacheTime: 3* 1000 * 60,
+        staleTime:3 * 1000 * 60,
         onSuccess(data) {
             setModelState({ ...modelState!, active: true });
         },
