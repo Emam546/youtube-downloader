@@ -17,6 +17,7 @@ import {
 import ModelPopUp from "../Model";
 import React from "react";
 import { DownloadButton } from "../downloadButton";
+import axios from "axios";
 function formatBytes(bytes: number, decimals = 2) {
     if (!+bytes) return "0 Bytes";
 
@@ -68,8 +69,8 @@ interface ModelStateType {
     key: string;
     vid: string;
     quality: string;
-    dlink?: string;
-    extension: string;
+    dlink: string;
+    active: boolean;
 }
 export default function YoutubeResult() {
     const [state, setState] = useState<TabsType>("VIDEO");
@@ -86,20 +87,34 @@ export default function YoutubeResult() {
             dispatch(videoActions.setData(data.related_videos));
         },
     });
-    // const convertQuery = useQuery({
-    //     queryKey: ["video", "convert", modelState?.vid, modelState?.key],
-    //     queryFn: ({ signal }) =>
-    //         convertVideoData(getVideoID(id), modelState!.key, signal),
-    //     enabled: modelState != null,
-    //     cacheTime: 3 * 1000 * 60,
-    //     staleTime: 3 * 1000 * 60,
-    //     onSuccess(data) {
-    //         setModelState({ ...modelState!, dlink: data.dlink });
-    //     },
-    // });
-    // useEffect(() => {
-    //     if (!modelState) convertQuery.remove();
-    // }, [modelState]);
+
+    useQuery({
+        retry: 1,
+        queryKey: ["video", "convert", modelState?.vid, modelState?.key],
+        queryFn: ({ signal }) => {
+            const controller = new AbortController();
+            signal?.addEventListener("abort", (e) => {
+                controller.abort();
+            });
+            return new Promise<boolean>((res, rej) => {
+                axios
+                    .get(modelState!.dlink, {
+                        validateStatus(status) {
+                            res(true);
+                            return true;
+                        },
+                        signal: controller.signal,
+                    })
+                    .catch((err) => rej(err));
+            });
+        },
+        enabled: modelState != null,
+        cacheTime: 3 * 1000 * 60,
+        staleTime: 3 * 1000 * 60,
+        onSuccess(data) {
+            setModelState({ ...modelState!, active: true });
+        },
+    });
     useEffect(() => {
         if (paramQuery.data)
             dispatch(videoActions.setData(paramQuery.data.related_videos));
@@ -143,9 +158,13 @@ export default function YoutubeResult() {
                     ),
                     q: video.q,
                     download() {
-                        const a = document.createElement("a");
-                        a.href = downloadURL.href;
-                        a.click();
+                        setModelState({
+                            key: video.k,
+                            quality: video.q,
+                            vid: data.videoDetails.videoId,
+                            dlink: downloadURL.href,
+                            active: false,
+                        });
                     },
                 };
             }),
@@ -197,10 +216,9 @@ export default function YoutubeResult() {
                 onClose={() => setModelState(null)}
             >
                 <div className="tw-flex tw-items-center tw-justify-center tw-mb-4">
-                    {modelState?.dlink ? (
+                    {modelState?.active ? (
                         <DownloadButton
                             onClick={() => {
-                                if (!modelState.dlink) return;
                                 const a = document.createElement("a");
                                 a.href = modelState.dlink;
                                 a.rel = "noopener noreferrer";
