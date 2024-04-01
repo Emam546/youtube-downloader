@@ -6,7 +6,7 @@ import { videoActions } from "@src/store/res-slice";
 import { ReactNode, useEffect, useState } from "react";
 import Loading from "../Loading";
 import classnames from "classnames";
-import { convertVideoData, getVideoData } from "@src/API";
+import { convertVideoData, getVideoData, instance } from "@src/API";
 import { useRouter } from "next/router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -69,6 +69,7 @@ interface ModelStateType {
     vid: string;
     quality: string;
     dlink?: string;
+    extension: string;
 }
 export default function YoutubeResult() {
     const [state, setState] = useState<TabsType>("VIDEO");
@@ -85,20 +86,20 @@ export default function YoutubeResult() {
             dispatch(videoActions.setData(data.related_videos));
         },
     });
-    const convertQuery = useQuery({
-        queryKey: ["video", "convert", modelState?.vid, modelState?.key],
-        queryFn: ({ signal }) =>
-            convertVideoData(getVideoID(id), modelState!.key, signal),
-        enabled: modelState != null,
-        cacheTime: 3 * 1000 * 60,
-        staleTime: 3 * 1000 * 60,
-        onSuccess(data) {
-            setModelState({ ...modelState!, dlink: data.dlink });
-        },
-    });
-    useEffect(() => {
-        if (!modelState) convertQuery.remove();
-    }, [modelState]);
+    // const convertQuery = useQuery({
+    //     queryKey: ["video", "convert", modelState?.vid, modelState?.key],
+    //     queryFn: ({ signal }) =>
+    //         convertVideoData(getVideoID(id), modelState!.key, signal),
+    //     enabled: modelState != null,
+    //     cacheTime: 3 * 1000 * 60,
+    //     staleTime: 3 * 1000 * 60,
+    //     onSuccess(data) {
+    //         setModelState({ ...modelState!, dlink: data.dlink });
+    //     },
+    // });
+    // useEffect(() => {
+    //     if (!modelState) convertQuery.remove();
+    // }, [modelState]);
     useEffect(() => {
         if (paramQuery.data)
             dispatch(videoActions.setData(paramQuery.data.related_videos));
@@ -125,6 +126,14 @@ export default function YoutubeResult() {
                     )
             )
             .map((video) => {
+                const baseURL = instance.defaults.baseURL || location.origin;
+
+                const downloadURL = new URL("/api/watch/download", baseURL);
+                downloadURL.searchParams.append("k", video.k);
+                downloadURL.searchParams.append(
+                    "vid",
+                    data.videoDetails.videoId
+                );
                 return {
                     sizeText: video.size,
                     fileTypeText: (
@@ -134,11 +143,9 @@ export default function YoutubeResult() {
                     ),
                     q: video.q,
                     download() {
-                        setModelState({
-                            key: video.k,
-                            quality: video.q,
-                            vid: data.videoDetails.videoId,
-                        });
+                        const a = document.createElement("a");
+                        a.href = downloadURL.href;
+                        a.click();
                     },
                 };
             }),
@@ -159,7 +166,6 @@ export default function YoutubeResult() {
                     download() {
                         const a = document.createElement("a");
                         a.href = video.url;
-                        a.download = `YoutubeDownloader - ${data.videoDetails.title}`;
                         a.click();
                     },
                 };
@@ -198,7 +204,6 @@ export default function YoutubeResult() {
                                 const a = document.createElement("a");
                                 a.href = modelState.dlink;
                                 a.rel = "noopener noreferrer";
-                                a.download = `YoutubeDownloader - ${data.videoDetails.title}`;
                                 a.click();
                             }}
                             className="tw-min-w-[10rem]"

@@ -48,15 +48,14 @@ export default function InputHolder() {
                 <div className="tw-flex-grow position-relative">
                     <input
                         type="text"
+                        placeholder="Search or paste link here..."
                         {...register("search", {
                             onChange(e: ChangeEvent<HTMLInputElement>) {
                                 const value = e.currentTarget.value;
-                                if(validateURL(e.currentTarget.value))
+                                if (validateURL(e.currentTarget.value))
                                     return navigate(
                                         `/youtube/${youtube_parser(value)}`
                                     );
-                                
-                                
                             },
                         })}
                     />

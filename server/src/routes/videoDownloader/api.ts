@@ -63,8 +63,7 @@ export async function getY2mateData(id: string): Promise<ServerVideoInfo> {
             headers: {
                 "Content-Type": "multipart/form-data;",
                 "User-Agent": "Your User Agent Here",
-            },
-            validateStatus: null,
+            }
         }
     );
     const googleData = await getInfo(id);
@@ -72,7 +71,7 @@ export async function getY2mateData(id: string): Promise<ServerVideoInfo> {
         vid: googleData.vid,
         related_videos: googleData.related_videos,
         videoDetails: googleData.videoDetails,
-        links: y2mateData.data.links || [],
+        links: y2mateData.data.links,
         formats: googleData.formats,
     };
 }
