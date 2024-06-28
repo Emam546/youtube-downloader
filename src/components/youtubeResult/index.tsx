@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getVideoID, validateID } from "@src/utils";
+import { validateID } from "@src/utils";
 import { useDispatch } from "react-redux";
 import { videoActions } from "@src/store/res-slice";
 import { ReactNode, useEffect, useState } from "react";
@@ -75,7 +75,7 @@ export default function YoutubeResult() {
     const dispatch = useDispatch();
     const paramQuery = useQuery({
         queryKey: ["video", id],
-        queryFn: ({ signal }) => getVideoData(getVideoID(id), signal),
+        queryFn: ({ signal }) => getVideoData(id, signal),
         enabled: id != undefined && validateID(id),
         cacheTime: 1 * 1000 * 60,
         staleTime: 1 * 1000 * 60,

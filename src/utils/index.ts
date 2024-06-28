@@ -6,7 +6,7 @@ export function validateID(id: string) {
 }
 export function getVideoID(v: string) {
     const id = _getVideoId(v);
-    if (!id) throw new Error("there is no video id");
+    if (id == null) throw new Error("there is no video id");
     return id;
 }
 export function youtube_parser(url: string) {
