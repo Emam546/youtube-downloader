@@ -1,4 +1,3 @@
-import { videoFormat } from "ytdl-core";
 import { useQuery } from "@tanstack/react-query";
 import { getVideoID, validateID } from "@src/utils";
 import { useDispatch } from "react-redux";
@@ -9,11 +8,7 @@ import classnames from "classnames";
 import { getVideoData, instance } from "@src/API";
 import { useRouter } from "next/router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-    faDownload,
-    faMusic,
-    faVideo,
-} from "@fortawesome/free-solid-svg-icons";
+import { faMusic, faVideo } from "@fortawesome/free-solid-svg-icons";
 import ModelPopUp from "../Model";
 import React from "react";
 import { DownloadButton } from "../downloadButton";
@@ -72,6 +67,7 @@ interface ModelStateType {
     dlink: string;
     active: boolean;
 }
+
 export default function YoutubeResult() {
     const [state, setState] = useState<TabsType>("VIDEO");
     const { id } = useRouter().query as { id: string };
@@ -90,7 +86,6 @@ export default function YoutubeResult() {
 
     useQuery({
         retry: 1,
-        
         queryKey: ["video", "convert", modelState?.vid, modelState?.key],
         queryFn: ({ signal }) => {
             const controller = new AbortController();
@@ -110,8 +105,8 @@ export default function YoutubeResult() {
             });
         },
         enabled: modelState != null,
-        cacheTime: 3* 1000 * 60,
-        staleTime:3 * 1000 * 60,
+        cacheTime: 3 * 1000 * 60,
+        staleTime: 3 * 1000 * 60,
         onSuccess(data) {
             setModelState({ ...modelState!, active: true });
         },

@@ -1,11 +1,10 @@
 import { useRouter } from "next/router";
-import { validateURL, getVideoID, youtube_parser } from "@src/utils";
+import { validateURL, youtube_parser } from "@src/utils";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { useForm } from "react-hook-form";
 import { ChangeEvent, useLayoutEffect } from "react";
-import { useParams, usePathname } from "next/navigation";
 interface DataFrom {
     search: string;
 }
