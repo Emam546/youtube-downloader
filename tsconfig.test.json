@@ -8,10 +8,19 @@
             "@src/*": [
                 "./src/*"
             ],
+            "@app/*": [
+                "./app/*"
+            ],
+            "@utils/*": [
+                "./utils/*"
+            ]
         }
     },
     "include": [
         "src",
-        "server"
+        "server",
+        "app",
+        "shared",
+        "utils"
     ]
 }

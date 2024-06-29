@@ -24,14 +24,27 @@
       ],
       "@serv/*": [
         "./server/src/*"
+      ],
+      "@shared/*": [
+        "./shared/*"
+      ],
+      "@utils/*": [
+        "./utils/*"
       ]
     },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
     "skipLibCheck": true
   },
   "include": [
     "src",
     "server",
-    "shared"
+    "shared",
+    ".next/types/**/*.ts",
+    "utils"
   ],
   "exclude": [
     "node_modules"

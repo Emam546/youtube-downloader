@@ -1,5 +1,7 @@
 import axios from "axios";
 import { getInfo, videoInfo } from "ytdl-core";
+import https from "https";
+import { IncomingMessage } from "http";
 export const instance = axios.create({
     baseURL: "https://www.y2mate.com",
 });
@@ -63,7 +65,7 @@ export async function getY2mateData(id: string): Promise<ServerVideoInfo> {
             headers: {
                 "Content-Type": "multipart/form-data;",
                 "User-Agent": "Your User Agent Here",
-            }
+            },
         }
     );
     const googleData = await getInfo(id);
@@ -81,6 +83,12 @@ export interface ServerConvertResults {
     ftype: Y2mateConvertResult["ftype"];
     vid: Y2mateConvertResult["vid"];
     title: Y2mateConvertResult["title"];
+}
+export function getFileName(title: string, quality: string, type: string) {
+    return `YoutubeDownloader - ${title}_v${quality}.${type}`.replace(
+        /[/\\?%*:|"<>]/g,
+        "-"
+    );
 }
 export async function convertY2mateData(
     id: string,
@@ -107,4 +115,33 @@ export async function convertY2mateData(
         vid: y2mateData.data.vid,
         title: y2mateData.data.title,
     };
+}
+export function getHttpMethod(
+    dlink: string,
+    callback: Parameters<typeof https.get>[2],
+    range?: string
+) {
+    const headers: Record<string, string> = {
+        "User-Agent": "Your User Agent Here",
+    };
+    if (range) headers["range"] = range;
+    https.get(
+        dlink,
+        {
+            headers,
+        },
+        callback
+    );
+}
+export async function DownloadVideoFromY2Mate(
+    id: string,
+    key: string,
+    callBack: (
+        data: ServerConvertResults,
+        response: IncomingMessage
+    ) => unknown,
+    range?: string
+) {
+    const data = await convertY2mateData(id, key);
+    getHttpMethod(data.dlink, (res) => callBack(data, res), range);
 }

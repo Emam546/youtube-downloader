@@ -4,7 +4,7 @@ import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { useForm } from "react-hook-form";
-import { ChangeEvent, useLayoutEffect } from "react";
+import { ChangeEvent, useEffect, useLayoutEffect } from "react";
 interface DataFrom {
     search: string;
 }
@@ -12,7 +12,7 @@ export default function InputHolder() {
     const router = useRouter();
     const navigate = router.push;
     const { register, handleSubmit, setValue, formState } = useForm<DataFrom>();
-    useLayoutEffect(() => {
+    useEffect(() => {
         if (router.asPath.startsWith("/youtube")) {
             const regex = /\/youtube\/([a-zA-Z0-9]+)/;
             const match = window.location.pathname.match(regex);

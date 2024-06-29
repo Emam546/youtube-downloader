@@ -1,7 +1,9 @@
 // next.config.js
 
 module.exports = {
-    appDir: true,
+    experimental: {
+        appDir: true,
+    },
     async headers() {
         return [
             {

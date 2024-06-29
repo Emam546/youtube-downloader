@@ -5,7 +5,7 @@ import { videoActions } from "@src/store/res-slice";
 import { ReactNode, useEffect, useState } from "react";
 import Loading from "../Loading";
 import classnames from "classnames";
-import { getVideoData, instance } from "@src/API";
+import { convertVideo, getVideoData, instance } from "@src/API";
 import { useRouter } from "next/router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMusic, faVideo } from "@fortawesome/free-solid-svg-icons";
@@ -13,6 +13,7 @@ import ModelPopUp from "../Model";
 import React from "react";
 import { DownloadButton } from "../downloadButton";
 import axios from "axios";
+import { ServerConvertResults } from "@serv/routes/videoDownloader/api";
 function formatBytes(bytes: number, decimals = 2) {
     if (!+bytes) return "0 Bytes";
 
@@ -64,8 +65,6 @@ interface ModelStateType {
     key: string;
     vid: string;
     quality: string;
-    dlink: string;
-    active: boolean;
 }
 
 export default function YoutubeResult() {
@@ -83,34 +82,28 @@ export default function YoutubeResult() {
             dispatch(videoActions.setData(data.related_videos));
         },
     });
-
+    const [DownloadData, setDownloadData] = useState<ServerConvertResults>();
     useQuery({
         retry: 1,
         queryKey: ["video", "convert", modelState?.vid, modelState?.key],
-        queryFn: ({ signal }) => {
+        queryFn: async ({ signal }) => {
             const controller = new AbortController();
             signal?.addEventListener("abort", (e) => {
                 controller.abort();
             });
-            return new Promise<boolean>((res, rej) => {
-                axios
-                    .get(modelState!.dlink, {
-                        validateStatus(status) {
-                            res(true);
-                            return true;
-                        },
-                        signal: controller.signal,
-                    })
-                    .catch((err) => rej(err));
-            });
+            return await convertVideo(modelState!);
         },
         enabled: modelState != null,
         cacheTime: 3 * 1000 * 60,
         staleTime: 3 * 1000 * 60,
         onSuccess(data) {
-            setModelState({ ...modelState!, active: true });
+            setDownloadData(data);
         },
     });
+    useEffect(() => {
+        setDownloadData(undefined);
+    }, [modelState]);
+    useEffect(() => {}, [modelState]);
     useEffect(() => {
         if (paramQuery.data)
             dispatch(videoActions.setData(paramQuery.data.related_videos));
@@ -137,14 +130,8 @@ export default function YoutubeResult() {
                     )
             )
             .map((video) => {
-                const baseURL = instance.defaults.baseURL || location.origin;
+                let link = video.k;
 
-                const downloadURL = new URL("/api/watch/download", baseURL);
-                downloadURL.searchParams.append("k", video.k);
-                downloadURL.searchParams.append(
-                    "vid",
-                    data.videoDetails.videoId
-                );
                 return {
                     sizeText: video.size,
                     fileTypeText: (
@@ -158,8 +145,6 @@ export default function YoutubeResult() {
                             key: video.k,
                             quality: video.q,
                             vid: data.videoDetails.videoId,
-                            dlink: downloadURL.href,
-                            active: false,
                         });
                     },
                 };
@@ -179,9 +164,19 @@ export default function YoutubeResult() {
                     ),
                     q: video.qualityLabel,
                     download() {
-                        const a = document.createElement("a");
-                        a.href = video.url;
-                        a.click();
+                        if (window.Environment == "web") {
+                            const a = document.createElement("a");
+                            a.href = video.url;
+                            a.click();
+                        } else {
+                            window.api.send("downloadY2mate", {
+                                vid: id,
+                                title: data.videoDetails.title,
+                                dlink: video.url,
+                                fquality: video.qualityLabel,
+                                ftype: video.container!,
+                            });
+                        }
                     },
                 };
             }),
@@ -197,10 +192,19 @@ export default function YoutubeResult() {
                     video.audioBitrate
                 }kbps`,
                 download() {
-                    const a = document.createElement("a");
-                    a.href = video.url;
-                    a.download = `YoutubeDownloader - ${data.videoDetails.title}`;
-                    a.click();
+                    if (window.Environment == "web") {
+                        const a = document.createElement("a");
+                        a.href = video.url;
+                        a.click();
+                    } else {
+                        window.api.send("downloadY2mate", {
+                            vid: id,
+                            title: data.videoDetails.title,
+                            dlink: video.url,
+                            fquality: `${video.audioBitrate}kbps`,
+                            ftype: video.container!,
+                        });
+                    }
                 },
             };
         });
@@ -209,16 +213,43 @@ export default function YoutubeResult() {
             <ModelPopUp
                 open={modelState != null}
                 title={data.videoDetails.title}
-                onClose={() => setModelState(null)}
+                onClose={() => {
+                    setModelState(null);
+                }}
             >
                 <div className="tw-flex tw-items-center tw-justify-center tw-mb-4">
-                    {modelState?.active ? (
+                    {DownloadData != undefined ? (
                         <DownloadButton
                             onClick={() => {
-                                const a = document.createElement("a");
-                                a.href = modelState.dlink;
-                                a.rel = "noopener noreferrer";
-                                a.click();
+                                if (window.Environment == "desktop") {
+                                    window.api.send(
+                                        "downloadY2mate",
+                                        DownloadData
+                                    );
+                                    setModelState(null);
+                                } else {
+                                    const baseURL =
+                                        instance.defaults.baseURL ||
+                                        location.origin;
+
+                                    const downloadURL = new URL(
+                                        "/api/watch/download",
+                                        baseURL
+                                    );
+                                    downloadURL.searchParams.append(
+                                        "k",
+                                        modelState!.key
+                                    );
+                                    downloadURL.searchParams.append(
+                                        "vid",
+                                        DownloadData.vid
+                                    );
+                                    const link = downloadURL.href;
+                                    const a = document.createElement("a");
+                                    a.href = link;
+                                    a.rel = "noopener noreferrer";
+                                    a.click();
+                                }
                             }}
                             className="tw-min-w-[10rem]"
                         />

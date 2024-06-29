@@ -3,8 +3,12 @@
 import { Router } from "express";
 import HttpStatusCodes from "@serv/declarations/major/HttpStatusCodes";
 import { validateID } from "ytdl-core";
-import { convertY2mateData, getY2mateData } from "./api";
-import https from "https";
+import {
+    convertY2mateData,
+    DownloadVideoFromY2Mate,
+    getFileName,
+    getY2mateData,
+} from "./api";
 
 const router = Router();
 
@@ -51,17 +55,10 @@ router.get("/download", async function (req, res) {
             .status(HttpStatusCodes.BAD_REQUEST)
             .json({ status: false, msg: "the key must be exist" });
 
-    const data = await convertY2mateData(req.query.vid, req.query.k);
-    const headers: Record<string, string> = {
-        "User-Agent": "Your User Agent Here",
-    };
-    if (req.headers.range) headers["range"] = req.headers.range;
-    https.get(
-        data.dlink,
-        {
-            headers,
-        },
-        (response) => {
+    await DownloadVideoFromY2Mate(
+        req.query.vid,
+        req.query.k,
+        (data, response) => {
             if (!response.statusCode || response.statusCode >= 300)
                 return res
                     .status(
@@ -82,10 +79,15 @@ router.get("/download", async function (req, res) {
                 "accept-ranges": response.headers["accept-ranges"],
                 "cf-cache-status": response.headers["cf-cache-status"],
                 // eslint-disable-next-line max-len
-                "content-disposition": `attachment; filename="YoutubeDownloader - ${data.title}_v${data.fquality}.${data.ftype}"`,
+                "content-disposition": `attachment; filename="${getFileName(
+                    data.title,
+                    data.fquality,
+                    data.ftype
+                )}"`,
             });
             response.pipe(res);
-        }
+        },
+        req.headers.range
     );
 });
 export default router;

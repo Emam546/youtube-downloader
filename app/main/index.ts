@@ -1,6 +1,13 @@
 import path from "path";
 import { app, ipcMain } from "electron";
 import { createWindow } from "./helpers";
+import {
+    HandleMethods,
+    HandleOnceMethods,
+    OnMethods,
+    OnceMethods,
+} from "./lib";
+import { ObjectEntries } from "@utils/index";
 (async () => {
     const serve = await import("electron-serve").then((d) => d.default);
     const isProd = process.env.NODE_ENV === "production";
@@ -13,36 +20,42 @@ import { createWindow } from "./helpers";
         app.setPath("userData", `${app.getPath("userData")} (development)`);
     }
 
-    (async () => {
-        await app.whenReady();
+    ObjectEntries(OnMethods).forEach(([key, val]) => {
+        ipcMain.on(key, val);
+    });
+    ObjectEntries(HandleMethods).forEach(([key, val]) => {
+        ipcMain.handle(key, val);
+    });
+    app.whenReady().then(async () => {
         const mainWindow = createWindow("main", {
             width: 1000,
             height: 600,
             webPreferences: {
+                sandbox: false,
                 preload: path.join(__dirname, "../preload/index.js"),
             },
         });
-        
         if (isProd) {
             if (appServe)
                 appServe(mainWindow).then(() => {
                     mainWindow.loadURL("app://-");
                 });
         } else {
-            const port = process.argv[2];
             await mainWindow.loadURL(`http://localhost:3000`);
-            // mainWindow.webContents.openDevTools();
+            mainWindow.webContents.openDevTools();
             mainWindow.webContents.on("did-fail-load", (e, code, desc) => {
                 mainWindow.webContents.reloadIgnoringCache();
             });
         }
-    })();
-
+    });
     app.on("window-all-closed", () => {
         app.quit();
     });
 
-    ipcMain.on("message", async (event, arg) => {
-        event.reply("message", `${arg} World!`);
-    });
+    // ObjectEntries(OnceMethods).forEach(([key, val]) => {
+    //     ipcMain.once(key, val);
+    // });
+    // ObjectEntries(HandleOnceMethods).forEach(([key, val]) => {
+    //     ipcMain.handleOnce(key, val);
+    // });
 })();

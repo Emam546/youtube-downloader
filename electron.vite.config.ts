@@ -13,6 +13,8 @@ export default defineConfig({
         resolve: {
             alias: {
                 "@shared": resolve("shared"),
+                "@serv": resolve("./server/src"),
+                "@utils": resolve("./utils"),
             },
         },
     },

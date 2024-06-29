@@ -18,6 +18,9 @@ const config: Config = {
             {
                 "@serv/*": ["./server/src/*"],
                 "@src/*": ["./src/*"],
+                "@app/*": ["./app/*"],
+                "@shared/*": ["./shared/*"],
+                "@utils/*": ["./utils/*"],
             },
             {
                 prefix: "<rootDir>/",
