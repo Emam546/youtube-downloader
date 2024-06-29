@@ -1,25 +1,24 @@
 import {
-    screen,
     BrowserWindow,
     BrowserWindowConstructorOptions,
-    Rectangle,
+    shell,
 } from "electron";
-// import Store from "electron-store";
+import path from "path";
+import serve from "electron-serve";
+const isProd = process.env.NODE_ENV === "production";
 
-export const createWindow = (
-    windowName: string,
+const appServe = isProd
+    ? serve({
+          directory: path.join(__dirname, "../../out"),
+      })
+    : null;
+export const createWindow = async (
     options: BrowserWindowConstructorOptions
-): BrowserWindow => {
-    const key = "window-state";
-    const name = `window-state-${windowName}`;
-    // const store = new Store<Rectangle>({ name });
-    const defaultSize = {
-        width: options.width,
-        height: options.height,
+): Promise<BrowserWindow> => {
+    let state: Electron.BrowserWindowConstructorOptions = {
+        show: false,
+        autoHideMenuBar: true,
     };
-    let state = {};
-
-    // const restore = () => store.get(key, defaultSize);
 
     const getCurrentPosition = () => {
         const position = win.getPosition();
@@ -32,35 +31,6 @@ export const createWindow = (
         };
     };
 
-    const windowWithinBounds = (windowState, bounds) => {
-        return (
-            windowState.x >= bounds.x &&
-            windowState.y >= bounds.y &&
-            windowState.x + windowState.width <= bounds.x + bounds.width &&
-            windowState.y + windowState.height <= bounds.y + bounds.height
-        );
-    };
-
-    const resetToDefaults = () => {
-        const bounds = screen.getPrimaryDisplay().bounds;
-        return Object.assign({}, defaultSize, {
-            x: (bounds.width - defaultSize.width!) / 2,
-            y: (bounds.height - defaultSize.height!) / 2,
-        });
-    };
-
-    const ensureVisibleOnSomeDisplay = (windowState) => {
-        const visible = screen.getAllDisplays().some((display) => {
-            return windowWithinBounds(windowState, display.bounds);
-        });
-        if (!visible) {
-            // Window is partially or fully not visible now.
-            // Reset it to safe defaults.
-            return resetToDefaults();
-        }
-        return windowState;
-    };
-
     const saveState = () => {
         if (!win.isMinimized() && !win.isMaximized()) {
             Object.assign(state, getCurrentPosition());
@@ -68,16 +38,33 @@ export const createWindow = (
         // store.set(key, state);
     };
 
-    // state = ensureVisibleOnSomeDisplay(restore());
-
     const win = new BrowserWindow({
         ...options,
         webPreferences: {
             ...options.webPreferences,
+            sandbox: false,
+            preload: path.join(__dirname, "../preload/index.js"),
         },
     });
+    win.on("ready-to-show", () => {
+        win?.show();
+    });
 
+    win.webContents.setWindowOpenHandler((details) => {
+        shell.openExternal(details.url);
+        return { action: "deny" };
+    });
     win.on("close", saveState);
-
+    if (isProd && appServe) {
+        appServe(win).then(() => {
+            win.loadURL("app://-");
+        });
+    } else {
+        await win.loadURL(`http://localhost:3000`);
+        win.webContents.openDevTools();
+        win.webContents.on("did-fail-load", () => {
+            win.webContents.reloadIgnoringCache();
+        });
+    }
     return win;
 };

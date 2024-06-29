@@ -5,16 +5,18 @@
   "scripts": {
     "build:server": "npx ts-node build.ts",
     "build:next": "next build",
+    "export": "npm run build:next&&next export",
     "build": "npm run build:server && npm run build:next",
     "lint": "next lint",
     "lint:server": "npx eslint -c server/.eslintrc.json --ext .ts server/src/",
     "start": "node -r module-alias/register ./dist --env=production",
     "dev": "nodemon",
     "test": "jest",
-    "start:electron": "electron-vite preview",
+    "start:desk": "electron-vite preview",
     "build:electron": "electron-vite build",
     "dev-electron": "electron-vite dev",
-    "dev:desk": "concurrently -n \"NEXT,ELECTRON\" -c \"yellow,blue\" --kill-others \"next dev\" \"npm run dev-electron\""
+    "dev:desk": "concurrently -n \"NEXT,ELECTRON\" -c \"yellow,blue\" --kill-others \"next dev\" \"npm run dev-electron\"",
+    "build:desk": "npm run export && npm run build:electron"
   },
   "nodemonConfig": {
     "watch": [
@@ -29,6 +31,7 @@
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/tsconfig": "^1.0.1",
+    "@electron-toolkit/utils": "^3.0.0",
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
     "@fortawesome/free-brands-svg-icons": "^6.5.1",
     "@fortawesome/free-regular-svg-icons": "^6.5.1",
@@ -45,7 +48,7 @@
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
-    "electron-serve": "^2.0.0",
+    "electron-serve": "^0.4.0",
     "electron-store": "^10.0.0",
     "express": "^4.18.2",
     "express-async-errors": "^3.1.1",
