@@ -1,9 +1,16 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from "@src/context/info";
 import Link from "next/link";
 
 export default function Header() {
     const { siteName } = useContext(UserContext);
+    useEffect(()=>{
+        window.api.send("log","Hey Start")
+    },[])
+    if (typeof window != "undefined" && window.IS_DESKTOP) {
+        console.log();
+        return null;
+    }
     return (
         <nav className="navbar navbar-expand-lg bg-light overflow-hidden">
             <div className="container">

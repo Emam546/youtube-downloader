@@ -1,6 +1,7 @@
 // next.config.js
 
 module.exports = {
+    appDir: true,
     async headers() {
         return [
             {

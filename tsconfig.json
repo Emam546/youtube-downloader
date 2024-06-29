@@ -7,7 +7,6 @@
       "esnext"
     ],
     "allowJs": true,
-    "skipLibCheck": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
@@ -26,11 +25,13 @@
       "@serv/*": [
         "./server/src/*"
       ]
-    }
+    },
+    "skipLibCheck": true
   },
   "include": [
     "src",
-    "server"
+    "server",
+    "shared"
   ],
   "exclude": [
     "node_modules"
