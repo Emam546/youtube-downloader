@@ -5,7 +5,7 @@
   "scripts": {
     "build:server": "npx ts-node build.ts",
     "build:next": "next build",
-    "build:web": "npm run build:server && npm run build:next",
+    "build": "npm run build:server && npm run build:next",
     "lint": "next lint",
     "lint:server": "npx eslint -c server/.eslintrc.json --ext .ts server/src/",
     "start": "node -r module-alias/register ./dist --env=production",

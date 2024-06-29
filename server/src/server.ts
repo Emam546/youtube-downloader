@@ -1,7 +1,7 @@
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import helmet from "helmet";
-import express, { Request, Response, NextFunction } from "express";
+import express, { Request, Response } from "express";
 
 import "express-async-errors";
 import baseRoute from "./routes";
@@ -17,7 +17,6 @@ const app = express();
 
 // **** Set basic express settings **** //
 //Cross origins
-
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -38,22 +37,14 @@ if (EnvVars.nodeEnv === NodeEnvs.Production) {
 // Add APIs
 app.use("/api", baseRoute);
 // Setup error handler
-app.use(
-    (
-        err: Error,
-        _: Request,
-        res: Response,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        next: NextFunction
-    ) => {
-        logger.err(err, true);
-        let status = HttpStatusCodes.BAD_REQUEST;
-        if (err instanceof RouteError) status = err.status;
+app.use((err: Error, _: Request, res: Response) => {
+    logger.err(err, true);
+    let status = HttpStatusCodes.BAD_REQUEST;
+    if (err instanceof RouteError) status = err.status;
 
-        return res
-            .status(status)
-            .json({ msg: "error", status: false, error: err.message });
-    }
-);
+    return res
+        .status(status)
+        .json({ msg: "error", status: false, error: err.message });
+});
 
 export default app;

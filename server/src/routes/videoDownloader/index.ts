@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Router } from "express";
 import HttpStatusCodes from "@serv/declarations/major/HttpStatusCodes";
 import { validateID } from "ytdl-core";
@@ -78,7 +76,7 @@ router.get("/download", async function (req, res) {
                 expires: response.headers["expires"],
                 "accept-ranges": response.headers["accept-ranges"],
                 "cf-cache-status": response.headers["cf-cache-status"],
-                // eslint-disable-next-line max-len
+
                 "content-disposition": `attachment; filename="${getFileName(
                     data.title,
                     data.fquality,
