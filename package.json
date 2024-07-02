@@ -76,6 +76,7 @@
     "react-dom": "18.2.0",
     "react-hook-form": "^7.49.2",
     "react-redux": "^8.0.7",
+    "throttle": "^1.0.3",
     "youtube-playlists-js": "^1.0.3",
     "youtube-searches": "^1.0.1",
     "ytdl-core": "^4.11.2"
@@ -97,6 +98,7 @@
     "@types/react": "^18.0.26",
     "@types/react-dom": "^18.0.9",
     "@types/supertest": "^2.0.12",
+    "@types/throttle": "^1.0.4",
     "@typescript-eslint/eslint-plugin": "^5.49.0",
     "@typescript-eslint/parser": "^5.49.0",
     "@vitejs/plugin-react": "^4.3.1",

@@ -118,30 +118,32 @@ export async function convertY2mateData(
     };
 }
 export function getHttpMethod(dlink: string, range?: string) {
-    const headers: Record<string, string> = {
-        "User-Agent": "Your User Agent Here",
-    };
-    if (range) headers["range"] = range;
-    if (dlink.startsWith("https"))
-        https.get(
-            dlink,
-            {
-                headers,
-            },
-            (response) => {
-                res(response);
-            }
-        );
-    else
-        http.get(
-            dlink,
-            {
-                headers,
-            },
-            (response) => {
-                res(response);
-            }
-        );
+    return new Promise<IncomingMessage>((res) => {
+        const headers: Record<string, string> = {
+            "User-Agent": "Your User Agent Here",
+        };
+        if (range) headers["range"] = range;
+        if (dlink.startsWith("https"))
+            https.get(
+                dlink,
+                {
+                    headers,
+                },
+                (response) => {
+                    res(response);
+                }
+            );
+        else
+            http.get(
+                dlink,
+                {
+                    headers,
+                },
+                (response) => {
+                    res(response);
+                }
+            );
+    });
 }
 export async function DownloadVideoFromY2Mate(
     id: string,

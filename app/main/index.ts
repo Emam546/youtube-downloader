@@ -10,7 +10,7 @@ if (!isProd) {
 app.whenReady().then(async () => {
     createProgressBarWindow({
         preloadData: {
-            link: "http://localhost:3001/example.mov",
+            link: "https://file-examples.com/storage/fe0e5e78596682d89b36118/2018/04/file_example_MOV_1920_2_2MB.mov",
             status: "connecting",
             title: "title",
         },
@@ -19,10 +19,10 @@ app.whenReady().then(async () => {
             continued: false,
         },
     });
-    createMainWindow({
-        width: 1000,
-        height: 600,
-    });
+    // createMainWindow({
+    //     width: 1000,
+    //     height: 600,
+    // });
 });
 app.on("window-all-closed", () => {
     app.quit();

@@ -1,4 +1,8 @@
-export type ConnectionStatus = "receiving" | "pause" | "connecting";
+export type ConnectionStatus =
+    | "receiving"
+    | "pause"
+    | "connecting"
+    | "completed";
 export interface ProgressBarState {
     title: string;
     link: string;

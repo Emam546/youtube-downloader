@@ -9,11 +9,14 @@
                 "./src/*"
             ],
             "@app/*": [
-                "./app/main/*"
+                "./app/*"
             ],
             "@utils/*": [
                 "./utils/*"
-            ]
+            ],
+            "@shared/renderer/*": [
+                "./app/renderer/shared/*"
+            ],
         }
     },
     "include": [

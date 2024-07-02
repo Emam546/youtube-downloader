@@ -7,8 +7,9 @@ import { IncomingMessage } from "http";
 import { StateType } from "@app/main/lib/main/downloader";
 import fs, { WriteStream } from "fs-extra";
 import { DownloadTheFile } from "./downloader";
-import { WebContents } from "electron";
+import { BrowserWindow, WebContents } from "electron";
 import axios from "axios";
+import Throttle from "throttle";
 type OnMethodsType = {
     [K in keyof Api.OnMethods]: ConvertToIpCMainFunc<Api.OnMethods[K]>;
 };
@@ -41,6 +42,8 @@ export class FileDownloader {
     private curInterval?: ReturnType<typeof setInterval>;
     private speedTransfer: number = 0;
     readonly link: string;
+    downloadSpeed = Number.MAX_SAFE_INTEGER;
+    throttle = new Throttle(this.downloadSpeed);
     resumable?: boolean;
     fileSize?: number;
     curSize: number;
@@ -87,11 +90,11 @@ export class FileDownloader {
         response.on("data", (data) => this.data(data));
         response.on("pause", () => this.pause());
         response.on("close", () => this.close());
-        response.on("resume", () => response.resume());
+        response.on("resume", () => this.resume());
         response.on("error", (err) => this.error(err));
         response.on("end", () => this.end());
 
-        // response.pipe(this.stream);
+        response.pipe(this.throttle).pipe(this.stream);
 
         const length = response.headers["content-length"];
         if (length) this.setFileSize(parseInt(length));
@@ -128,20 +131,21 @@ export class FileDownloader {
         if (state != this.state) this.onChangeState(state);
         this.state = state;
     }
+
     onChangeState(state: ProgressBarState["status"]) {
         this.webContent.send("onConnectionStatus", state);
     }
+    changeSpeed(speed: number) {
+        this.throttle.
+    }
     trigger(state: boolean) {
         if (!this.response) return;
-        if (state && this.response.isPaused()) {
-            console.log("start resume");
-            this.response.resume();
-        } else if (!state && !this.response.isPaused()) this.response.pause();
+        if (state && this.response.isPaused()) this.response.resume();
+        else if (!state && !this.response.isPaused()) this.response.pause();
     }
     close() {}
     setSpeed(speed: number) {
         this.webContent.send("onSpeed", speed);
-        this.webContent.send("onDownloaded", this.curSize);
         this.webContent.send("onStatus", {
             size: this.curSize,
             speed: speed,
@@ -157,22 +161,21 @@ export class FileDownloader {
         console.error(err);
     }
     pause() {
-        console.log("paused");
         this.changeState("pause");
     }
     resume() {
-        console.log("resume");
         this.changeState("connecting");
     }
     data(chunk: Buffer) {
-        console.log("data");
         this.changeState("receiving");
-        this.curSize += chunk.length / 2;
-        this.speedTransfer += chunk.length / 2;
-        console.log(this.stream.write(chunk));
+        this.curSize += chunk.length;
+        this.speedTransfer += chunk.length;
     }
     end() {
         this.setSpeed(0);
         this.stream.close();
+        const window = BrowserWindow.fromWebContents(this.webContent);
+        if (!window) return;
+        window.close();
     }
 }
