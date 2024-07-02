@@ -3,10 +3,11 @@
     "include": [
         "electron.vite.config.*",
         "./app/main/**/*",
-        "./app/preload/*",
+        "./app/preload/**/*",
+        "./app/renderer/shared/*",
         "./server/src",
         "shared/**/*",
-        "utils"
+        "utils",
     ],
     "compilerOptions": {
         "composite": true,
@@ -15,15 +16,21 @@
         ],
         "baseUrl": ".",
         "paths": {
+            "@app/*": [
+                "./app/*"
+            ],
             "@shared/*": [
                 "./shared/*"
+            ],
+            "@shared/renderer/*": [
+                "./app/renderer/shared/*"
             ],
             "@serv/*": [
                 "./server/src/*"
             ],
             "@utils/*": [
                 "./utils/*"
-            ]
+            ],
         },
     }
 }

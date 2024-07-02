@@ -1,18 +1,24 @@
 import {
     BrowserWindow,
     BrowserWindowConstructorOptions,
+    ipcMain,
     shell,
 } from "electron";
 import path from "path";
 import serve from "electron-serve";
-const isProd = process.env.NODE_ENV === "production";
+import { app } from "electron";
+import { ObjectEntries } from "@utils/index";
+import { OnMethods, HandleMethods } from "@app/main/lib/main";
+import { convertMainFunc } from "@app/preload/utils/main";
+
+const isProd = app.isPackaged;
 
 const appServe = isProd
     ? serve({
-          directory: path.join(__dirname, "../../out"),
+          directory: path.join(__dirname, "../renderer"),
       })
     : null;
-export const createWindow = async (
+export const createMainWindow = async (
     options: BrowserWindowConstructorOptions
 ): Promise<BrowserWindow> => {
     let state: Electron.BrowserWindowConstructorOptions = {
@@ -40,14 +46,17 @@ export const createWindow = async (
 
     const win = new BrowserWindow({
         ...options,
+        ...state,
         webPreferences: {
+            ...state.webPreferences,
             ...options.webPreferences,
             sandbox: false,
-            preload: path.join(__dirname, "../preload/index.js"),
+            preload: path.join(__dirname, "../preload/main.js"),
         },
     });
+
     win.on("ready-to-show", () => {
-        win?.show();
+        win.show();
     });
 
     win.webContents.setWindowOpenHandler((details) => {
@@ -66,5 +75,17 @@ export const createWindow = async (
             win.webContents.reloadIgnoringCache();
         });
     }
+    ObjectEntries(OnMethods).forEach(([key, val]) => {
+        ipcMain.on(convertMainFunc(key), val);
+    });
+    ObjectEntries(HandleMethods).forEach(([key, val]) => {
+        ipcMain.handle(convertMainFunc(key), val);
+    });
+    // ObjectEntries(OnceMethods).forEach(([key, val]) => {
+    //     ipcMain.once(key, val);
+    // });
+    // ObjectEntries(HandleOnceMethods).forEach(([key, val]) => {
+    //     ipcMain.handleOnce(key, val);
+    // });
     return win;
 };

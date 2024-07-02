@@ -1,6 +1,7 @@
 import axios from "axios";
 import { getInfo, videoInfo } from "ytdl-core";
 import https from "https";
+import http from "http";
 import { IncomingMessage } from "http";
 export const instance = axios.create({
     baseURL: "https://www.y2mate.com",
@@ -116,32 +117,43 @@ export async function convertY2mateData(
         title: y2mateData.data.title,
     };
 }
-export function getHttpMethod(
-    dlink: string,
-    callback: Parameters<typeof https.get>[2],
-    range?: string
-) {
+export function getHttpMethod(dlink: string, range?: string) {
     const headers: Record<string, string> = {
         "User-Agent": "Your User Agent Here",
     };
     if (range) headers["range"] = range;
-    https.get(
-        dlink,
-        {
-            headers,
-        },
-        callback
-    );
+    if (dlink.startsWith("https"))
+        https.get(
+            dlink,
+            {
+                headers,
+            },
+            (response) => {
+                res(response);
+            }
+        );
+    else
+        http.get(
+            dlink,
+            {
+                headers,
+            },
+            (response) => {
+                res(response);
+            }
+        );
 }
 export async function DownloadVideoFromY2Mate(
     id: string,
     key: string,
-    callBack: (
-        data: ServerConvertResults,
-        response: IncomingMessage
-    ) => unknown,
+
     range?: string
-) {
+): Promise<[ServerConvertResults, IncomingMessage]> {
     const data = await convertY2mateData(id, key);
-    getHttpMethod(data.dlink, (res) => callBack(data, res), range);
+    const response = await getHttpMethod(
+        data.dlink,
+
+        range
+    );
+    return [data, response];
 }

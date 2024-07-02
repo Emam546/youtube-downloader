@@ -7,8 +7,10 @@ import {
     getY2mateData,
 } from "@serv/routes/videoDownloader/api";
 import { getSearchData } from "@serv/routes/search/api";
-import { Downloader } from "./downloader";
+import { createProgressBarWindow } from "../../helpers/create-window/progress-bar";
 import { BrowserWindow } from "electron";
+import { ApiMain } from "@shared/main";
+import { Downloader } from "./downloader";
 type OnMethodsType = {
     [K in keyof ApiMain.OnMethods]: ConvertToIpCMainFunc<ApiMain.OnMethods[K]>;
 };
@@ -31,10 +33,19 @@ export const OnMethods: OnMethodsType = {
     log(_, ...arg) {
         console.log(...arg);
     },
-    async downloadY2mate(e, ...args) {
+    async downloadY2mate(e, data) {
         const window = BrowserWindow.fromWebContents(e.sender);
         if (!window) throw new Error("Undefined Window");
-        await Downloader(...args, window);
+        const state = await Downloader(data, window);
+        if (!state) return;
+        createProgressBarWindow({
+            stateData: state,
+            preloadData: {
+                link: data.dlink,
+                status: "connecting",
+                title: data.title,
+            },
+        });
     },
 };
 export const OnceMethods: OnceMethodsType = {};

@@ -3,17 +3,13 @@ module.exports = {
     theme: {
         extend: {
             colors: {
-                primary: "#2d86ff",
+                background: "#F0F0F0",
+                "secondary-color": "#E6E6E6",
                 black: "#000",
                 white: "#fff",
             },
         },
     },
-    content: [
-        "./index.html",
-        "./app/renderer/**/*.{js,ts,jsx,tsx}",
-        "./src/**/*.{js,ts,jsx,tsx}",
-    ],
-    prefix: "tw-",
+    content: ["./app/renderer/progress/**/*.{js,ts,jsx,tsx}"],
     plugins: [],
 };

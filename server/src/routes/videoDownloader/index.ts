@@ -53,39 +53,37 @@ router.get("/download", async function (req, res) {
             .status(HttpStatusCodes.BAD_REQUEST)
             .json({ status: false, msg: "the key must be exist" });
 
-    await DownloadVideoFromY2Mate(
+    const [data, response] = await DownloadVideoFromY2Mate(
         req.query.vid,
         req.query.k,
-        (data, response) => {
-            if (!response.statusCode || response.statusCode >= 300)
-                return res
-                    .status(
-                        response.statusCode ||
-                            HttpStatusCodes.INTERNAL_SERVER_ERROR
-                    )
-                    .json({
-                        msg: "Error happened on the server",
-                        status: false,
-                    });
-            res.writeHead(response.statusCode, {
-                date: response.headers["date"],
-                connection: response.headers["connection"],
-                "cache-control": response.headers["cache-control"],
-                "content-type": response.headers["content-type"],
-                "content-length": response.headers["content-length"],
-                expires: response.headers["expires"],
-                "accept-ranges": response.headers["accept-ranges"],
-                "cf-cache-status": response.headers["cf-cache-status"],
-
-                "content-disposition": `attachment; filename="${getFileName(
-                    data.title,
-                    data.fquality,
-                    data.ftype
-                )}"`,
-            });
-            response.pipe(res);
-        },
         req.headers.range
     );
+
+    if (!response.statusCode || response.statusCode >= 300)
+        return res
+            .status(
+                response.statusCode || HttpStatusCodes.INTERNAL_SERVER_ERROR
+            )
+            .json({
+                msg: "Error happened on the server",
+                status: false,
+            });
+    res.writeHead(response.statusCode, {
+        date: response.headers["date"],
+        connection: response.headers["connection"],
+        "cache-control": response.headers["cache-control"],
+        "content-type": response.headers["content-type"],
+        "content-length": response.headers["content-length"],
+        expires: response.headers["expires"],
+        "accept-ranges": response.headers["accept-ranges"],
+        "cf-cache-status": response.headers["cf-cache-status"],
+
+        "content-disposition": `attachment; filename="${getFileName(
+            data.title,
+            data.fquality,
+            data.ftype
+        )}"`,
+    });
+    response.pipe(res);
 });
 export default router;

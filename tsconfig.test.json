@@ -9,7 +9,7 @@
                 "./src/*"
             ],
             "@app/*": [
-                "./app/*"
+                "./app/main/*"
             ],
             "@utils/*": [
                 "./utils/*"
