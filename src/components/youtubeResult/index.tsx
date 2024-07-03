@@ -130,8 +130,6 @@ export default function YoutubeResult() {
                     )
             )
             .map((video) => {
-                let link = video.k;
-
                 return {
                     sizeText: video.size,
                     fileTypeText: (

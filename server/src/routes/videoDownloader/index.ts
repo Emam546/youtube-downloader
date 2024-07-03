@@ -78,10 +78,8 @@ router.get("/download", async function (req, res) {
         "accept-ranges": response.headers["accept-ranges"],
         "cf-cache-status": response.headers["cf-cache-status"],
 
-        "content-disposition": `attachment; filename="${getFileName(
-            data.title,
-            data.fquality,
-            data.ftype
+        "content-disposition": `attachment; filename="${encodeURIComponent(
+            getFileName(data.title, data.fquality, data.ftype)
         )}"`,
     });
     response.pipe(res);

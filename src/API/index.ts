@@ -20,7 +20,12 @@ export async function getVideoData(
     if (window.Environment == "desktop") {
         return await window.api.invoke("getVideoData", id);
     } else {
-        const res = await instance.get(`/api/watch?v=${id}`, { signal });
+        const res = await instance.get(`/api/watch`, {
+            signal,
+            params: {
+                v: id,
+            },
+        });
         return res.data.data;
     }
 }

@@ -113,7 +113,7 @@ export async function convertY2mateData(
         dlink: y2mateData.data.dlink,
         fquality: y2mateData.data.fquality,
         ftype: y2mateData.data.ftype,
-        vid: y2mateData.data.vid,
+        vid: id,
         title: y2mateData.data.title,
     };
 }
