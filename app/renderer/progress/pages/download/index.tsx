@@ -1,0 +1,25 @@
+import {
+    DownloadedStatus,
+    FileSizeStatus,
+    TimeLeftStatus,
+    TransferStatus,
+} from "./Systems";
+import ConnectionStatusComp from "./connectionStatus";
+export default function Download() {
+    return (
+        <div>
+            <div>
+                <p className="break-keep text-clip whitespace-nowrap max-w-full overflow-hidden">{window.context.link}</p>
+                <ConnectionStatusComp />
+            </div>
+            <div className="mt-2">
+                <ul>
+                    <FileSizeStatus />
+                    <DownloadedStatus />
+                    <TransferStatus />
+                    <TimeLeftStatus />
+                </ul>
+            </div>
+        </div>
+    );
+}

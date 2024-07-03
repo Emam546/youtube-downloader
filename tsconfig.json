@@ -7,12 +7,12 @@
       "esnext"
     ],
     "allowJs": true,
-    "skipLibCheck": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "esModuleInterop": true,
-    "module": "CommonJS",
+    "allowSyntheticDefaultImports": true,
+    "module": "commonjs",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -24,12 +24,27 @@
       ],
       "@serv/*": [
         "./server/src/*"
+      ],
+      "@shared/*": [
+        "./shared/*"
+      ],
+      "@utils/*": [
+        "./utils/*"
       ]
-    }
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "skipLibCheck": true
   },
   "include": [
     "src",
-    "server"
+    "server",
+    "shared",
+    ".next/types/**/*.ts",
+    "utils"
   ],
   "exclude": [
     "node_modules"

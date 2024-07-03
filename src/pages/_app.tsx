@@ -1,5 +1,6 @@
 // import "@src/style/css/normalize.css";
 import "@src/style/index.scss";
+import "@src/setup"
 import type { AppProps } from "next/app";
 import { Provider } from "react-redux";
 import store from "@src/store";

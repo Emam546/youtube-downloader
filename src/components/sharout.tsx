@@ -10,6 +10,11 @@ export default function SharedLayout({ children }: { children: ReactNode }) {
         <>
             <Head>
                 <title>Youtube Downloader</title>
+                <meta charSet="UTF-8" />
+                <meta
+                    name="viewport"
+                    content="width=device-width, initial-scale=1.0"
+                />
             </Head>
             <UserProvider>
                 <Header />

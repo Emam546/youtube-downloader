@@ -1,11 +1,16 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from "@src/context/info";
 import Link from "next/link";
+import classNames from "classnames";
 
 export default function Header() {
     const { siteName } = useContext(UserContext);
     return (
-        <nav className="navbar navbar-expand-lg bg-light overflow-hidden">
+        <nav
+            className={classNames(
+                "navbar navbar-expand-lg bg-light overflow-hidden"
+            )}
+        >
             <div className="container">
                 <Link
                     className="navbar-brand"

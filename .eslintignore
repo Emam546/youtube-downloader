@@ -1,2 +1,3 @@
 jest.config.ts
 build.ts
+electron.vite.config.js
