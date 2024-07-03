@@ -1,10 +1,26 @@
-import React, { useEffect } from "react";
-import { useAppDispatch } from "../store";
+import React, { useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "../store";
 import { DownloadActions } from "../store/downloading";
 import { StatusActions } from "../store/status";
 
+function getBaseName(fullPath) {
+    return fullPath.split("\\").pop();
+}
 export default function Updater() {
     const dispatch = useAppDispatch();
+    const { downloaded, fileSize } = useAppSelector(
+        (status) => status.download
+    );
+    useEffect(() => {
+        if (downloaded != undefined && fileSize != undefined) {
+            window.api.send(
+                "setTitle",
+                `${Math.round((downloaded / fileSize) * 100)}% ${getBaseName(
+                    window.context.path
+                )}`
+            );
+        } else window.api.send("setTitle", getBaseName(window.context.path));
+    }, [downloaded, fileSize]);
     useEffect(() => {
         window.api.on("onResumeCapacity", (_, state) => {
             dispatch(DownloadActions.setResumeCapability(state));

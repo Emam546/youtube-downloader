@@ -1,6 +1,6 @@
 import { createMainWindow } from "./helpers/create-window/main";
 import { app } from "electron";
-import { createProgressBarWindow } from "./helpers/create-window/progress-bar";
+import "./helpers/ipcMain";
 const isProd = app.isPackaged;
 
 if (!isProd) {

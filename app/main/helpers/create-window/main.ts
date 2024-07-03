@@ -8,7 +8,6 @@ import path from "path";
 import serve from "electron-serve";
 import { ObjectEntries } from "@utils/index";
 import { OnMethods, HandleMethods } from "@app/main/lib/main";
-import { convertMainFunc } from "@app/preload/utils/main";
 import { is } from "@electron-toolkit/utils";
 
 const isProd = !is.dev;
@@ -79,10 +78,10 @@ export const createMainWindow = async (
     return win;
 };
 ObjectEntries(OnMethods).forEach(([key, val]) => {
-    ipcMain.on(convertMainFunc(key), val);
+    ipcMain.on(key, val);
 });
 ObjectEntries(HandleMethods).forEach(([key, val]) => {
-    ipcMain.handle(convertMainFunc(key), val);
+    ipcMain.handle(key, val);
 });
 // ObjectEntries(OnceMethods).forEach(([key, val]) => {
 //     ipcMain.once(key, val);

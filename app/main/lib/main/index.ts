@@ -41,6 +41,7 @@ export const OnMethods: OnMethodsType = {
         createProgressBarWindow({
             stateData: state,
             preloadData: {
+                path: state.path,
                 link: data.dlink,
                 title: data.title,
             },

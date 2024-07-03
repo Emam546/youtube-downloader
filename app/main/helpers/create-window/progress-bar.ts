@@ -10,7 +10,6 @@ import { ProgressBarState, Context } from "@shared/renderer/progress";
 import { StateType } from "@app/main/lib/main/downloader";
 import { HandleMethods, OnMethods } from "@app/main/lib/progressBar";
 import { ObjectEntries } from "@utils/index";
-import { convertProgressFunc } from "@app/preload/utils/progress";
 import { convertFunc } from "@utils/app";
 import { FileDownloaderWindow } from "@app/main/lib/progressBar/window";
 export interface Props {
@@ -26,6 +25,7 @@ export const createProgressBarWindow = async (
         ...stateData,
         status: "connecting",
         throttle: true,
+
         downloadSpeed: 1,
     };
     const win = new FileDownloaderWindow(
@@ -72,9 +72,9 @@ export const createProgressBarWindow = async (
     return win;
 };
 ObjectEntries(OnMethods).forEach(([key, val]) => {
-    ipcMain.on(convertProgressFunc(key), val);
+    ipcMain.on(key, val);
 });
 
 ObjectEntries(HandleMethods).forEach(([key, val]) => {
-    ipcMain.handle(convertProgressFunc(key), val);
+    ipcMain.handle(key, val);
 });

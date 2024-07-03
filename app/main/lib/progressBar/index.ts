@@ -24,9 +24,6 @@ type HandelOnceMethodsType = {
 };
 export type FlagType = "w" | "a";
 export const OnMethods: OnMethodsType = {
-    log(_, ...arg) {
-        console.log(...arg);
-    },
     cancel(e) {
         const window = FileDownloaderWindow.fromWebContents(e.sender);
         if (!window) return;

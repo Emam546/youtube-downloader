@@ -1,14 +1,9 @@
 import { contextBridge } from "electron";
 import { electronAPI } from "@electron-toolkit/preload";
-import { ChangeApiRender, convertFunc } from "@utils/app";
-import { ConnectionStatus, Context } from "@shared/renderer/progress";
-import { convertProgressFunc } from "./utils/progress";
+import { Context } from "@shared/renderer/progress";
 
 // Custom APIs for renderer
-const api = ChangeApiRender(
-    electronAPI.ipcRenderer as any,
-    convertProgressFunc as any
-);
+const api = electronAPI.ipcRenderer;
 
 const context: Context = JSON.parse(
     decodeURIComponent(

@@ -13,6 +13,7 @@ export interface ProgressBarState {
     title: string;
     link: string;
     status: ConnectionStatus;
+    path: string;
     downloadingState?: DownloadingData;
 }
 export interface Context extends ProgressBarState {
@@ -33,7 +34,6 @@ export namespace ApiRender {
 }
 export namespace Api {
     interface OnMethods {
-        log(...arg: unknown[]): void;
         cancel(): void;
         close(): void;
     }

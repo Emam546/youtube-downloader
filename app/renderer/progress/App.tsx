@@ -26,13 +26,8 @@ const tabs: TabsState = [
 ];
 function App(): JSX.Element {
     const [selected, setSelected] = useState(tabs[0].id);
-    const status = useAppSelector((state) => state.status.status);
     const selectedState = tabs.find((tab) => tab.id == selected)!;
     const ref = useRef<ComponentRef<"div">>(null);
-    // useEffect(() => {
-    //     const bodyHeight = document.body.scrollHeight;
-    //     window.api.invoke("setHeight", bodyHeight);
-    // }, [status]);
     return (
         <div
             ref={ref}

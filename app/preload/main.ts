@@ -1,11 +1,9 @@
 import { contextBridge } from "electron";
 import { electronAPI } from "@electron-toolkit/preload";
-import { convertFunc, ChangeApiRender } from "@utils/app";
-import { convertMainFunc } from "./utils/main";
 
 
 // Custom APIs for renderer
-const api = ChangeApiRender(electronAPI.ipcRenderer as any, convertMainFunc);
+const api = electronAPI.ipcRenderer;
 
 // Use `contextBridge` APIs to expose Electron APIs to
 // renderer only if context isolation is enabled, otherwise

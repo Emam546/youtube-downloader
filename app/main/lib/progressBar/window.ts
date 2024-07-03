@@ -26,7 +26,7 @@ declare module "electron" {
 
 export class FileDownloaderWindow extends BrowserWindow {
     public static readonly MAX_TRIES = 3;
-    public static readonly INTERVAL_TIME = 1000;
+    public static readonly INTERVAL_TIME = 100;
     public static Windows: Record<string, FileDownloaderWindow> = {};
     private readonly stream: WriteStream;
     private response?: IncomingMessage;
@@ -110,7 +110,11 @@ export class FileDownloaderWindow extends BrowserWindow {
         if (this.curInterval) clearInterval(this.curInterval);
         this.curInterval = setInterval(() => {
             if (this.speedTransfer > 0) {
-                this.setSpeed(this.speedTransfer);
+                const speed = Math.round(
+                    this.speedTransfer /
+                        (FileDownloaderWindow.INTERVAL_TIME / 1000)
+                );
+                this.setSpeed(speed);
                 this.speedTransfer = 0;
             }
         }, FileDownloaderWindow.INTERVAL_TIME);

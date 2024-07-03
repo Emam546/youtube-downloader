@@ -15,6 +15,20 @@ type ConvertToIpCHandleMainFunc<T extends (...args: any[]) => any> = (
     event: IpcMainInvokeEvent,
     ...args: Parameters<T>
 ) => ReturnType<T>;
+import { ApiMain as Api, ApiRender as OrgApiRender } from "@shared/main";
+
+declare global {
+    namespace ApiMain {
+        interface OnMethods {
+            log(...args: any[]): void;
+            setTitle(name: string): void;
+        }
+        interface OnceMethods {}
+        interface HandleMethods {}
+        interface HandleOnceMethods {}
+    }
+}
+
 interface ApiRender {
     on<Key extends keyof ApiMain.Render.OnMethods>(
         channel: Key,
