@@ -42,7 +42,6 @@ export const OnMethods: OnMethodsType = {
             stateData: state,
             preloadData: {
                 link: data.dlink,
-                status: "connecting",
                 title: data.title,
             },
         });

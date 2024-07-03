@@ -14,7 +14,7 @@ import { convertProgressFunc } from "@app/preload/utils/progress";
 import { convertFunc } from "@utils/app";
 import { FileDownloaderWindow } from "@app/main/lib/progressBar/window";
 export interface Props {
-    preloadData: ProgressBarState;
+    preloadData: Omit<ProgressBarState, "status">;
     stateData: StateType;
 }
 export const createProgressBarWindow = async (
@@ -22,8 +22,9 @@ export const createProgressBarWindow = async (
     options?: BrowserWindowConstructorOptions
 ): Promise<BrowserWindow> => {
     const stateData = vars.preloadData;
-    const preloadData = {
+    const preloadData: Context = {
         ...stateData,
+        status: "connecting",
         throttle: true,
         downloadSpeed: 1,
     };
@@ -43,9 +44,7 @@ export const createProgressBarWindow = async (
                 preload: path.join(__dirname, "../preload/progress.js"),
                 additionalArguments: [
                     convertFunc(
-                        encodeURIComponent(
-                            JSON.stringify(preloadData as Context)
-                        ),
+                        encodeURIComponent(JSON.stringify(preloadData)),
                         "data"
                     ),
                 ],
@@ -62,14 +61,14 @@ export const createProgressBarWindow = async (
 
     win.enableThrottle = preloadData.throttle;
     win.downloadSpeed = preloadData.downloadSpeed;
+    win.on("ready-to-show", () => {
+        win.show();
+        win.download();
+    });
     if (is.dev) {
         await win.loadURL(`${process.env["ELECTRON_RENDERER_URL"]}/progress`);
-        win.show();
-        // win.webContents.openDevTools();
-    } else
-        await win.loadFile(path.join(__dirname, "../windows/progress.html"));
+    } else await win.loadFile(path.join(__dirname, "../windows/progress.html"));
 
-    await win.download();
     return win;
 };
 ObjectEntries(OnMethods).forEach(([key, val]) => {
