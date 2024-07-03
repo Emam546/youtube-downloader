@@ -6,12 +6,12 @@ import {
 } from "electron";
 import path from "path";
 import serve from "electron-serve";
-import { app } from "electron";
 import { ObjectEntries } from "@utils/index";
 import { OnMethods, HandleMethods } from "@app/main/lib/main";
 import { convertMainFunc } from "@app/preload/utils/main";
+import { is } from "@electron-toolkit/utils";
 
-const isProd = app.isPackaged;
+const isProd = !is.dev;
 
 const appServe = isProd
     ? serve({

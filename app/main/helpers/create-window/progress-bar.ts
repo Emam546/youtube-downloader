@@ -67,9 +67,7 @@ export const createProgressBarWindow = async (
         win.show();
         // win.webContents.openDevTools();
     } else
-        await win.loadFile(
-            path.join(__dirname, "../progressBar/progress.html")
-        );
+        await win.loadFile(path.join(__dirname, "../windows/progress.html"));
 
     await win.download();
     return win;
