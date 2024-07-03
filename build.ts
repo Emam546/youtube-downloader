@@ -3,7 +3,6 @@
  */
 
 import fs from "fs-extra";
-import logger from "jet-logger";
 import childProcess from "child_process";
 
 /**
@@ -17,7 +16,7 @@ import childProcess from "child_process";
         await exec("tsc --build tsconfig.prod.json", "./");
         console.log("finish building server");
     } catch (err) {
-        logger.err(err);
+        console.error(err);
     }
 })();
 
@@ -50,10 +49,10 @@ function exec(cmd: string, loc: string): Promise<void> {
     return new Promise((res, rej) => {
         return childProcess.exec(cmd, { cwd: loc }, (err, stdout, stderr) => {
             if (!!stdout) {
-                logger.info(stdout);
+                console.log(stdout);
             }
             if (!!stderr) {
-                logger.warn(stderr);
+                console.warn(stderr);
             }
             return !!err ? rej(err) : res();
         });
