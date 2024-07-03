@@ -6,14 +6,14 @@ export function convertFunc<Key extends string, Pre extends string>(
 ) {
     return `${preName}-${name}`;
 }
-export function ChangeApiRender(
+export function ChangeApiRender<Key extends string>(
     renderer: IpcRenderer,
-    convFun: (name: string) => string
+    convFun: (name: Key) => string
 ) {
     const send = renderer.send;
     const invoke = renderer.invoke;
-    renderer.send = (channel, ...args) => send(convFun(channel), ...args);
-    renderer.invoke = (channel, ...args) => invoke(convFun(channel), ...args);
+    renderer.send = (channel, ...args) => send(convFun(channel as Key), ...args);
+    renderer.invoke = (channel, ...args) => invoke(convFun(channel as Key), ...args);
 
     return renderer;
 }

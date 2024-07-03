@@ -1,4 +1,9 @@
-import { ApiRender, Api, ProgressBarState } from "@shared/renderer/progress";
+import {
+    ApiRender,
+    Api,
+    ProgressBarState,
+    Context,
+} from "@shared/renderer/progress";
 export type TabsType = "Download" | "speedLimiter" | "Options";
 declare global {
     namespace ApiMain {
@@ -12,6 +17,6 @@ declare global {
         }
     }
     interface Window {
-        context: ProgressBarState;
+        context: Context;
     }
 }

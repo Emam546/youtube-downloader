@@ -6,7 +6,7 @@ export function Tab({ className, ...props }: ComponentProps<"li">) {
         <li
             className={classNames(
                 className,
-                "text-sm border border-solid px-2 border-gray-600/20 aria-selected:bg-white aria-selected:scale-105 aria-selected:border-0 hover:bg-blue-100"
+                "border border-solid px-2 border-gray-600/20 aria-selected:bg-white aria-selected:scale-105 aria-selected:border-0 hover:bg-blue-100"
             )}
             {...props}
         />

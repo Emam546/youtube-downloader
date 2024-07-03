@@ -1,12 +1,9 @@
-import { ConnectionStatus } from "@shared/renderer/progress";
 import classNames from "classnames";
-import React, { useEffect, useState } from "react";
+import { useAppSelector } from "../../store";
 
 export default function ConnectionStatusComp() {
-    const [status, setStatus] = useState<ConnectionStatus>("connecting");
-    useEffect(() => {
-        window.api.on("onConnectionStatus", (_, status) => setStatus(status));
-    }, []);
+    const status = useAppSelector((state) => state.status.status);
+
     return (
         <p>
             Status
@@ -14,6 +11,7 @@ export default function ConnectionStatusComp() {
                 {status == "receiving" && "Receiving...."}
                 {status == "pause" && "Pause"}
                 {status == "connecting" && "Connecting ..."}
+                {status == "completed" && "Completed"}
             </span>
         </p>
     );

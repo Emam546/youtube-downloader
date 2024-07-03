@@ -56,6 +56,7 @@ export const createMainWindow = async (
     });
 
     win.on("ready-to-show", () => {
+        win.maximize();
         win.show();
     });
 
@@ -75,17 +76,17 @@ export const createMainWindow = async (
             win.webContents.reloadIgnoringCache();
         });
     }
-    ObjectEntries(OnMethods).forEach(([key, val]) => {
-        ipcMain.on(convertMainFunc(key), val);
-    });
-    ObjectEntries(HandleMethods).forEach(([key, val]) => {
-        ipcMain.handle(convertMainFunc(key), val);
-    });
-    // ObjectEntries(OnceMethods).forEach(([key, val]) => {
-    //     ipcMain.once(key, val);
-    // });
-    // ObjectEntries(HandleOnceMethods).forEach(([key, val]) => {
-    //     ipcMain.handleOnce(key, val);
-    // });
     return win;
 };
+ObjectEntries(OnMethods).forEach(([key, val]) => {
+    ipcMain.on(convertMainFunc(key), val);
+});
+ObjectEntries(HandleMethods).forEach(([key, val]) => {
+    ipcMain.handle(convertMainFunc(key), val);
+});
+// ObjectEntries(OnceMethods).forEach(([key, val]) => {
+//     ipcMain.once(key, val);
+// });
+// ObjectEntries(HandleOnceMethods).forEach(([key, val]) => {
+//     ipcMain.handleOnce(key, val);
+// });

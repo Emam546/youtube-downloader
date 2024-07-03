@@ -1,24 +1,21 @@
 import { contextBridge } from "electron";
 import { electronAPI } from "@electron-toolkit/preload";
 import { ChangeApiRender, convertFunc } from "@utils/app";
-import { ConnectionStatus, ProgressBarState } from "@shared/renderer/progress";
+import { ConnectionStatus, Context } from "@shared/renderer/progress";
 import { convertProgressFunc } from "./utils/progress";
 
 // Custom APIs for renderer
 const api = ChangeApiRender(
     electronAPI.ipcRenderer as any,
-    convertProgressFunc
+    convertProgressFunc as any
 );
 
-const [link, title, status] = process.argv
-    .filter((v) => v.startsWith("data-"))
-    .map((v) => decodeURIComponent(v.replace(/^data-/, "")));
+const context: Context = JSON.parse(
+    decodeURIComponent(
+        process.argv.find((v) => v.startsWith("data-"))!
+    ).replace(/^data-/, "")
+);
 
-const context: ProgressBarState = {
-    link,
-    status: status as ConnectionStatus,
-    title,
-};
 // Use `contextBridge` APIs to expose Electron APIs to
 // renderer only if context isolation is enabled, otherwise
 // just add to the DOM global.

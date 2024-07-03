@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import React, { ComponentProps, useEffect, useState } from "react";
+import { useAppSelector } from "../../store";
 export interface StatusLiProps extends ComponentProps<"li"> {
     label: string;
 }
@@ -45,10 +46,8 @@ function humanFileSize(bytes: number, si = true, dp = 1) {
     return bytes.toFixed(dp) + " " + units[u];
 }
 export function FileSizeStatus() {
-    const [size, setSize] = useState<number>();
-    useEffect(() => {
-        window.api.on("onFileSize", (_, size) => setSize(size));
-    }, []);
+    const size = useAppSelector((state) => state.download.fileSize);
+
     return (
         <StatusLi label="File size">
             <p>
@@ -59,28 +58,27 @@ export function FileSizeStatus() {
     );
 }
 export function DownloadedStatus() {
-    const [size, setSize] = useState<string>();
-    useEffect(() => {
-        window.api.on("onStatus", (_, { size, fileSize }) => {
-            const sizeF = humanFileSize(size);
-            if (!fileSize) return setSize(sizeF);
-            setSize(`${sizeF} ${((size / fileSize) * 100).toFixed(2)}%`);
-        });
-    }, []);
+    const { downloaded, fileSize } = useAppSelector((state) => state.download);
+    let status: string | undefined = undefined;
+    if (downloaded) {
+        status = humanFileSize(downloaded);
+        if (fileSize)
+            status = `${status} ${((downloaded / fileSize) * 100).toFixed(2)}%`;
+    }
+
     return (
         <StatusLi label="Downloaded">
             <p>
-                {size != undefined && size}
-                {size == undefined && "......"}
+                {status != undefined && status}
+                {status == undefined && "......"}
             </p>
         </StatusLi>
     );
 }
 export function TransferStatus() {
-    const [speed, setSpeed] = useState<number>();
-    useEffect(() => {
-        window.api.on("onSpeed", (_, speed) => setSpeed(speed));
-    }, []);
+    // const [speed, setSpeed] = useState<number>();
+    const speed = useAppSelector((state) => state.download.transferRate);
+
     return (
         <StatusLi label="Transfer rate">
             <p>
@@ -123,18 +121,18 @@ function millisecondsToStr(milliseconds: number) {
     return "less than a second"; //'just now' //or other string you like;
 }
 export function TimeLeftStatus() {
-    const [status, setStatus] = useState<string>();
-    useEffect(() => {
-        window.api.on("onStatus", (_, { speed, fileSize, size }) => {
-            if (!fileSize) return setStatus("unknown");
-            const time = (fileSize - size) / speed;
-            setStatus(`${millisecondsToStr(time)}`);
-        });
-    }, []);
+    let status: string | undefined = undefined;
+    const { downloaded, fileSize, transferRate } = useAppSelector(
+        (state) => state.download
+    );
+    if (fileSize && transferRate && downloaded) {
+        const time = (fileSize - downloaded) / transferRate;
+        status = millisecondsToStr(time);
+    }
     return (
         <StatusLi label="Time Left">
             <p>
-                {status != undefined && status}
+                {status != undefined && `${status}`}
                 {status == undefined && "......"}
             </p>
         </StatusLi>
@@ -142,12 +140,8 @@ export function TimeLeftStatus() {
 }
 
 export function ResumeStatus() {
-    const [status, setStatus] = useState<boolean>();
-    useEffect(() => {
-        window.api.on("onResumeCapacity", (_, state) => {
-            setStatus(true);
-        });
-    }, []);
+    const status = useAppSelector((state) => state.download.resumeCapacity);
+
     return (
         <StatusLi label="Resume capability">
             <p className="px-4">

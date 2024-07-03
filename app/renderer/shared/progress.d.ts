@@ -3,18 +3,22 @@ export type ConnectionStatus =
     | "pause"
     | "connecting"
     | "completed";
+export interface DownloadingData {
+    fileSize?: number;
+    downloaded: number;
+    transferRate: number;
+    resumeCapacity: boolean;
+}
 export interface ProgressBarState {
     title: string;
     link: string;
     status: ConnectionStatus;
-    downloadingState?: {
-        fileSize: number;
-        Downloaded: number;
-        transferRate: number;
-        resumeCapacity: boolean;
-    };
+    downloadingState?: DownloadingData;
 }
-
+export interface Context extends ProgressBarState {
+    throttle: boolean;
+    downloadSpeed: number;
+}
 export namespace ApiRender {
     interface OnMethods {
         onSpeed(speed: number): void;
@@ -30,10 +34,14 @@ export namespace ApiRender {
 export namespace Api {
     interface OnMethods {
         log(...arg: unknown[]): void;
+        cancel(): void;
+        close(): void;
     }
     interface OnceMethods {}
     interface HandleMethods {
         triggerConnection(state: boolean): void;
+        setSpeed(speed: number): void;
+        setThrottle(state: boolean): void;
     }
     interface HandleOnceMethods {}
 }

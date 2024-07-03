@@ -5,10 +5,18 @@
 
 
 @layer base{
+    :root{
+        @apply text-sm;
+    }
     #root{
         @apply h-screen bg-background;
     }
     html,body{
-        @apply select-none;
+        @apply select-none ;
     }
 }
+
+body{
+
+}
+
