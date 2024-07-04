@@ -1,24 +1,24 @@
 name: Release
 on:
-  release:
-    types:
-      - created
+    release:
+        types:
+            - created
 permissions:
-  contents: write       # Required for creating releases
-  id-token: write       # Required for authenticating with GitHub Packages
+    contents: write # Required for creating releases
+    id-token: write # Required for authenticating with GitHub Packages
 env:
-  GH_TOKEN: ${{ secrets.GH_TOKEN }}
+    GH_TOKEN: ${{ secrets.GH_TOKEN }}
 jobs:
-  publish_on_win:
-    runs-on: windows-latest
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v3
-      with:
-          node-version: 20.0.0
-    - name: install dependencies
-      run: npm install
-    - name: build
-      run: npm run build:desk
-    - name: publish
-      run: npm run publish
+    publish_on_win:
+        runs-on: windows-latest
+        steps:
+            - uses: actions/checkout@v2
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: 20.0.0
+            - name: install dependencies
+              run: npm install
+            - name: build
+              run: npm run build:desk
+            - name: publish
+              run: npm run publish

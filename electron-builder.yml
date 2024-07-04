@@ -46,6 +46,4 @@ win:
   publish:
     - protocol: https
       provider: github
-            # a string provider for bitbucket that will use default options
-    - bitbucket
   target: nsis
