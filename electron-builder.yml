@@ -30,18 +30,16 @@ npmRebuild: false
 nsis:
   allowElevation: true
   allowToChangeInstallationDirectory: true
-  artifactName: ${name}-${version}-setup.${ext}
+  artifactName: "${productName}-setup-${version}-win.${ext}"
   createDesktopShortcut: always
   oneClick: false
   perMachine: false
   shortcutName: ${productName}
-  uninstallDisplayName: ${productName}
-productName: YoutubeDownloader
+productName: youtube-downloader
 publish:
   owner: Emam546
   provider: github
   repo: youtube-downloader
   releaseType : release
 win:
-
   target: nsis
