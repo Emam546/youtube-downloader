@@ -40,10 +40,7 @@ publish:
   owner: Emam546
   provider: github
   repo: youtube-downloader
-  releaseType: release
+  releaseType : release
 win:
   icon: build\icon.ico
-  publish:
-    - protocol: https
-      provider: github
   target: nsis
