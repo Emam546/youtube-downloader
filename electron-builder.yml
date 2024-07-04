@@ -5,8 +5,12 @@ directories:
     buildResources: build
 asarUnpack:
     - resources/**
+# win:
+#    executableName: YoutubeDownloader
+
 win:
-    executableName: YoutubeDownloader
+  target:
+    - nsis
 nsis:
     artifactName: ${name}-${version}-setup.${ext}
     shortcutName: ${productName}
@@ -16,6 +20,8 @@ nsis:
     perMachine: false
     allowElevation: true
     allowToChangeInstallationDirectory: true
+    language:
+    - 1033  # English
 mac:
     entitlementsInherit: build/entitlements.mac.plist
     extendInfo:
@@ -24,8 +30,7 @@ mac:
         - NSDocumentsFolderUsageDescription: Application requests access to the user's Documents folder.
         - NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
     notarize: false
-dmg:
-    artifactName: ${name}-${version}.${ext}
+
 linux:
     target:
         - AppImage
@@ -37,5 +42,6 @@ appImage:
     artifactName: ${name}-${version}.${ext}
 npmRebuild: false
 publish:
-    provider: generic
-    url: https://example.com/auto-updates
+    provider: github
+    owner: Emam546
+    repo: youtube-downloader

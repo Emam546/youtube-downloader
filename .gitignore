@@ -1,12 +1,6 @@
 **/node_modules
 **/**/*.log
 dist
-<<<<<<< HEAD
-res.json
-**/**/res.json
-.next
-next-env.d.ts
-=======
 # Logs
 logs
 *.log
@@ -47,9 +41,6 @@ dist-ssr
 /.next/
 /out/
 
-# production
-/build
-
 # misc
 .DS_Store
 *.pem
@@ -71,4 +62,3 @@ next-env.d.ts
 test_scrap
 dist
 
->>>>>>> nextjs
