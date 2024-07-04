@@ -26,7 +26,7 @@
     "dev:desk": "concurrently -n \"NEXT,ELECTRON\" -c \"yellow,blue\" --kill-others \"next dev\" \"npm run dev-electron\"",
     "build:desk": "npm run build:next&&next export -o ./out/renderer && npm run build:electron",
     "build:win": "npm run build:desk && electron-builder --win",
-    "prepublish": "npm run jdesk",
+    "prepublishOnly": "npm run build:desk",
     "publish": "electron-builder -p always"
   },
   "nodemonConfig": {
