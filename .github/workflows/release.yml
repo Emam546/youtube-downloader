@@ -8,15 +8,13 @@ jobs:
   publish_on_win:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v2       
-    - uses: actions/setup-node@master
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v3
       with:
-        node-version: 14
+          node-version: 16.8.0
     - name: install dependencies
       run: npm install
-    - name: build cache
-      run: npm run build:desk
     - name: publish
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       run: npm run publish
