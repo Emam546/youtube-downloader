@@ -127,7 +127,7 @@ export function TimeLeftStatus() {
     );
     if (fileSize && transferRate && downloaded) {
         const time = (fileSize - downloaded) / transferRate;
-        status = millisecondsToStr(time);
+        status = millisecondsToStr(time*1000);
     }
     return (
         <StatusLi label="Time Left">
