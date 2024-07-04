@@ -4,6 +4,7 @@ appImage:
   artifactName: ${name}-${version}.${ext}
 asarUnpack:
   - resources/**
+icon: build\icon.ico
 directories:
   buildResources: build
   output: dist
@@ -42,5 +43,5 @@ publish:
   repo: youtube-downloader
   releaseType : release
 win:
-  icon: build\icon.ico
+
   target: nsis
