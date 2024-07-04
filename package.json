@@ -3,13 +3,9 @@
   "version": "0.0.0",
   "main": "./out/main/index.js",
   "description": "A Youtube videos downloader app",
+  "repository": "https://github.com/Emam546/youtube-downloader",
   "author": "Imam Ashour",
-  "build": {
-    "files": [
-      "out/**/*",
-      "build/**/*"
-    ]
-  },
+
   "scripts": {
     "build:server": "npx ts-node build.ts",
     "build:next": "next build",
@@ -61,6 +57,7 @@
     "dotenv": "^16.0.3",
     "electron-serve": "^0.4.0",
     "electron-store": "^10.0.0",
+    "electron-updater": "^6.2.1",
     "express": "^4.18.2",
     "express-async-errors": "^3.1.1",
     "get-youtube-id": "^1.0.1",

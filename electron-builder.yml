@@ -1,47 +1,51 @@
+---
 appId: com.electron.app
-productName: YoutubeDownloader
-target: NSIS
-directories:
-    buildResources: build
-asarUnpack:
-    - resources/**
-# win:
-#    executableName: YoutubeDownloader
-
-win:
-  target:
-    - nsis
-nsis:
-    artifactName: ${name}-${version}-setup.${ext}
-    shortcutName: ${productName}
-    uninstallDisplayName: ${productName}
-    createDesktopShortcut: always
-    oneClick: false
-    perMachine: false
-    allowElevation: true
-    allowToChangeInstallationDirectory: true
-    language:
-    - 1033  # English
-mac:
-    entitlementsInherit: build/entitlements.mac.plist
-    extendInfo:
-        - NSCameraUsageDescription: Application requests access to the device's camera.
-        - NSMicrophoneUsageDescription: Application requests access to the device's microphone.
-        - NSDocumentsFolderUsageDescription: Application requests access to the user's Documents folder.
-        - NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
-    notarize: false
-
-linux:
-    target:
-        - AppImage
-        - snap
-        - deb
-    maintainer: electronjs.org
-    category: Utility
 appImage:
-    artifactName: ${name}-${version}.${ext}
+  artifactName: ${name}-${version}.${ext}
+asarUnpack:
+  - resources/**
+directories:
+  buildResources: build
+  output: dist
+files:
+  - out/**/*
+  - build/**/*
+linux:
+  category: Utility
+  maintainer: electronjs.org
+  target:
+    - AppImage
+    - snap
+    - deb
+mac:
+  entitlementsInherit: build/entitlements.mac.plist
+  extendInfo:
+    - NSCameraUsageDescription: Application requests access to the device's camera.
+    - NSMicrophoneUsageDescription: Application requests access to the device's microphone.
+    - NSDocumentsFolderUsageDescription: Application requests access to the user's Documents folder.
+    - NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
+  notarize: false
 npmRebuild: false
+nsis:
+  allowElevation: true
+  allowToChangeInstallationDirectory: true
+  artifactName: ${name}-${version}-setup.${ext}
+  createDesktopShortcut: always
+  oneClick: false
+  perMachine: false
+  shortcutName: ${productName}
+  uninstallDisplayName: ${productName}
+productName: YoutubeDownloader
 publish:
-    provider: github
-    owner: Emam546
-    repo: youtube-downloader
+  owner: Emam546
+  provider: github
+  repo: youtube-downloader
+  releaseType: draft
+win:
+  icon: build\icon.ico
+  publish:
+    - protocol: https
+      provider: github
+            # a string provider for bitbucket that will use default options
+    - bitbucket
+  target: nsis

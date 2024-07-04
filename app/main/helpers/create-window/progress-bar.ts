@@ -30,6 +30,7 @@ export const createProgressBarWindow = async (
     };
     const win = new FileDownloaderWindow(
         {
+            icon: "build/icon.ico",
             useContentSize: true,
             show: false,
             autoHideMenuBar: true,

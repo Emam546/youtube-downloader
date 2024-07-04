@@ -46,6 +46,7 @@ export const createMainWindow = async (
     const win = new BrowserWindow({
         ...options,
         ...state,
+        icon: "build/icon.ico",
         webPreferences: {
             ...state.webPreferences,
             ...options.webPreferences,

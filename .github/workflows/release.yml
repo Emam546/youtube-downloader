@@ -19,5 +19,4 @@ jobs:
     - name: install dependencies
       run: npm install
     - name: publish
-
       run: npm run publish
