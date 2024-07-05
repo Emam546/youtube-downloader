@@ -10,7 +10,7 @@ export async function DownloadTheFile(
     if (!response.statusCode || response.statusCode >= 300) {
         switch (response.statusCode) {
             case 302:
-                return await DownloadTheFile(link, range);
+                return await DownloadTheFile(response.headers.location!, range);
 
             default:
                 throw new Error(`${response.statusCode}`);
