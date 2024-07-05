@@ -28,7 +28,8 @@ export class FileDownloaderWindow extends BrowserWindow {
     public static readonly MAX_TRIES = 3;
     public static readonly INTERVAL_TIME = 100;
     public static Windows: Record<string, FileDownloaderWindow> = {};
-    private readonly stream: WriteStream;
+    private readonly flag: FlagType;
+    private stream?: WriteStream;
     private response?: IncomingMessage;
     private curInterval?: ReturnType<typeof setInterval>;
     private speedTransfer: number = 0;
@@ -59,16 +60,10 @@ export class FileDownloaderWindow extends BrowserWindow {
         link: string
     ) {
         super(options);
-        const flag: FlagType =
-            state.continued && fs.existsSync(state.path) ? "a" : "w";
+        this.flag = state.continued && fs.existsSync(state.path) ? "a" : "w";
         this.downloadingState = state;
-        this.curSize = flag == "a" ? this.getRealSize() : 0;
+        this.curSize = this.flag == "a" ? this.getRealSize() : 0;
         this.link = link;
-        this.stream = fs.createWriteStream(state.path, {
-            flags: flag,
-        });
-        this.stream.on("error", (err) => this.error(err));
-
         this.on("close", () => {
             FileDownloaderWindow.removeWindow(this);
         });
@@ -87,7 +82,6 @@ export class FileDownloaderWindow extends BrowserWindow {
             else this.resumable = false;
             this.webContents.send("onResumeCapacity", this.resumable);
             const range = `bytes=${this.getRealSize()}-`;
-            this.setSpeed(0);
             this.state = "connecting";
             const response = await DownloadTheFile(
                 this.link,
@@ -99,6 +93,10 @@ export class FileDownloaderWindow extends BrowserWindow {
         }
     }
     private function(response: IncomingMessage) {
+        this.stream = fs.createWriteStream(this.downloadingState.path, {
+            flags: this.flag,
+        });
+        this.stream.on("error", (err) => this.error(err));
         response.on("data", (data) => this.data(data));
         response.on("pause", () => this.pause());
         response.on("resume", () => this.resume());
@@ -132,7 +130,7 @@ export class FileDownloaderWindow extends BrowserWindow {
         this.state = state;
     }
     private pipe(response: stream.Readable) {
-        response.pipe(this.stream);
+        response.pipe(this.stream!);
     }
     onChangeState(state: ProgressBarState["status"]) {
         this.webContents.send("onConnectionStatus", state);
@@ -191,7 +189,7 @@ export class FileDownloaderWindow extends BrowserWindow {
     end() {
         this.changeState("completed");
         this.setSpeed(0);
-        this.stream.close();
+        this.stream!.close();
         this.moveTop();
     }
 }
