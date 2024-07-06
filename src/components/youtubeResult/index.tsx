@@ -8,7 +8,11 @@ import classnames from "classnames";
 import { convertVideo, getVideoData, instance } from "@src/API";
 import { useRouter } from "next/router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMusic, faVideo } from "@fortawesome/free-solid-svg-icons";
+import {
+    faFileVideo,
+    faMusic,
+    faVideo,
+} from "@fortawesome/free-solid-svg-icons";
 import ModelPopUp from "../Model";
 import { DownloadButton } from "../downloadButton";
 import { ServerConvertResults } from "@serv/routes/videoDownloader/api";
@@ -29,7 +33,7 @@ interface VideoData {
     fileTypeText: ReactNode;
     download: () => any;
 }
-function MapDataVideo({ video }: { video: VideoData }) {
+function MapData({ video }: { video: VideoData }) {
     return (
         <tr>
             <td className="flex-shrink-1">{video.fileTypeText}</td>
@@ -44,21 +48,7 @@ function MapDataVideo({ video }: { video: VideoData }) {
     );
 }
 
-function MapDataAudio({ video }: { video: VideoData }) {
-    return (
-        <tr>
-            <td>{video.fileTypeText}</td>
-            <td>{video.sizeText}</td>
-            <td className="button-column">
-                <DownloadButton
-                    onClick={video.download}
-                    className="btn btn-success"
-                />
-            </td>
-        </tr>
-    );
-}
-type TabsType = "VIDEO" | "AUDIO";
+type TabsType = "VIDEO" | "AUDIO" | "OTHERS";
 interface ModelStateType {
     key: string;
     vid: string;
@@ -184,6 +174,7 @@ export default function YoutubeResult() {
         .map((video) => {
             return {
                 sizeText: `${formatBytes(parseInt(video.contentLength), 0)}`,
+
                 fileTypeText: `${video.container.toUpperCase()} - ${
                     video.audioBitrate
                 }kbps`,
@@ -198,6 +189,29 @@ export default function YoutubeResult() {
                             title: data.videoDetails.title,
                             dlink: video.url,
                             fquality: `${video.audioBitrate}kbps`,
+                            ftype: video.container!,
+                        });
+                    }
+                },
+            };
+        });
+    const others: VideoData[] = data.formats
+        .filter((v) => v.hasVideo && !v.hasAudio)
+        .map((video) => {
+            return {
+                sizeText: `${formatBytes(parseInt(video.contentLength), 0)}`,
+                fileTypeText: `Video Only ${video.qualityLabel} (.${video.container})`,
+                download() {
+                    if (window.Environment == "web") {
+                        const a = document.createElement("a");
+                        a.href = video.url;
+                        a.click();
+                    } else {
+                        window.api.send("downloadY2mate", {
+                            vid: id,
+                            title: data.videoDetails.title,
+                            dlink: video.url,
+                            fquality: video.qualityLabel,
                             ftype: video.container!,
                         });
                     }
@@ -278,7 +292,7 @@ export default function YoutubeResult() {
                     </div>
                     <div className="col-md-8">
                         <div>
-                            <ul className="icon-nav">
+                            <ul className="icon-nav tw-select-none">
                                 <li
                                     className={classnames({
                                         active: state == "VIDEO",
@@ -286,7 +300,7 @@ export default function YoutubeResult() {
                                     onClick={() => setState("VIDEO")}
                                 >
                                     <FontAwesomeIcon icon={faVideo} />
-                                    Video
+                                    <span>Video</span>
                                 </li>
                                 <li
                                     className={classnames({
@@ -295,15 +309,20 @@ export default function YoutubeResult() {
                                     onClick={() => setState("AUDIO")}
                                 >
                                     <FontAwesomeIcon icon={faMusic} />
-                                    Audio
+                                    <span>Audio</span>
+                                </li>
+                                <li
+                                    className={classnames({
+                                        active: state == "OTHERS",
+                                    })}
+                                    onClick={() => setState("OTHERS")}
+                                >
+                                    <FontAwesomeIcon icon={faFileVideo} />
+                                    <span>Others</span>
                                 </li>
                             </ul>
                             <div className="tab-content">
-                                <div
-                                    className={classnames({
-                                        "tw-hidden": state != "VIDEO",
-                                    })}
-                                >
+                                <div>
                                     <table>
                                         <thead>
                                             <tr>
@@ -313,35 +332,27 @@ export default function YoutubeResult() {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {videos.map((video, i) => (
-                                                <MapDataVideo
-                                                    key={`${data.vid}-${i}`}
-                                                    video={video}
-                                                />
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div
-                                    className={classnames({
-                                        "tw-hidden": state != "AUDIO",
-                                    })}
-                                >
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th>File type</th>
-                                                <th>File size</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {audios.map((v, i) => (
-                                                <MapDataAudio
-                                                    video={v}
-                                                    key={`${data.vid}-${i}`}
-                                                />
-                                            ))}
+                                            {state == "VIDEO" &&
+                                                videos.map((video, i) => (
+                                                    <MapData
+                                                        key={`${data.vid}-${i}-${video.fileTypeText}`}
+                                                        video={video}
+                                                    />
+                                                ))}
+                                            {state == "AUDIO" &&
+                                                audios.map((video, i) => (
+                                                    <MapData
+                                                        key={`${data.vid}-${i}-${video.fileTypeText}`}
+                                                        video={video}
+                                                    />
+                                                ))}
+                                            {state == "OTHERS" &&
+                                                others.map((video, i) => (
+                                                    <MapData
+                                                        key={`${data.vid}-${i}-${video.fileTypeText}`}
+                                                        video={video}
+                                                    />
+                                                ))}
                                         </tbody>
                                     </table>
                                 </div>
