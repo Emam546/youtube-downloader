@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
+import { useAppSelector } from "../store";
 
 export default function ProgressBar() {
-    const [per, setPercent] = useState(0);
-    useEffect(() => {
-        window.api.on("onStatus", (_, { size, fileSize }) => {
-            if (!fileSize) return setPercent(0);
-            setPercent(+((size / fileSize) * 100).toFixed(2));
-        });
-    }, []);
+    const { fileSize, downloaded: size } = useAppSelector(
+        (state) => state.download
+    );
+    let per = 0;
+    if (fileSize && size) {
+        per = +((size / fileSize) * 100).toFixed(2);
+    }
+
     return (
         <div className="my-3">
             <div className="w-full bg-secondary-color h-5 dark:bg-gray-700 border-gray-600/25 border">

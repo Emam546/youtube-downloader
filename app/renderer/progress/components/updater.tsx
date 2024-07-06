@@ -34,10 +34,6 @@ export default function Updater() {
         window.api.on("onSpeed", (_, state) => {
             dispatch(DownloadActions.setSpeed(state));
         });
-        window.api.on("onStatus", (_, { size, speed, fileSize }) => {
-            dispatch(DownloadActions.setSpeed(speed));
-            dispatch(DownloadActions.setDownloaded(size));
-        });
         window.api.on("onConnectionStatus", (_, status) => {
             dispatch(StatusActions.setStatus(status));
         });

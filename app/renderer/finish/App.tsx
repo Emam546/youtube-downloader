@@ -7,7 +7,7 @@ function App(): JSX.Element {
     const ref = useRef<ComponentRef<"div">>(null);
     useEffect(() => {
         if (!ref.current) return;
-        window.api.send("setContentHeight", ref.current!.clientHeight);
+        window.api.send("setContentHeight", ref.current!.scrollHeight);
     }, [ref]);
     return (
         <div

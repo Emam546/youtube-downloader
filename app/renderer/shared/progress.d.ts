@@ -27,9 +27,7 @@ export namespace ApiRender {
     interface OnMethods {
         onSpeed(speed: number): void;
         onFileSize(fileSize: number): void;
-        onStatus(status: ConnectionStatus): void;
         onDownloaded(size: number): void;
-        onStatus(obj: { speed: number; fileSize?: number; size: number }): void;
         onConnectionStatus(status: ConnectionStatus): void;
         onResumeCapacity(status: boolean): void;
     }

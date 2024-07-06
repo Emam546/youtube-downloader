@@ -1,13 +1,9 @@
-import {
-    app,
-    BrowserWindow,
-    BrowserWindowConstructorOptions,
-    shell,
-} from "electron";
+import { BrowserWindow, BrowserWindowConstructorOptions, shell } from "electron";
 import path from "path";
 import { is } from "@electron-toolkit/utils";
 import { Context } from "@shared/renderer/finish";
 import { convertFunc } from "@utils/app";
+import { DownloadingWindow } from "@app/main/lib/donwloading";
 export interface Props {
     preloadData: Context;
 }
@@ -19,7 +15,7 @@ export const createFinishWindow = async (
     const preloadData: Context = {
         ...stateData,
     };
-    const win = new BrowserWindow({
+    const win = new DownloadingWindow({
         icon: "build/icon.ico",
         useContentSize: true,
         show: false,
@@ -45,14 +41,11 @@ export const createFinishWindow = async (
         shell.openExternal(details.url);
         return { action: "deny" };
     });
-
-    win.on("ready-to-show", () => {
-        win.show();
-    });
     if (is.dev) {
         await win.loadURL(`${process.env["ELECTRON_RENDERER_URL"]}/finish`);
     } else await win.loadFile(path.join(__dirname, "../windows/finish.html"));
-
+    win.show();
+    win.moveTop();
     return win;
 };
 // ObjectEntries(OnMethods).forEach(([key, val]) => {

@@ -28,7 +28,6 @@ export const OnMethods: OnMethodsType = {
         window.cancel();
         window.close();
     },
-
 };
 export const OnceMethods: OnceMethodsType = {};
 export const HandleMethods: Pick<

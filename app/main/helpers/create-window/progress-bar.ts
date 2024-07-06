@@ -53,6 +53,7 @@ export const createProgressBarWindow = async (
         vars.stateData,
         vars.preloadData
     );
+
     win.webContents.setWindowOpenHandler((details) => {
         shell.openExternal(details.url);
         return { action: "deny" };
