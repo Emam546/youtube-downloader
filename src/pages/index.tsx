@@ -28,7 +28,7 @@ export function TextFun() {
                 <div className="row">
                     <div className="col-sm-6">
                         <div>
-                            <h6 className="tw-text-base tw-my-1">
+                            <h6 className="tw-my-1">
                                 Instructions
                             </h6>
                             <ul className="tw-list-inside tw-text-sm tw-px-1">
@@ -62,7 +62,7 @@ export function TextFun() {
                         </div>
                     </div>
                 </div>
-                <div className="row my-5 ">
+                <div className="row my-5">
                     <div className="col-sm-4">
                         <div className="text-center tw-py-5 tw-px-3">
                             <FontAwesomeIcon

@@ -72,6 +72,7 @@ export default function InputHolder() {
                 <button
                     type="submit"
                     disabled={formState.isSubmitting}
+                    title="search"
                     className="tw-p-4 tw-flex tw-items-center tw-gap-x-2"
                 >
                     <span>Start</span>

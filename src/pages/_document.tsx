@@ -23,6 +23,10 @@ export default function Document() {
                     href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap"
                     rel="stylesheet"
                 />
+                <meta
+                    name="description"
+                    content="Download YouTube videos in all formats with our fast and easy-to-use downloader. Enjoy high-quality videos offline with just a few clicks. Compatible with all devices and platforms."
+                />
             </Head>
             <body>
                 <Main />
