@@ -43,7 +43,10 @@ export const OnMethods: OnMethodsType = {
             preloadData: {
                 path: state.path,
                 link: data.dlink,
-                title: data.title,
+                video: {
+                    title: data.title,
+                    vid: data.vid,
+                },
             },
         });
     },

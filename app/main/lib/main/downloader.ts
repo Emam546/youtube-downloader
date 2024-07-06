@@ -30,11 +30,11 @@ export async function Downloader(
     if (fs.pathExistsSync(newpath)) {
         const { response } = await dialog.showMessageBox(window, {
             type: "question",
-            buttons: ["Yes", "No, redownload the video"],
+            buttons: ["Yes             ", "No, redownload the video"],
             title: "Save",
+            defaultId: 0,
             cancelId: 1,
             message: "Do you want to start from where it stopped downloading",
-            detail: "Additional details can be shown here.",
         });
         continued = response == 0;
     }

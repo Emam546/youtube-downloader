@@ -5,7 +5,6 @@ import { autoUpdater } from "electron-updater";
 import { electronApp } from "@electron-toolkit/utils";
 import { lunchArgs } from "./helpers/launchHelpers";
 import path from "path";
-import { createFinishWindow } from "./helpers/create-window/finsih";
 let mainWindow: BrowserWindow;
 const isProd = app.isPackaged;
 autoUpdater.autoDownload = true;
@@ -23,17 +22,11 @@ if (!isProd) {
 }
 
 app.whenReady().then(async () => {
-    // mainWindow = await createMainWindow({
-    //     width: 1000,
-    //     height: 600,
-    // });
-    createFinishWindow({
-        preloadData: {
-            fileSize: 1024 * 1024 * 300,
-            link: "https://www.youtube.com/watch?v=CVgzp2vfePs",
-            path: "D:\\projects\\websites\\youtube-playlist-server\\file_example_MOV_1920_2_2MB.mov",
-        },
+    mainWindow = await createMainWindow({
+        width: 1000,
+        height: 600,
     });
+
     lunchArgs(process.argv, mainWindow);
     if (isProd) autoUpdater.checkForUpdatesAndNotify();
 });

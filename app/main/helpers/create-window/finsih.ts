@@ -1,4 +1,5 @@
 import {
+    app,
     BrowserWindow,
     BrowserWindowConstructorOptions,
     shell,

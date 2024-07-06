@@ -25,7 +25,6 @@ export const createProgressBarWindow = async (
         ...stateData,
         status: "connecting",
         throttle: true,
-
         downloadSpeed: 1,
     };
     const win = new FileDownloaderWindow(
@@ -51,9 +50,8 @@ export const createProgressBarWindow = async (
                 ],
             },
         },
-
         vars.stateData,
-        vars.preloadData.link
+        vars.preloadData
     );
     win.webContents.setWindowOpenHandler((details) => {
         shell.openExternal(details.url);

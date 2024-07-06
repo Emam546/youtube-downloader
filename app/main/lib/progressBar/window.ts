@@ -6,13 +6,19 @@ import { DownloadTheFile } from "./downloader";
 import {
     BrowserWindow,
     BrowserWindowConstructorOptions,
-    WebContents,
 } from "electron";
 import axios from "axios";
 import stream from "stream";
 import { createFinishWindow } from "@app/main/helpers/create-window/finsih";
 
 export type FlagType = "w" | "a";
+export interface VideoData {
+    link: string;
+    video: {
+        title: string;
+        vid: string;
+    };
+}
 export class FileDownloaderWindow extends BrowserWindow {
     public static readonly MAX_TRIES = 3;
     public static readonly INTERVAL_TIME = 100;
@@ -23,6 +29,7 @@ export class FileDownloaderWindow extends BrowserWindow {
     private curInterval?: ReturnType<typeof setInterval>;
     private speedTransfer: number = 0;
     readonly link: string;
+    readonly videoData: VideoData["video"];
     enableThrottle: boolean = true;
     downloadSpeed = 1024 * 4;
     resumable?: boolean;
@@ -46,15 +53,19 @@ export class FileDownloaderWindow extends BrowserWindow {
     constructor(
         options: BrowserWindowConstructorOptions,
         state: StateType,
-        link: string
+        data: VideoData
     ) {
         super(options);
         this.flag = state.continued && fs.existsSync(state.path) ? "a" : "w";
         this.downloadingState = state;
         this.curSize = this.flag == "a" ? this.getRealSize() : 0;
-        this.link = link;
+        this.link = data.link;
+        this.videoData = data.video;
         this.on("close", () => {
             FileDownloaderWindow.removeWindow(this);
+            if (this.response) this.response.destroy();
+
+            if (this.stream) this.stream.close();
         });
         FileDownloaderWindow.addWindow(this);
     }
@@ -69,9 +80,19 @@ export class FileDownloaderWindow extends BrowserWindow {
             const acceptRanges = res.headers["accept-ranges"];
             if (acceptRanges && acceptRanges === "bytes") this.resumable = true;
             else this.resumable = false;
+            if (res.headers["Content-Length"]) {
+                const length = parseInt(
+                    res.headers["Content-Length"] as string
+                );
+                if (!isNaN(length)) {
+                    if (length == this.curSize) return this.end();
+                    this.setFileSize(length);
+                }
+            }
             this.webContents.send("onResumeCapacity", this.resumable);
-            const range = `bytes=${this.getRealSize()}-`;
-            this.state = "connecting";
+            const range = `bytes=${this.curSize}-`;
+
+            this.changeState("connecting");
             const response = await DownloadTheFile(
                 this.link,
                 this.resumable ? range : undefined
@@ -177,8 +198,6 @@ export class FileDownloaderWindow extends BrowserWindow {
         this.curSize += data.byteLength;
     }
     cancel() {
-        this.response!.destroy();
-        this.stream!.close();
         if (fs.existsSync(this.downloadingState.path))
             fs.unlinkSync(this.downloadingState.path);
         this.close();
@@ -189,7 +208,7 @@ export class FileDownloaderWindow extends BrowserWindow {
         createFinishWindow({
             preloadData: {
                 fileSize: this.fileSize || this.curSize,
-                link: this.link,
+                link: `https://www.youtube.com/watch?v=${this.videoData.vid}`,
                 path: this.downloadingState.path,
             },
         }).then(() => {
