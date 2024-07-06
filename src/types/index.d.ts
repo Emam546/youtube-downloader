@@ -1,4 +1,8 @@
-import { ApiMain as Api, ApiRender as OrgApiRender } from "@shared/main";
+import {
+    ApiMain as Api,
+    ApiRender as OrgApiRender,
+    Context,
+} from "@shared/main";
 
 declare global {
     namespace ApiMain {
@@ -10,5 +14,8 @@ declare global {
             interface OnMethods extends OrgApiRender.OnMethods {}
             interface OnceMethods extends OrgApiRender.OnceMethods {}
         }
+    }
+    interface Window {
+        context: Context;
     }
 }

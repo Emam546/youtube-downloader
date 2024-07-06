@@ -4,10 +4,20 @@ import {
     ServerConvertResults,
 } from "@serv/routes/videoDownloader/api";
 import { getSearchData as getSearchData } from "@serv/routes/search/api";
-
+export interface NavigateVideo {
+    video: {
+        link: string;
+    };
+}
+export interface NavigateSearch {
+    video: {
+        link: string;
+    };
+}
+export type Context = NavigateVideo | NavigateSearch | undefined;
 export namespace ApiRender {
     interface OnMethods {
-        getYoutubeUrl(url: string);
+        getYoutubeUrl(url: string): void;
     }
     interface OnceMethods {}
 }

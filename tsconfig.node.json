@@ -15,6 +15,7 @@
             "electron-vite/node"
         ],
         "baseUrl": ".",
+        "skipLibCheck": false,
         "paths": {
             "@app/*": [
                 "./app/*"

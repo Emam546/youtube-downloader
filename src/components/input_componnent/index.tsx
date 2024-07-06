@@ -5,8 +5,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { useForm } from "react-hook-form";
 import { ChangeEvent, useEffect, useLayoutEffect } from "react";
+import { NavigateVideo } from "@shared/main";
 interface DataFrom {
     search: string;
+}
+function isVideo(val: unknown): val is NavigateVideo {
+    return window.context != undefined && window.context.video != undefined;
 }
 export default function InputHolder() {
     const router = useRouter();
@@ -27,15 +31,19 @@ export default function InputHolder() {
         }
     }, []);
     useEffect(() => {
+        function navigate(url: string) {
+            const validateUrl = validateURL(url);
+            if (validateUrl) {
+                const id = getVideoID(url);
+                router.push(`/youtube/${id}`);
+                setValue("search", `https://www.youtube.com/watch?v=${id}`);
+            }
+        }
         if (window.Environment == "desktop")
             window.api.on("getYoutubeUrl", (_, url) => {
-                const validateUrl = validateURL(url);
-                if (validateUrl) {
-                    const id = getVideoID(url);
-                    router.push(`/youtube/${id}`);
-                    setValue("search", `https://www.youtube.com/watch?v=${id}`);
-                }
+                navigate(url);
             });
+        if (isVideo(window.context)) navigate(window.context.video.link);
     }, []);
     return (
         <form
