@@ -35,7 +35,6 @@ export namespace ApiRender {
 export namespace Api {
     interface OnMethods {
         cancel(): void;
-        close(): void;
     }
     interface OnceMethods {}
     interface HandleMethods {

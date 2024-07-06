@@ -42,7 +42,7 @@ export const createProgressBarWindow = async (
             webPreferences: {
                 ...options?.webPreferences,
                 sandbox: false,
-                preload: path.join(__dirname, "../preload/progress.js"),
+                preload: path.join(__dirname, "../preload/index.js"),
                 additionalArguments: [
                     convertFunc(
                         encodeURIComponent(JSON.stringify(preloadData)),

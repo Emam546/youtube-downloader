@@ -4,8 +4,6 @@ import {
 } from "@shared/index";
 import { Api } from "@shared/renderer/progress";
 import { FileDownloaderWindow } from "./window";
-import fs from "fs-extra";
-import { BrowserWindow } from "electron";
 type OnMethodsType = {
     [K in keyof Api.OnMethods]: ConvertToIpCMainFunc<Api.OnMethods[K]>;
 };
@@ -27,16 +25,10 @@ export const OnMethods: OnMethodsType = {
     cancel(e) {
         const window = FileDownloaderWindow.fromWebContents(e.sender);
         if (!window) return;
-        window.end();
-        if (fs.existsSync(window.downloadingState.path))
-            fs.unlinkSync(window.downloadingState.path);
+        window.cancel();
         window.close();
     },
-    close(e) {
-        const window = BrowserWindow.fromWebContents(e.sender);
-        if (!window) return;
-        window.close();
-    },
+
 };
 export const OnceMethods: OnceMethodsType = {};
 export const HandleMethods: Pick<

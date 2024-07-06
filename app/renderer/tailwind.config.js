@@ -10,6 +10,6 @@ module.exports = {
             },
         },
     },
-    content: ["./app/renderer/progress/**/*.{js,ts,jsx,tsx}"],
+    content: ["./app/renderer/**/*.{js,ts,jsx,tsx}"],
     plugins: [],
 };

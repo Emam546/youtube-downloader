@@ -6,7 +6,9 @@ import {
 import { getSearchData as getSearchData } from "@serv/routes/search/api";
 
 export namespace ApiRender {
-    interface OnMethods {}
+    interface OnMethods {
+        getYoutubeUrl(url: string);
+    }
     interface OnceMethods {}
 }
 export namespace ApiMain {

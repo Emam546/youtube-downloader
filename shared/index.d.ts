@@ -22,6 +22,11 @@ declare global {
         interface OnMethods {
             log(...args: any[]): void;
             setTitle(name: string): void;
+            closeWindow(): void;
+            openFolder(path: string): void;
+            openFile(path: string): void;
+            opeFileWith(path: string): void;
+            setContentHeight(height: number): void;
         }
         interface OnceMethods {}
         interface HandleMethods {}

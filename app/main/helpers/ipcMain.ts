@@ -4,6 +4,7 @@ import {
 } from "@shared/index";
 import { ObjectEntries } from "@utils/index";
 import { BrowserWindow, ipcMain } from "electron";
+import { OpenFile, OpenFileWith, OpenFolder } from "../lib/ipcmain";
 
 type OnMethodsType = {
     [K in keyof ApiMain.OnMethods]: ConvertToIpCMainFunc<ApiMain.OnMethods[K]>;
@@ -27,13 +28,32 @@ export const OnMethods: OnMethodsType = {
     log(_, ...arg) {
         console.log(...arg);
     },
-    setTitle: function (
-        event: Electron.CrossProcessExports.IpcMainEvent,
-        name: string
-    ): void {
+    setTitle: function (event, name: string): void {
         const window = BrowserWindow.fromWebContents(event.sender);
         if (!window) return;
         window.setTitle(name);
+    },
+    closeWindow(e) {
+        const window = BrowserWindow.fromWebContents(e.sender);
+        if (!window) return;
+        window.close();
+    },
+    openFolder: function (_, path: string): void {
+        OpenFolder(path);
+    },
+    openFile: function (_, path: string): void {
+        OpenFile(path);
+    },
+    opeFileWith: function (_, path: string): void {
+        OpenFileWith(path);
+    },
+    setContentHeight: function (
+        event: Electron.CrossProcessExports.IpcMainEvent,
+        height: number
+    ): void {
+        const window = BrowserWindow.fromWebContents(event.sender);
+        if (!window) return;
+        window.setContentSize(window.getSize()[0], height);
     },
 };
 export const OnceMethods: OnceMethodsType = {};

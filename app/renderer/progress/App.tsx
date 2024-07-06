@@ -1,12 +1,9 @@
-import React, { ComponentRef, useEffect, useRef, useState } from "react";
+import { ComponentRef, useEffect, useRef, useState } from "react";
 import Header, { TabsState } from "./components/header";
 import Download from "./pages/download";
-import OptionsPage from "./pages/options";
 import ProgressBar from "./components/progressBar";
 import Footer from "./components/footer";
-import SpeedLimiter from "./pages/speed";
 import Updater from "./components/updater";
-import { useAppSelector } from "./store";
 const tabs: TabsState = [
     {
         id: "0",
@@ -28,10 +25,14 @@ function App(): JSX.Element {
     const [selected, setSelected] = useState(tabs[0].id);
     const selectedState = tabs.find((tab) => tab.id == selected)!;
     const ref = useRef<ComponentRef<"div">>(null);
+    useEffect(() => {
+        if (!ref.current) return;
+        window.api.send("setContentHeight", ref.current.clientHeight);
+    }, [ref]);
     return (
         <div
             ref={ref}
-            className="px-5"
+            className="px-5 mb-5"
         >
             <Header
                 tabs={tabs}

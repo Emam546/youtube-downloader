@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { validateURL, youtube_parser } from "@src/utils";
+import { getVideoID, validateURL, youtube_parser } from "@utils/youtube";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
@@ -26,7 +26,17 @@ export default function InputHolder() {
             setValue("search", match[1]);
         }
     }, []);
-
+    useEffect(() => {
+        if (window.Environment == "desktop")
+            window.api.on("getYoutubeUrl", (_, url) => {
+                const validateUrl = validateURL(url);
+                if (validateUrl) {
+                    const id = getVideoID(url);
+                    router.push(`/youtube/${id}`);
+                    setValue("search", `https://www.youtube.com/watch?v=${id}`);
+                }
+            });
+    }, []);
     return (
         <form
             action=""

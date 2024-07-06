@@ -29,20 +29,8 @@ export default defineConfig({
         build: {
             rollupOptions: {
                 input: {
-                    main: resolve(__dirname, "./app/preload/main.ts"),
-                    progress: resolve(__dirname, "./app/preload/progress.ts"),
+                    index: resolve(__dirname, "./app/preload/index.ts"),
                 },
-            },
-        },
-        resolve: {
-            alias: {
-                "@shared": resolve("shared"),
-                "@app": resolve("./app"),
-                "@serv": resolve("./server/src"),
-                "@utils": resolve("./utils"),
-                "@shared/renderer/*": resolve("./app/renderer/shared"),
-                "@serv/*": resolve("./server/src"),
-                "@utils/*": resolve("./utils"),
             },
         },
     },
@@ -53,12 +41,13 @@ export default defineConfig({
             rollupOptions: {
                 input: {
                     progress: resolve(__dirname, "app/renderer/progress.html"),
+                    finish: resolve(__dirname, "app/renderer/finish.html"),
                 },
             },
         },
         resolve: {
             alias: {
-                "@progress": resolve("./app/renderer/progress"),
+                "@renderer": resolve("./app/renderer"),
                 "@shared": resolve("./shared"),
                 "@shared/renderer/*": resolve("./app/renderer/shared"),
                 "@utils": resolve("./utils"),

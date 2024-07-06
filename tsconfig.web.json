@@ -11,11 +11,11 @@
         "baseUrl": ".",
         "skipLibCheck": false,
         "paths": {
+            "@renderer/*": [
+                "./app/renderer/*"
+            ],
             "@shared/*": [
                 "./shared/*"
-            ],
-            "@progress/*": [
-                "./app/src/renderer/progress/*"
             ],
             "@utils/*": [
                 "./utils/*"

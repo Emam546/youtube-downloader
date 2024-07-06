@@ -1,4 +1,4 @@
-import { ApiRender, ProgressBarState } from "@shared/renderer/progress";
+import { ProgressBarState } from "@shared/renderer/progress";
 import { IncomingMessage } from "http";
 import { StateType } from "@app/main/lib/main/downloader";
 import fs, { WriteStream } from "fs-extra";
@@ -10,20 +10,9 @@ import {
 } from "electron";
 import axios from "axios";
 import stream from "stream";
+import { createFinishWindow } from "@app/main/helpers/create-window/finsih";
 
 export type FlagType = "w" | "a";
-interface WebEmitter extends WebContents {
-    send<Key extends keyof ApiRender.OnMethods>(
-        channel: Key,
-        ...args: Parameters<ApiRender.OnMethods[Key]>
-    ): void;
-}
-declare module "electron" {
-    interface BrowserWindow {
-        readonly webContents: WebEmitter;
-    }
-}
-
 export class FileDownloaderWindow extends BrowserWindow {
     public static readonly MAX_TRIES = 3;
     public static readonly INTERVAL_TIME = 100;
@@ -126,6 +115,7 @@ export class FileDownloaderWindow extends BrowserWindow {
         return 0;
     }
     private changeState(state: ProgressBarState["status"]) {
+        if (this.isDestroyed()) return;
         if (state != this.state) this.onChangeState(state);
         this.state = state;
     }
@@ -142,6 +132,8 @@ export class FileDownloaderWindow extends BrowserWindow {
         throw new Error("unimplemented");
     }
     trigger(state: boolean) {
+        if (this.isDestroyed()) return;
+
         if (!this.response) return;
         if (state && this.response.isPaused()) {
             this.response.resume();
@@ -152,6 +144,7 @@ export class FileDownloaderWindow extends BrowserWindow {
         }
     }
     setSpeed(speed: number) {
+        if (this.isDestroyed()) return;
         this.webContents.send("onSpeed", speed);
         this.webContents.send("onStatus", {
             size: this.curSize,
@@ -160,6 +153,7 @@ export class FileDownloaderWindow extends BrowserWindow {
         });
     }
     setFileSize(size: number) {
+        if (this.isDestroyed()) return;
         this.fileSize = size;
         this.webContents.send("onFileSize", size);
     }
@@ -168,28 +162,38 @@ export class FileDownloaderWindow extends BrowserWindow {
         console.error(err);
     }
     pause() {
-        setTimeout(() => {
-            if (this.response?.isPaused() && this.state != "completed") {
-                this.changeState("pause");
-            }
-        }, 1000);
+        if (this.response?.isPaused() && this.state != "completed") {
+            this.changeState("pause");
+        }
     }
     resume() {
-        setTimeout(() => {
-            if (!this.response?.isPaused()) {
-                this.changeState("receiving");
-            }
-        }, 1000);
+        if (!this.response?.isPaused()) {
+            this.changeState("receiving");
+        }
     }
     data(data: Buffer) {
         this.changeState("receiving");
         this.speedTransfer += data.byteLength;
         this.curSize += data.byteLength;
     }
+    cancel() {
+        this.response!.destroy();
+        this.stream!.close();
+        if (fs.existsSync(this.downloadingState.path))
+            fs.unlinkSync(this.downloadingState.path);
+        this.close();
+    }
     end() {
         this.changeState("completed");
         this.setSpeed(0);
-        this.stream!.close();
-        this.moveTop();
+        createFinishWindow({
+            preloadData: {
+                fileSize: this.fileSize || this.curSize,
+                link: this.link,
+                path: this.downloadingState.path,
+            },
+        }).then(() => {
+            this.close();
+        });
     }
 }

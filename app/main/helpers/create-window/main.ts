@@ -51,7 +51,7 @@ export const createMainWindow = async (
             ...state.webPreferences,
             ...options.webPreferences,
             sandbox: false,
-            preload: path.join(__dirname, "../preload/main.js"),
+            preload: path.join(__dirname, "../preload/index.js"),
         },
     });
 

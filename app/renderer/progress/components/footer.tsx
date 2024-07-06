@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
 import { Button } from "../components/button";
-import { ConnectionStatus } from "@shared/renderer/progress";
 import { useAppSelector } from "../store";
 import classNames from "classnames";
 
@@ -44,7 +42,7 @@ export default function Footer() {
             >
                 <Button
                     onClick={() => {
-                        window.api.send("close");
+                        window.api.send("closeWindow");
                     }}
                 >
                     Close

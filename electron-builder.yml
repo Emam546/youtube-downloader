@@ -1,16 +1,16 @@
 ---
-appId: com.electron.app
+appId: com.youtube-downloader.app
 appImage:
   artifactName: ${name}-${version}.${ext}
 asarUnpack:
   - resources/**
-icon: build\icon.ico
 directories:
   buildResources: build
   output: dist
 files:
   - out/**/*
   - build/**/*
+icon: build\icon.ico
 linux:
   category: Utility
   maintainer: electronjs.org
@@ -30,7 +30,7 @@ npmRebuild: false
 nsis:
   allowElevation: true
   allowToChangeInstallationDirectory: true
-  artifactName: "${productName}-setup-${version}-win.${ext}"
+  artifactName: ${productName}-setup-${version}-win.${ext}
   createDesktopShortcut: always
   oneClick: false
   perMachine: false
@@ -39,7 +39,7 @@ productName: youtube-downloader
 publish:
   owner: Emam546
   provider: github
+  releaseType: release
   repo: youtube-downloader
-  releaseType : release
 win:
   target: nsis
