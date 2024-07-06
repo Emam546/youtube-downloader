@@ -9,6 +9,9 @@ import serve from "electron-serve";
 import { ObjectEntries } from "@utils/index";
 import { OnMethods, HandleMethods } from "@app/main/lib/main";
 import { is } from "@electron-toolkit/utils";
+import { convertFunc } from "@utils/app";
+import { Context } from "@shared/main";
+import { MainWindow } from "@app/main/lib/main/window";
 
 const isProd = !is.dev;
 
@@ -18,7 +21,8 @@ const appServe = isProd
       })
     : null;
 export const createMainWindow = async (
-    options: BrowserWindowConstructorOptions
+    options: BrowserWindowConstructorOptions,
+    preloadData?: Context
 ): Promise<BrowserWindow> => {
     let state: Electron.BrowserWindowConstructorOptions = {
         show: false,
@@ -43,7 +47,7 @@ export const createMainWindow = async (
         // store.set(key, state);
     };
 
-    const win = new BrowserWindow({
+    const win = new MainWindow({
         ...options,
         ...state,
         icon: "build/icon.ico",
@@ -52,6 +56,12 @@ export const createMainWindow = async (
             ...options.webPreferences,
             sandbox: false,
             preload: path.join(__dirname, "../preload/index.js"),
+            additionalArguments: [
+                convertFunc(
+                    encodeURIComponent(JSON.stringify(preloadData)),
+                    "data"
+                ),
+            ],
         },
     });
 

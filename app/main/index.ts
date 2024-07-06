@@ -1,11 +1,11 @@
 import "./helpers/ipcMain";
 import { createMainWindow } from "./helpers/create-window/main";
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, Menu, Tray } from "electron";
 import { autoUpdater } from "electron-updater";
 import { electronApp } from "@electron-toolkit/utils";
 import { lunchArgs } from "./helpers/launchHelpers";
 import path from "path";
-let mainWindow: BrowserWindow;
+import { MainWindow } from "./lib/main/window";
 const isProd = app.isPackaged;
 autoUpdater.autoDownload = true;
 autoUpdater.autoInstallOnAppQuit = true;
@@ -20,14 +20,27 @@ if (process.defaultApp) {
 if (!isProd) {
     app.setPath("userData", `${app.getPath("userData")} (development)`);
 }
-
+async function createWindow(args: string[]) {
+    const data = lunchArgs(args);
+    return await createMainWindow(
+        {},
+        data ? { video: { link: data.youtubeLink } } : undefined
+    );
+}
 app.whenReady().then(async () => {
-    mainWindow = await createMainWindow({
-        width: 1000,
-        height: 600,
-    });
+    await createWindow(process.argv);
+    // const tray = new Tray("build/icon.ico");
 
-    lunchArgs(process.argv, mainWindow);
+    // tray.setContextMenu(
+    //     Menu.buildFromTemplate([
+    //         {
+    //             label: "Show App",
+    //             click: function () {
+    //                 mainWindow.show();
+    //             },
+    //         },
+    //     ])
+    // );
     if (isProd) autoUpdater.checkForUpdatesAndNotify();
 });
 electronApp.setAppUserModelId("com.youtube-downloader");
@@ -38,11 +51,19 @@ else
     app.on("second-instance", (_, argv) => {
         //User requested a second instance of the app.
         //argv has the process.argv arguments of the second instance.
-        if (app.hasSingleInstanceLock() && argv.length >= 2 && mainWindow) {
-            if (mainWindow.isMinimized()) mainWindow.restore();
-            mainWindow.focus();
-            lunchArgs(argv, mainWindow);
-        }
+        if (!app.hasSingleInstanceLock()) return;
+        if (MainWindow.Window) {
+            if (MainWindow.Window.isMinimized()) MainWindow.Window.restore();
+            MainWindow.Window.focus();
+            if (argv.length >= 2) {
+                const data = lunchArgs(argv);
+                if (data)
+                    MainWindow.Window.webContents.send(
+                        "getYoutubeUrl",
+                        data.youtubeLink
+                    );
+            }
+        } else createWindow(argv);
     });
 
 app.on("window-all-closed", () => {
