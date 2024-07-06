@@ -32,7 +32,7 @@ function App(): JSX.Element {
     return (
         <div
             ref={ref}
-            className="px-5 mb-5"
+            className="px-5 pb-5"
         >
             <Header
                 tabs={tabs}

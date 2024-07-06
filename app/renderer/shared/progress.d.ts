@@ -10,11 +10,14 @@ export interface DownloadingData {
     resumeCapacity: boolean;
 }
 export interface ProgressBarState {
-    title: string;
     link: string;
     status: ConnectionStatus;
     path: string;
     downloadingState?: DownloadingData;
+    video: {
+        title: string;
+        vid: string;
+    };
 }
 export interface Context extends ProgressBarState {
     throttle: boolean;
