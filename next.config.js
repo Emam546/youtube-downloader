@@ -12,7 +12,7 @@ module.exports = {
                 headers: [
                     {
                         key: "Content-Security-Policy",
-                        value: "img-src 'self' data: https://i.ytimg.com;",
+                        value: "img-src * data:;",
                     },
                 ],
             },
