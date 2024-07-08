@@ -1,5 +1,7 @@
-import { BrowserWindow, Menu, Tray } from "electron";
+import { BrowserWindow, Menu, nativeImage, Tray } from "electron";
 import { clipText, objectValues } from "@utils/index";
+import path from "path";
+const MAX_CHARS = 50;
 
 export class DownloadTray extends Tray {
     public static Tray: DownloadTray | null;
@@ -11,7 +13,12 @@ export class DownloadTray extends Tray {
         DownloadTray.Tray = this;
     }
     static getTray() {
-        if (!this.Tray) return new DownloadTray("build/icon.ico");
+        if (!this.Tray)
+            return new DownloadTray(
+                nativeImage.createFromPath(
+                    path.join(__dirname, "../../build/icon.ico")
+                )
+            );
         return this.Tray;
     }
     static addWindow(window: BrowserWindow) {
@@ -59,7 +66,7 @@ export class DownloadTray extends Tray {
             { type: "separator" },
             ...objectValues(this.HidedWindows).map((window) => {
                 return {
-                    label: clipText(window.getTitle(), 30),
+                    label: clipText(window.getTitle(), MAX_CHARS),
                     click: () => {
                         window.show();
                     },
@@ -72,7 +79,7 @@ export class DownloadTray extends Tray {
                 const f = () =>
                     (contextMenu.items[i].label = clipText(
                         window.getTitle(),
-                        30
+                        MAX_CHARS
                     ));
                 window.addListener("page-title-updated", f);
                 return () => window.removeListener("close", f);
