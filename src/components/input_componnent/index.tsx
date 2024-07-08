@@ -10,7 +10,7 @@ interface DataFrom {
     search: string;
 }
 function isVideo(val: unknown): val is NavigateVideo {
-    return window.context != undefined && window.context.video != undefined;
+    return window.context != null && window.context.video != undefined;
 }
 export default function InputHolder() {
     const router = useRouter();
@@ -39,11 +39,12 @@ export default function InputHolder() {
                 setValue("search", `https://www.youtube.com/watch?v=${id}`);
             }
         }
-        if (window.Environment == "desktop")
+        if (window.Environment == "desktop") {
             window.api.on("getYoutubeUrl", (_, url) => {
                 navigate(url);
             });
-        if (isVideo(window.context)) navigate(window.context.video.link);
+            if (isVideo(window.context)) navigate(window.context.video.link);
+        }
     }, []);
     return (
         <form

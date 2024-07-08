@@ -1,6 +1,7 @@
 import {
     DownloadedStatus,
     FileSizeStatus,
+    ResumeStatus,
     TimeLeftStatus,
     TransferStatus,
 } from "./Systems";
@@ -9,7 +10,9 @@ export default function Download() {
     return (
         <div>
             <div>
-                <p className="break-keep text-clip whitespace-nowrap max-w-full overflow-hidden">{window.context.link}</p>
+                <p className="break-keep text-clip whitespace-nowrap max-w-full overflow-hidden">
+                    {window.context.link}
+                </p>
                 <ConnectionStatusComp />
             </div>
             <div className="mt-2">
@@ -18,6 +21,7 @@ export default function Download() {
                     <DownloadedStatus />
                     <TransferStatus />
                     <TimeLeftStatus />
+                    <ResumeStatus />
                 </ul>
             </div>
         </div>

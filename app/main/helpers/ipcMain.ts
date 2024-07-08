@@ -47,13 +47,20 @@ export const OnMethods: OnMethodsType = {
     opeFileWith: function (_, path: string): void {
         OpenFileWith(path);
     },
-    setContentHeight: function (
-        event: Electron.CrossProcessExports.IpcMainEvent,
-        height: number
-    ): void {
+    setContentHeight: function (event, height: number): void {
         const window = BrowserWindow.fromWebContents(event.sender);
         if (!window) return;
         window.setContentSize(window.getSize()[0], height);
+    },
+    minimizeWindow: function (event): void {
+        const window = BrowserWindow.fromWebContents(event.sender);
+        if (!window) return;
+        window.minimize();
+    },
+    hideWindow: function (event): void {
+        const window = BrowserWindow.fromWebContents(event.sender);
+        if (!window) return;
+        window.hide();
     },
 };
 export const OnceMethods: OnceMethodsType = {};

@@ -58,7 +58,7 @@ export const createMainWindow = async (
             preload: path.join(__dirname, "../preload/index.js"),
             additionalArguments: [
                 convertFunc(
-                    encodeURIComponent(JSON.stringify(preloadData)),
+                    encodeURIComponent(JSON.stringify(preloadData || null)),
                     "data"
                 ),
             ],

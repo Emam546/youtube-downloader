@@ -75,7 +75,7 @@ export function TimeLeftStatus() {
     );
     if (fileSize && transferRate && downloaded) {
         const time = (fileSize - downloaded) / transferRate;
-        status = millisecondsToStr(time*1000);
+        status = millisecondsToStr(time * 1000);
     }
     return (
         <StatusLi label="Time Left">
@@ -94,7 +94,9 @@ export function ResumeStatus() {
         <StatusLi label="Resume capability">
             <p className="px-4">
                 {status == true && `Yes`}
-                {status == true && <span className="text-red-500">{"NO"}</span>}
+                {status == false && (
+                    <span className="text-red-500">{"NO"}</span>
+                )}
                 {status == undefined && "......"}
             </p>
         </StatusLi>

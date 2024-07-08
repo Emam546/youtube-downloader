@@ -1,7 +1,4 @@
-import type {
-    ElectronAPI,
-    IpcRendererListener,
-} from "@electron-toolkit/preload";
+import type { ElectronAPI } from "@electron-toolkit/preload";
 import type {
     IpcMainEvent,
     IpcMainInvokeEvent,
@@ -15,7 +12,6 @@ type ConvertToIpCHandleMainFunc<T extends (...args: any[]) => any> = (
     event: IpcMainInvokeEvent,
     ...args: Parameters<T>
 ) => ReturnType<T>;
-import { ApiMain as Api, ApiRender as OrgApiRender } from "@shared/main";
 
 declare global {
     namespace ApiMain {
@@ -27,6 +23,8 @@ declare global {
             openFile(path: string): void;
             opeFileWith(path: string): void;
             setContentHeight(height: number): void;
+            minimizeWindow(): void;
+            hideWindow(): void;
         }
         interface OnceMethods {}
         interface HandleMethods {}
@@ -75,4 +73,3 @@ declare global {
         api: ApiRender;
     }
 }
-declare module "electron" {}

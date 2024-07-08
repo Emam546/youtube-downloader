@@ -14,7 +14,7 @@ export interface NavigateSearch {
         link: string;
     };
 }
-export type Context = NavigateVideo | NavigateSearch | undefined;
+export type Context = NavigateVideo | NavigateSearch | null;
 export namespace ApiRender {
     interface OnMethods {
         getYoutubeUrl(url: string): void;

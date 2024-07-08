@@ -1,11 +1,12 @@
 import "./helpers/ipcMain";
 import { createMainWindow } from "./helpers/create-window/main";
-import { app, BrowserWindow, Menu, Tray } from "electron";
+import { app } from "electron";
 import { autoUpdater } from "electron-updater";
 import { electronApp } from "@electron-toolkit/utils";
 import { lunchArgs } from "./helpers/launchHelpers";
 import path from "path";
 import { MainWindow } from "./lib/main/window";
+import { createProgressBarWindow } from "./helpers/create-window/progress-bar";
 const isProd = app.isPackaged;
 autoUpdater.autoDownload = true;
 autoUpdater.autoInstallOnAppQuit = true;
@@ -29,18 +30,6 @@ async function createWindow(args: string[]) {
 }
 app.whenReady().then(async () => {
     await createWindow(process.argv);
-    // const tray = new Tray("build/icon.ico");
-
-    // tray.setContextMenu(
-    //     Menu.buildFromTemplate([
-    //         {
-    //             label: "Show App",
-    //             click: function () {
-    //                 mainWindow.show();
-    //             },
-    //         },
-    //     ])
-    // );
     if (isProd) autoUpdater.checkForUpdatesAndNotify();
 });
 electronApp.setAppUserModelId("com.youtube-downloader");

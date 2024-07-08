@@ -1,4 +1,8 @@
-import { BrowserWindow, BrowserWindowConstructorOptions, shell } from "electron";
+import {
+    BrowserWindow,
+    BrowserWindowConstructorOptions,
+    shell,
+} from "electron";
 import path from "path";
 import { is } from "@electron-toolkit/utils";
 import { Context } from "@shared/renderer/finish";

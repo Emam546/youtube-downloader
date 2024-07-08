@@ -40,6 +40,7 @@ export class FileDownloaderWindow extends DownloadingWindow {
     private static addWindow(window: FileDownloaderWindow) {
         this.Windows[window.id] = window;
     }
+
     private static removeWindow(window: FileDownloaderWindow) {
         delete this.Windows[window.id];
     }
@@ -81,9 +82,9 @@ export class FileDownloaderWindow extends DownloadingWindow {
             if (acceptRanges && acceptRanges === "bytes")
                 this.setResumability(true);
             else this.setResumability(false);
-            if (res.headers["Content-Length"]) {
+            if (res.headers["content-length"]) {
                 const length = parseInt(
-                    res.headers["Content-Length"] as string
+                    res.headers["content-length"] as string
                 );
                 if (!isNaN(length)) {
                     if (length == this.curSize) return this.end();
@@ -92,7 +93,6 @@ export class FileDownloaderWindow extends DownloadingWindow {
             }
 
             const range = `bytes=${this.curSize}-`;
-
             this.changeState("connecting");
             const response = await DownloadTheFile(
                 this.link,
@@ -200,11 +200,11 @@ export class FileDownloaderWindow extends DownloadingWindow {
     trigger(state: boolean) {
         if (this.isDestroyed()) return;
         if (!this.response) return;
-        if (state && this.response.isPaused()) {
+        if (state) {
             this.changeState("connecting");
             this.response.resume();
             this.resetSpeed();
-        } else if (!state && !this.response.isPaused()) {
+        } else {
             this.changeState("pause");
             this.response.pause();
         }

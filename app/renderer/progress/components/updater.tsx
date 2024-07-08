@@ -12,14 +12,14 @@ export default function Updater() {
         (status) => status.download
     );
     useEffect(() => {
+        let title: string = window.context.video.title;
         if (downloaded != undefined && fileSize != undefined) {
-            window.api.send(
-                "setTitle",
-                `${Math.round((downloaded / fileSize) * 100)}% ${getBaseName(
-                    window.context.path
-                )}`
-            );
-        } else window.api.send("setTitle", getBaseName(window.context.path));
+            title = `${Math.round((downloaded / fileSize) * 100)}% ${
+                window.context.video.title
+            }`;
+        }
+        window.api.send("setTitle", title);
+        document.title = title;
     }, [downloaded, fileSize]);
     useEffect(() => {
         window.api.on("onResumeCapacity", (_, state) => {

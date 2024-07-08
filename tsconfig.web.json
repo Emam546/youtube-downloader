@@ -4,7 +4,8 @@
         "./app/renderer/**/env.d.ts",
         "./app/renderer/**/*",
         "./shared",
-        "./utils"
+        "./utils",
+        "./build"
     ],
     "compilerOptions": {
         "composite": true,

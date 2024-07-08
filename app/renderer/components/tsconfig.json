@@ -4,6 +4,7 @@
         "./",
         "../shared",
         "../../../shared",
+        "../../../build/*",
         "../../../utils",
         "../utils",
         "../components",
