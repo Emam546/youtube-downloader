@@ -3,7 +3,11 @@ import { IncomingMessage } from "http";
 import { StateType } from "@app/main/lib/main/downloader";
 import fs, { WriteStream } from "fs-extra";
 import { DownloadTheFile } from "./downloader";
-import { BrowserWindow, BrowserWindowConstructorOptions } from "electron";
+import {
+    BrowserWindow,
+    BrowserWindowConstructorOptions,
+    dialog,
+} from "electron";
 import axios from "axios";
 import stream from "stream";
 import { createFinishWindow } from "@app/main/helpers/create-window/finish";
@@ -71,8 +75,8 @@ export class FileDownloaderWindow extends DownloadingWindow {
         FileDownloaderWindow.addWindow(this);
     }
     async download(num: number = 0, err?: any) {
+        if (num > FileDownloaderWindow.MAX_TRIES) return this.error(err);
         try {
-            if (num > FileDownloaderWindow.MAX_TRIES) return this.error(err);
             const res = await axios.head(this.link, {
                 validateStatus(status) {
                     return status < 400;
@@ -211,7 +215,8 @@ export class FileDownloaderWindow extends DownloadingWindow {
     }
 
     error(err: any) {
-        console.error(err);
+        dialog.showErrorBox("Error Happened", err.toString());
+        this.close()
     }
     end() {
         this.changeState("completed");
