@@ -7,12 +7,12 @@ function App(): JSX.Element {
     const ref = useRef<ComponentRef<"div">>(null);
     useEffect(() => {
         if (!ref.current) return;
-        window.api.send("setContentHeight", ref.current!.offsetHeight);
+        window.api.send("setContentHeight", ref.current.scrollHeight);
     }, [ref]);
     return (
         <div
             ref={ref}
-            className="px-5 pb-4 pt-2"
+            className="px-5 pt-2 pb-4"
         >
             <Head />
             <main className="mt-3">

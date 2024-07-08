@@ -43,7 +43,7 @@ const Frame = React.forwardRef<ComponentRef<"div">, ComponentProps<"div">>(
                         className="w-5"
                         alt=""
                     />
-                    <p className="text-ellipsis overflow-hidden max-w-xs">{title}</p>
+                    <p className="text-ellipsis overflow-hidden max-w-xs whitespace-nowrap">{title}</p>
                 </div>
                 <div className="flex">
                     <div>{children}</div>
