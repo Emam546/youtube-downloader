@@ -1,11 +1,10 @@
 {
   "name": "youtube-downloader",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "main": "./out/main/index.js",
   "description": "A Youtube videos downloader app",
   "repository": "https://github.com/Emam546/youtube-downloader",
   "author": "Imam Ashour",
-
   "scripts": {
     "build:server": "npx ts-node build.ts",
     "build:next": "next build",
