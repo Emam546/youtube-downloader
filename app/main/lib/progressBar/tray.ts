@@ -6,8 +6,7 @@ const MAX_CHARS = 50;
 export class DownloadTray extends Tray {
     public static Tray: DownloadTray | null;
     private static HidedWindows: Record<string, BrowserWindow> = {};
-    public windowListeners: Array<() => any> = [];
-    public contextMenu: Electron.Menu | null = null;
+
     constructor(...options: ConstructorParameters<typeof Tray>) {
         super(...options);
         this.setToolTip("Youtube Downloads");
@@ -38,30 +37,6 @@ export class DownloadTray extends Tray {
             this.construct();
         });
     }
-    destroy(): void {
-        super.destroy();
-        this.windowListeners.forEach((v) => v());
-    }
-    setContextMenu(menu: Electron.Menu | null): void {
-        this.windowListeners.forEach((v) => v());
-        this.contextMenu = menu;
-        this.windowListeners = objectValues(DownloadTray.HidedWindows).map(
-            (window, i) => {
-                const f = () => {
-                    if (!this.contextMenu) return;
-                    console.log(window.getTitle());
-                    this.contextMenu.items[i].label = clipText(
-                        window.getTitle(),
-                        MAX_CHARS
-                    );
-                    super.setContextMenu(this.contextMenu);
-                };
-                window.addListener("page-title-updated", f);
-                return () => window.removeListener("close", f);
-            }
-        );
-        return super.setContextMenu(menu);
-    }
     public static construct() {
         if (objectValues(this.HidedWindows).length == 0) {
             if (this.Tray) {
@@ -90,6 +65,7 @@ export class DownloadTray extends Tray {
                 };
             }),
         ]);
+
         tray.setContextMenu(contextMenu);
     }
 }
