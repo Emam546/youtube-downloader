@@ -7,17 +7,18 @@ import Updater from "./components/updater";
 import Frame, { BaseButton } from "@renderer/components/frame";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import SpeedLimiter from "./pages/speed";
 const tabs: TabsState = [
     {
         id: "0",
         title: "Download Status",
         type: "Download",
     },
-    // {
-    //     id: "1",
-    //     title: "Speed limiter",
-    //     type: "speedLimiter",
-    // },
+    {
+        id: "1",
+        title: "Speed limiter",
+        type: "speedLimiter",
+    },
     // {
     //     id: "2",
     //     title: "Options on completion",
@@ -32,10 +33,20 @@ function App(): JSX.Element {
     useEffect(() => {
         if (!ref.current) return;
         if (!frameTitle.current) return;
-        window.api.send(
-            "setContentHeight",
-            ref.current.offsetHeight + frameTitle.current.offsetHeight
-        );
+        let prevWidth: number = 0;
+        let resizeObserver = new ResizeObserver((entries) => {
+            const { height } = entries[0].contentRect;
+            if (height !== prevWidth) {
+                prevWidth = height;
+                window.api.send(
+                    "setContentHeight",
+                    ref.current!.offsetHeight + frameTitle.current!.offsetHeight
+                );
+            }
+        });
+
+        resizeObserver.observe(ref.current);
+        return () => resizeObserver.disconnect();
     }, [ref, frameTitle]);
     return (
         <>
@@ -62,8 +73,8 @@ function App(): JSX.Element {
                 />
                 <main className="bg-white px-4 py-2 min-h-[164px] overflow-hidden w-full">
                     {selectedState.type == "Download" && <Download />}
+                    {selectedState.type == "speedLimiter" && <SpeedLimiter />}
                     {/* {selectedState.type == "Options" && <OptionsPage />} */}
-                    {/* {selectedState.type == "speedLimiter" && <SpeedLimiter />} */}
                 </main>
                 <ProgressBar />
                 <Footer />

@@ -12,7 +12,8 @@ import axios from "axios";
 import stream from "stream";
 import { createFinishWindow } from "@app/main/helpers/create-window/finish";
 import { DownloadingWindow } from "../donwloading";
-
+import Throttle from "throttle";
+import { Transform, TransformOptions } from "stream";
 export type FlagType = "w" | "a";
 export interface VideoData {
     link: string;
@@ -21,21 +22,32 @@ export interface VideoData {
         vid: string;
     };
 }
+export class ModifiedThrottle extends Throttle {
+    public ops: Throttle.Options;
+    public bps: number;
+    constructor(options: Throttle.Options) {
+        super(options);
+        this.ops = options;
+        this.bps = options.bps;
+    }
+}
 export class FileDownloaderWindow extends DownloadingWindow {
     public static readonly MAX_TRIES = 3;
     public static readonly PAUSETIME = 3000;
-    public static readonly INTERVAL_Bytes = 1024 * 200;
+    public static readonly INTERVAL_Bytes = 1024 * 100;
     public static Windows: Record<string, FileDownloaderWindow> = {};
     private readonly flag: FlagType;
     private stream?: WriteStream;
-    private response?: IncomingMessage;
+    private response?: stream.Readable;
     private curTimeOut?: ReturnType<typeof setTimeout>;
     private speedTransfer: number = 0;
     private lastTime = Date.now();
+    private curStream?: ModifiedThrottle;
     readonly link: string;
     readonly videoData: VideoData["video"];
+
     enableThrottle: boolean = true;
-    downloadSpeed = 1024 * 4;
+    downloadSpeed = 1024 * 50;
     resumable?: boolean;
     fileSize?: number;
     curSize: number;
@@ -69,7 +81,6 @@ export class FileDownloaderWindow extends DownloadingWindow {
         this.on("close", () => {
             FileDownloaderWindow.removeWindow(this);
             if (this.response) this.response.destroy();
-            if (this.stream) this.stream.close();
         });
 
         FileDownloaderWindow.addWindow(this);
@@ -112,16 +123,16 @@ export class FileDownloaderWindow extends DownloadingWindow {
             flags: this.flag,
         });
         this.stream.on("error", (err) => this.error(err));
-        response.on("data", (data) => this.data(data));
         response.on("pause", () => this.pause());
         response.on("resume", () => this.resume());
         response.on("error", (err) => this.error(err));
-        response.on("end", () => this.end());
+
         const length = response.headers["content-length"];
         if (length) this.setFileSize(parseInt(length));
-        this.response = response;
         if (this.curTimeOut) clearInterval(this.curTimeOut);
-        this.pipe(this.response);
+        this.response = response;
+
+        this.pipe();
     }
     private getRealSize() {
         if (fs.existsSync(this.downloadingState.path)) {
@@ -135,31 +146,51 @@ export class FileDownloaderWindow extends DownloadingWindow {
         if (state != this.state) this.onChangeState(state);
         this.state = state;
     }
-    private pipe(response: stream.Readable) {
-        response.pipe(this.stream!);
+    private pipe() {
+        if (!this.response) return;
+        this.curStream = this.response.pipe(
+            new ModifiedThrottle({
+                bps: this.enableThrottle
+                    ? Math.max(1024, this.downloadSpeed)
+                    : Number.MAX_SAFE_INTEGER,
+                highWaterMark: 1024,
+            })
+        );
+
+        this.curStream.on("resume", () => this.response?.resume());
+        this.curStream.on("pause", () => this.response?.pause());
+        this.curStream.on("data", (data) => this.data(data));
+        this.curStream.on("end", () => this.end());
+        this.curStream.on("close", () => this.stream!.close());
+        this.curStream.pipe(this.stream!);
     }
 
     setThrottleSpeed(speed: number) {
-        throw new Error("unimplemented");
+        this.downloadSpeed = speed;
+        this.setThrottleState(this.enableThrottle);
     }
     setThrottleState(state: boolean) {
-        throw new Error("unimplemented");
+        this.enableThrottle = state;
+        if (!this.curStream) return;
+        this.curStream.bps = state
+            ? Math.max(1024, this.downloadSpeed)
+            : Number.MAX_SAFE_INTEGER;
     }
 
     private pause() {}
     private resume() {}
     private data(data: Buffer) {
+        this.speedTransfer += data.byteLength;
+        this.curSize += data.byteLength;
+
         if (this.curTimeOut) clearTimeout(this.curTimeOut);
+        if (this.state == "pause") return;
         this.curTimeOut = setTimeout(() => {
             if (this.state != "pause") this.changeState("connecting");
             this.curTimeOut = undefined;
         }, 3000);
-
         this.changeState("receiving");
-        this.speedTransfer += data.byteLength;
-        this.curSize += data.byteLength;
         this.onDownloaded(this.curSize);
-
         if (this.speedTransfer > FileDownloaderWindow.INTERVAL_Bytes) {
             const speed = Math.round(
                 this.speedTransfer / ((Date.now() - this.lastTime) / 1000)
@@ -206,20 +237,21 @@ export class FileDownloaderWindow extends DownloadingWindow {
         if (!this.response) return;
         if (state) {
             this.changeState("connecting");
-            this.response.resume();
+            this.curStream?.resume();
             this.resetSpeed();
         } else {
             this.changeState("pause");
-            this.response.pause();
+            this.curStream?.pause();
         }
     }
 
     error(err: any) {
         dialog.showErrorBox("Error Happened", err.toString());
-        this.close()
+        this.close();
     }
     end() {
         this.changeState("completed");
+        this.onDownloaded(this.curSize);
         createFinishWindow({
             preloadData: {
                 fileSize: this.fileSize || this.curSize,

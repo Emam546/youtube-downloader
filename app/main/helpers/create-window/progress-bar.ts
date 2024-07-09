@@ -21,8 +21,8 @@ export const createProgressBarWindow = async (
     const preloadData: Context = {
         ...stateData,
         status: "connecting",
-        throttle: true,
-        downloadSpeed: 1,
+        throttle: false,
+        downloadSpeed: 1024 * 50,
     };
     const win = new FileDownloaderWindow(
         {
@@ -42,7 +42,7 @@ export const createProgressBarWindow = async (
                 preload: path.join(__dirname, "../preload/index.js"),
                 additionalArguments: [
                     convertFunc(
-                        encodeURIComponent(JSON.stringify(preloadData )),
+                        encodeURIComponent(JSON.stringify(preloadData)),
                         "data"
                     ),
                 ],

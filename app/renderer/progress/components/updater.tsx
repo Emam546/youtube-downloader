@@ -11,6 +11,7 @@ export default function Updater() {
     const { downloaded, fileSize } = useAppSelector(
         (status) => status.download
     );
+    const speed = useAppSelector((state) => state.status.downloadSpeed);
     useEffect(() => {
         let title: string = window.context.video.title;
         if (downloaded != undefined && fileSize != undefined) {
@@ -21,6 +22,14 @@ export default function Updater() {
         window.api.send("setTitle", title);
         document.title = title;
     }, [downloaded, fileSize]);
+    useEffect(() => {
+        const t = setTimeout(() => {
+            if (isNaN(speed)) return;
+            const val = Math.round(parseFloat(speed.toString()));
+            if (val) window.api.invoke("setSpeed", val);
+        }, 3000);
+        return () => clearTimeout(t);
+    }, [speed]);
     useEffect(() => {
         window.api.on("onResumeCapacity", (_, state) => {
             dispatch(DownloadActions.setResumeCapability(state));

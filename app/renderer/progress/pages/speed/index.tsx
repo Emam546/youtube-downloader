@@ -11,11 +11,7 @@ export default function SpeedLimiter() {
     useEffect(() => {
         window.api.invoke("setThrottle", checked);
     }, [checked]);
-    useEffect(() => {
-        if (isNaN(speed)) return;
-        const val = Math.round(parseFloat(speed.toString()) * 1024);
-        if (val) window.api.invoke("setSpeed", val);
-    }, [speed]);
+
     return (
         <div>
             <TransferStatus />
@@ -41,7 +37,7 @@ export default function SpeedLimiter() {
                     <div className="flex items-center gap-x-2">
                         <input
                             className={classNames(
-                                "border border-gray-600 disabled:text-gray-400 disabled:border-gray-400  hover:outline-none px-1 py-1",
+                                "border border-gray-600 disabled:text-gray-400 disabled:border-gray-400  hover:outline-none px-1 py-1"
                             )}
                             disabled={!checked}
                             type="number"
