@@ -3,6 +3,7 @@ on:
     release:
         types:
             - created
+     workflow_dispatch:
 permissions:
     contents: write # Required for creating releases
     id-token: write # Required for authenticating with GitHub Packages
