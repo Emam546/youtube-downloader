@@ -3,8 +3,14 @@ import {
     ConvertToIpCHandleMainFunc,
 } from "@shared/index";
 import { ObjectEntries } from "@utils/index";
-import { BrowserWindow, ipcMain } from "electron";
-import { OpenFile, OpenFileWith, OpenFolder } from "../lib/ipcmain";
+import { app, BrowserWindow, ipcMain } from "electron";
+import {
+    OpenFile,
+    OpenFileWith,
+    OpenFolder,
+    ShutDown,
+    SleepComputer,
+} from "../lib/ipcmain";
 
 type OnMethodsType = {
     [K in keyof ApiMain.OnMethods]: ConvertToIpCMainFunc<ApiMain.OnMethods[K]>;
@@ -61,6 +67,15 @@ export const OnMethods: OnMethodsType = {
         const window = BrowserWindow.fromWebContents(event.sender);
         if (!window) return;
         window.hide();
+    },
+    quitApp: function (e): void {
+        app.quit();
+    },
+    shutDownComputer: function (e, force: boolean): void {
+        ShutDown(force);
+    },
+    sleepComputer: function (e): void {
+        SleepComputer();
     },
 };
 export const OnceMethods: OnceMethodsType = {};

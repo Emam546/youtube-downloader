@@ -1,4 +1,5 @@
 /* eslint-disable react/display-name */
+import "./frame.css";
 import React, {
     ComponentProps,
     ComponentRef,
@@ -35,7 +36,7 @@ const Frame = React.forwardRef<ComponentRef<"div">, ComponentProps<"div">>(
             <div
                 ref={ref}
                 {...props}
-                className="flex items-center justify-between bg-white max-w-full"
+                className="frame-drag flex items-center justify-between bg-white max-w-full"
             >
                 <div className="flex items-center flex-1 gap-x-2 px-1">
                     <img
@@ -43,7 +44,9 @@ const Frame = React.forwardRef<ComponentRef<"div">, ComponentProps<"div">>(
                         className="w-5"
                         alt=""
                     />
-                    <p className="text-ellipsis overflow-hidden max-w-xs whitespace-nowrap">{title}</p>
+                    <p className="text-ellipsis overflow-hidden max-w-xs whitespace-nowrap">
+                        {title}
+                    </p>
                 </div>
                 <div className="flex">
                     <div>{children}</div>

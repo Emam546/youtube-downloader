@@ -2,16 +2,15 @@ import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../store";
 import { DownloadActions } from "../store/downloading";
 import { StatusActions } from "../store/status";
+import { ShutDownType } from "../store/options";
 
-function getBaseName(fullPath) {
-    return fullPath.split("\\").pop();
-}
 export default function Updater() {
     const dispatch = useAppDispatch();
     const { downloaded, fileSize } = useAppSelector(
         (status) => status.download
     );
     const speed = useAppSelector((state) => state.status.downloadSpeed);
+    const options = useAppSelector((state) => state.options);
     useEffect(() => {
         let title: string = window.context.video.title;
         if (downloaded != undefined && fileSize != undefined) {
@@ -47,5 +46,28 @@ export default function Updater() {
             dispatch(StatusActions.setStatus(status));
         });
     }, []);
+    useEffect(() => {
+        return window.api.on("onEnd", () => {
+            if (options.showDialog) window.api.send("showDownloadDialog");
+            else {
+                if (options.otherOptions.turnoff) {
+                    switch (options.shutDownState) {
+                        case ShutDownType.SHUTDOWN:
+                            window.api.send(
+                                "shutDownComputer",
+                                options.otherOptions.forceTurnoff
+                            );
+                            break;
+                        case ShutDownType.SLEEP:
+                            window.api.send("sleepComputer");
+                            break;
+                        default:
+                            throw new Error("unimplemented");
+                    }
+                }
+                if (options.otherOptions.exist) window.api.send("quitApp");
+            }
+        });
+    }, [options]);
     return <></>;
 }

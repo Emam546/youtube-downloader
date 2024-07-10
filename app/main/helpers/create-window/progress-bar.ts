@@ -58,15 +58,13 @@ export const createProgressBarWindow = async (
 
     win.enableThrottle = preloadData.throttle;
     win.downloadSpeed = preloadData.downloadSpeed;
-    win.on("ready-to-show", () => {
-        win.show();
-        win.download();
-        DownloadTray.addWindow(win);
-    });
     if (is.dev) {
         await win.loadURL(`${process.env["ELECTRON_RENDERER_URL"]}/progress`);
+        win.webContents.openDevTools();
     } else await win.loadFile(path.join(__dirname, "../windows/progress.html"));
-
+    win.show();
+    win.download();
+    DownloadTray.addWindow(win);
     return win;
 };
 ObjectEntries(OnMethods).forEach(([key, val]) => {

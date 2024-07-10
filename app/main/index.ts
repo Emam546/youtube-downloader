@@ -30,6 +30,24 @@ async function createWindow(args: string[]) {
 }
 app.whenReady().then(async () => {
     await createWindow(process.argv);
+    if (!isProd) {
+        const win = await createProgressBarWindow({
+            preloadData: {
+                link: "http://localhost:4001/example.mov",
+                path: "newExample.env",
+                video: {
+                    title: "Title",
+                    vid: "id",
+                },
+            },
+            stateData: {
+                path: "newExample.env",
+                continued: false,
+            },
+        });
+        win.setThrottleState(true);
+        win.setThrottleSpeed(10 * 1024);
+    }
     if (isProd) autoUpdater.checkForUpdatesAndNotify();
 });
 electronApp.setAppUserModelId("com.youtube-downloader");

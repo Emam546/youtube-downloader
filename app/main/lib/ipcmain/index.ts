@@ -54,3 +54,35 @@ export function OpenFolder(filePath: string) {
         });
     });
 }
+export function ShutDown(force: boolean, time = 0) {
+    exec(
+        `shutdown /s ${force ? "/f" : ""} /t ${time}`,
+        (error, stdout, stderr) => {
+            if (error) {
+                console.error(`Error: ${error.message}`);
+                return;
+            }
+            if (stderr) {
+                console.error(`Stderr: ${stderr}`);
+                return;
+            }
+            console.log(`Stdout: ${stdout}`);
+        }
+    );
+}
+export function SleepComputer() {
+    exec(
+        `rundll32.exe powrprof.dll, SetSuspendState Sleep`,
+        (error, stdout, stderr) => {
+            if (error) {
+                console.error(`Error: ${error.message}`);
+                return;
+            }
+            if (stderr) {
+                console.error(`Stderr: ${stderr}`);
+                return;
+            }
+            console.log(`Stdout: ${stdout}`);
+        }
+    );
+}

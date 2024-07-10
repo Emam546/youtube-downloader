@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import downloadingSlice from "./downloading";
 import StatusSlice from "./status";
+import OptionsSlice from "./options";
 import type { TypedUseSelectorHook } from "react-redux";
 import { useDispatch, useSelector, useStore } from "react-redux";
 
@@ -8,6 +9,7 @@ const store = configureStore({
     reducer: {
         [downloadingSlice.name]: downloadingSlice.reducer,
         [StatusSlice.name]: StatusSlice.reducer,
+        [OptionsSlice.name]: OptionsSlice.reducer,
     },
 });
 

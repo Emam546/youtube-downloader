@@ -1,4 +1,4 @@
-import type { ElectronAPI } from "@electron-toolkit/preload";
+import type { ElectronAPI, IpcRenderer } from "@electron-toolkit/preload";
 import type {
     IpcMainEvent,
     IpcMainInvokeEvent,
@@ -25,6 +25,9 @@ declare global {
             setContentHeight(height: number): void;
             minimizeWindow(): void;
             hideWindow(): void;
+            quitApp(): void;
+            shutDownComputer(force: boolean): void;
+            sleepComputer(): void;
         }
         interface OnceMethods {}
         interface HandleMethods {}
@@ -32,14 +35,14 @@ declare global {
     }
 }
 
-interface ApiRender {
+interface ApiRender extends IpcRenderer {
     on<Key extends keyof ApiMain.Render.OnMethods>(
         channel: Key,
         listener: (
             event: IpcRendererEvent,
             ...args: Parameters<ApiMain.Render.OnMethods[Key]>
         ) => any
-    ): void;
+    ): () => void;
 
     once<Key extends keyof ApiMain.Render.OnceMethods>(
         channel: Key,
@@ -47,7 +50,7 @@ interface ApiRender {
             event: IpcRendererEvent,
             ...args: Parameters<ApiMain.Render.OnceMethods[Key]>
         ) => any
-    ): void;
+    ): () => void;
 
     send<Key extends keyof (ApiMain.OnMethods & ApiMain.OnceMethods)>(
         channel: Key,

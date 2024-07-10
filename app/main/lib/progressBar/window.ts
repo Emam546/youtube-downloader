@@ -252,14 +252,6 @@ export class FileDownloaderWindow extends DownloadingWindow {
     end() {
         this.changeState("completed");
         this.onDownloaded(this.curSize);
-        createFinishWindow({
-            preloadData: {
-                fileSize: this.fileSize || this.curSize,
-                link: `https://www.youtube.com/watch?v=${this.videoData.vid}`,
-                path: this.downloadingState.path,
-            },
-        }).then(() => {
-            this.close();
-        });
+        this.webContents.send("onEnd");
     }
 }

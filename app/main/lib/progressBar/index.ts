@@ -4,6 +4,7 @@ import {
 } from "@shared/index";
 import { Api } from "@shared/renderer/progress";
 import { FileDownloaderWindow } from "./window";
+import { createFinishWindow } from "@app/main/helpers/create-window/finish";
 type OnMethodsType = {
     [K in keyof Api.OnMethods]: ConvertToIpCMainFunc<Api.OnMethods[K]>;
 };
@@ -28,6 +29,19 @@ export const OnMethods: OnMethodsType = {
         window.cancel();
         window.close();
     },
+    showDownloadDialog: function (e): void {
+        const window = FileDownloaderWindow.fromWebContents(e.sender);
+        if (!window) return;
+        createFinishWindow({
+            preloadData: {
+                fileSize: window.fileSize || window.curSize,
+                link: `https://www.youtube.com/watch?v=${window.videoData.vid}`,
+                path: window.downloadingState.path,
+            },
+        }).then(() => {
+            window.close();
+        });
+    },
 };
 export const OnceMethods: OnceMethodsType = {};
 export const HandleMethods: Pick<
@@ -50,4 +64,5 @@ export const HandleMethods: Pick<
         window.setThrottleState(state);
     },
 };
+
 export const HandleOnceMethod: HandelOnceMethodsType = {};

@@ -30,12 +30,14 @@ export namespace ApiRender {
         onDownloaded(size: number): void;
         onConnectionStatus(status: ConnectionStatus): void;
         onResumeCapacity(status: boolean): void;
+        onEnd(): void;
     }
     interface OnceMethods {}
 }
 export namespace Api {
     interface OnMethods {
         cancel(): void;
+        showDownloadDialog(): void;
     }
     interface OnceMethods {}
     interface HandleMethods {

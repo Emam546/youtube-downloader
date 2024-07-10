@@ -8,6 +8,7 @@ import Frame, { BaseButton } from "@renderer/components/frame";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import SpeedLimiter from "./pages/speed";
+import OptionsPage from "./pages/options";
 const tabs: TabsState = [
     {
         id: "0",
@@ -19,11 +20,11 @@ const tabs: TabsState = [
         title: "Speed limiter",
         type: "speedLimiter",
     },
-    // {
-    //     id: "2",
-    //     title: "Options on completion",
-    //     type: "Options",
-    // },
+    {
+        id: "2",
+        title: "Options on completion",
+        type: "Options",
+    },
 ];
 function App(): JSX.Element {
     const [selected, setSelected] = useState(tabs[0].id);
@@ -74,7 +75,7 @@ function App(): JSX.Element {
                 <main className="bg-white px-4 py-2 min-h-[164px] overflow-hidden w-full">
                     {selectedState.type == "Download" && <Download />}
                     {selectedState.type == "speedLimiter" && <SpeedLimiter />}
-                    {/* {selectedState.type == "Options" && <OptionsPage />} */}
+                    {selectedState.type == "Options" && <OptionsPage />}
                 </main>
                 <ProgressBar />
                 <Footer />
