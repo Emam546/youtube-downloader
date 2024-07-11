@@ -7,13 +7,13 @@ import {
     BrowserWindow,
     BrowserWindowConstructorOptions,
     dialog,
+    powerSaveBlocker,
 } from "electron";
 import axios from "axios";
 import stream from "stream";
-import { createFinishWindow } from "@app/main/helpers/create-window/finish";
 import { DownloadingWindow } from "../donwloading";
 import Throttle from "throttle";
-import { Transform, TransformOptions } from "stream";
+
 export type FlagType = "w" | "a";
 export interface VideoData {
     link: string;
@@ -21,6 +21,16 @@ export interface VideoData {
         title: string;
         vid: string;
     };
+}
+export class PowerStarter {
+    private id: number | null = null;
+    start() {
+        if (this.id == null)
+            this.id = powerSaveBlocker.start("prevent-app-suspension");
+    }
+    stop() {
+        if (this.id != null) powerSaveBlocker.stop(this.id);
+    }
 }
 export class ModifiedThrottle extends Throttle {
     public ops: Throttle.Options;
@@ -42,6 +52,7 @@ export class FileDownloaderWindow extends DownloadingWindow {
     private curTimeOut?: ReturnType<typeof setTimeout>;
     private speedTransfer: number = 0;
     private lastTime = Date.now();
+    private sleepId = new PowerStarter();
     private curStream?: ModifiedThrottle;
     readonly link: string;
     readonly videoData: VideoData["video"];
@@ -157,12 +168,20 @@ export class FileDownloaderWindow extends DownloadingWindow {
             })
         );
 
-        this.curStream.on("resume", () => this.response?.resume());
-        this.curStream.on("pause", () => this.response?.pause());
+        this.curStream.on("resume", () => {
+            this.response?.resume();
+
+            this.sleepId.start();
+        });
+        this.curStream.on("pause", () => {
+            this.response?.pause();
+            this.sleepId.stop();
+        });
         this.curStream.on("data", (data) => this.data(data));
         this.curStream.on("end", () => this.end());
         this.curStream.on("close", () => this.stream!.close());
         this.curStream.pipe(this.stream!);
+        this.sleepId.start();
     }
 
     setThrottleSpeed(speed: number) {
@@ -252,6 +271,7 @@ export class FileDownloaderWindow extends DownloadingWindow {
     end() {
         this.changeState("completed");
         this.onDownloaded(this.curSize);
+        this.sleepId.stop();
         this.webContents.send("onEnd");
     }
 }
