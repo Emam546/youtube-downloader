@@ -24,7 +24,7 @@ const Frame = React.forwardRef<ComponentRef<"div">, ComponentProps<"div">>(
     ({ className, children, ...props }, ref) => {
         const [title, setTitle] = useState(document.title);
         useEffect(() => {
-            new MutationObserver(function (mutations) {
+            new MutationObserver(function () {
                 setTitle(document.title);
             }).observe(document.querySelector("title")!, {
                 subtree: true,
@@ -56,8 +56,8 @@ const Frame = React.forwardRef<ComponentRef<"div">, ComponentProps<"div">>(
                             disabled={true}
                             type="button"
                             className="hover:bg-gray-200"
-                            onClick={(e) => {
-                                window.api.send("minimizeWindow");
+                            onClick={() => {
+                                window.api.send("hideWindow");
                             }}
                         >
                             <FontAwesomeIcon icon={faMinus} />
@@ -66,6 +66,9 @@ const Frame = React.forwardRef<ComponentRef<"div">, ComponentProps<"div">>(
                             disabled={true}
                             type="button"
                             className="enabled:hover:bg-gray-200 disabled:text-gray-300"
+                            onClick={() => {
+                                window.api.send("minimizeWindow");
+                            }}
                         >
                             <FontAwesomeIcon icon={faSquare} />
                         </BaseButton>
@@ -73,7 +76,7 @@ const Frame = React.forwardRef<ComponentRef<"div">, ComponentProps<"div">>(
                             title="Close"
                             type="button"
                             className="hover:bg-red-600 hover:text-white"
-                            onClick={(e) => {
+                            onClick={() => {
                                 window.api.send("closeWindow");
                             }}
                         >
