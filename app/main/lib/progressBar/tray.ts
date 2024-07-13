@@ -1,6 +1,7 @@
 import { BrowserWindow, Menu, nativeImage, Tray } from "electron";
 import { clipText, objectValues } from "@utils/index";
 import path from "path";
+import { MainWindow } from "../main/window";
 const MAX_CHARS = 50;
 
 export class DownloadTray extends Tray {
@@ -9,6 +10,12 @@ export class DownloadTray extends Tray {
 
     constructor(...options: ConstructorParameters<typeof Tray>) {
         super(...options);
+        this.on("double-click", () => {
+            if (MainWindow.Window) {
+                MainWindow.Window.restore();
+                MainWindow.Window.focus();
+            }
+        });
         this.setToolTip("Youtube Downloads");
         DownloadTray.Tray = this;
     }
@@ -46,6 +53,7 @@ export class DownloadTray extends Tray {
             return;
         }
         const tray = this.getTray();
+
         const contextMenu = Menu.buildFromTemplate([
             {
                 label: "Restore all windows",
