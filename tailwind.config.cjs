@@ -11,7 +11,6 @@ module.exports = {
     },
     content: [
         "./index.html",
-        "./app/renderer/**/*.{js,ts,jsx,tsx}",
         "./src/**/*.{js,ts,jsx,tsx}",
     ],
     prefix: "tw-",

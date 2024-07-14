@@ -4,6 +4,7 @@ import type {
     ServerVideoInfo,
     ServerConvertResults,
 } from "@serv/routes/videoDownloader/api";
+import { ReturnedData as PlayListData } from "youtube-playlists-js";
 export const instance = axios.create({});
 export async function getSearchData(search: string): Promise<ResultData> {
     if (window.Environment == "desktop") {
@@ -24,6 +25,22 @@ export async function getVideoData(
             signal,
             params: {
                 v: id,
+            },
+        });
+        return res.data.data;
+    }
+}
+export async function getListData(
+    id: string,
+    signal?: AbortSignal
+): Promise<PlayListData | null> {
+    if (window.Environment == "desktop") {
+        return await window.api.invoke("getPlaylistData", id);
+    } else {
+        const res = await instance.get(`/api/playlist`, {
+            signal,
+            params: {
+                list: id,
             },
         });
         return res.data.data;

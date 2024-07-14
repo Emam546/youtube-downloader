@@ -11,6 +11,8 @@ import { createProgressBarWindow } from "../../helpers/create-window/progress-ba
 import { BrowserWindow } from "electron";
 import { ApiMain } from "@shared/main";
 import { Downloader } from "./downloader";
+import { ReturnedData } from "youtube-playlists-js";
+import { getPlayListData } from "@serv/routes/playlist/api";
 type OnMethodsType = {
     [K in keyof ApiMain.OnMethods]: ConvertToIpCMainFunc<ApiMain.OnMethods[K]>;
 };
@@ -61,6 +63,9 @@ export const HandleMethods: HandelMethodsType = {
     },
     startConvertingVideo(_, ...args) {
         return convertY2mateData(...args);
+    },
+    getPlaylistData(_, id: string) {
+        return getPlayListData(id);
     },
 };
 export const HandleOnceMethods: HandelOnceMethodsType = {};

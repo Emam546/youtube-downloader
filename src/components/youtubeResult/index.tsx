@@ -54,7 +54,13 @@ interface ModelStateType {
     vid: string;
     quality: string;
 }
-
+export function ErrorMessage({ children }: { children: ReactNode }) {
+    return (
+        <div className="tw-bg-blue-100 tw-py-4 tw-px-2 tw-mb-5">
+            <p className="tw-text-blue-900 tw-text-center">{children}</p>
+        </div>
+    );
+}
 export default function YoutubeResult() {
     const [state, setState] = useState<TabsType>("VIDEO");
     const { id } = useRouter().query as { id: string };
@@ -98,12 +104,13 @@ export default function YoutubeResult() {
         else dispatch(videoActions.setData(null));
     }, [id]);
     if (!id) return null;
+    if (!validateID(id)) return <ErrorMessage>Invalid video id</ErrorMessage>;
     if (paramQuery.isLoading) return <Loading />;
     if (paramQuery.isError) {
         return (
-            <p className="tw-text-red-500 tw-text-center tw-text-xl">
+            <ErrorMessage>
                 There is a problem that occurred on the server.
-            </p>
+            </ErrorMessage>
         );
     }
     const data = paramQuery.data;

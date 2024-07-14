@@ -4,6 +4,7 @@ import {
     ServerConvertResults,
 } from "@serv/routes/videoDownloader/api";
 import { getSearchData as getSearchData } from "@serv/routes/search/api";
+import { getPlayListData } from "@serv/routes/playlist/api";
 export interface NavigateVideo {
     video: {
         link: string;
@@ -30,6 +31,7 @@ export namespace ApiMain {
     interface HandleMethods {
         getVideoData: typeof getY2mateData;
         getSearchData: typeof getSearchData;
+        getPlaylistData: typeof getPlayListData;
         startConvertingVideo: typeof convertY2mateData;
     }
     interface HandleOnceMethods {}
