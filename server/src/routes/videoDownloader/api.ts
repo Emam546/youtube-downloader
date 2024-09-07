@@ -53,29 +53,61 @@ export interface Y2mateConvertResult {
     fquality: string;
     dlink: string;
 }
-export async function getY2mateData(id: string): Promise<ServerVideoInfo> {
-    const y2mateData = await axios.post<Y2mateVideoData>(
-        "https://www.y2mate.com/mates/analyzeV2/ajax",
-        {
-            k_query: `https://www.youtube.com/watch?v=${id}`,
-            k_page: "home",
-            hl: "en",
-            q_auto: 0,
-        },
-        {
+export async function WrapResponse<T>(
+    fetchData: Promise<Response>
+): Promise<T> {
+    const res = await fetchData;
+    if (res.status >= 300)
+        throw new Error(`${res.statusText} With Code Status ${res.status}`);
+    return (await res.json()) as T;
+}
+export async function fetchData(id: string): Promise<Y2mateVideoData> {
+    const data = await WrapResponse<Y2mateVideoData>(
+        fetch("https://www.y2mate.com/mates/en948/analyzeV2/ajax", {
             headers: {
-                "Content-Type": "multipart/form-data;",
-                "User-Agent": "Your User Agent Here",
+                "Content-Type": "application/x-www-form-urlencoded",
+                accept: "*/*",
+                "accept-language":
+                    "en-GB,en;q=0.9,de-GB;q=0.8,de;q=0.7,ar-EG;q=0.6,ar;q=0.5,en-US;q=0.4",
+                "cache-control": "no-cache",
+                "content-type": "application/x-www-form-urlencoded",
+                pragma: "no-cache",
+                priority: "u=1, i",
+                "sec-ch-ua":
+                    '"Not)A;Brand";v="99", "Google Chrome";v="127", "Chromium";v="127"',
+                "sec-ch-ua-mobile": "?0",
+                "sec-ch-ua-platform": '"Windows"',
+                "sec-fetch-dest": "empty",
+                "sec-fetch-mode": "cors",
+                "sec-fetch-site": "same-origin",
+                "x-requested-with": "XMLHttpRequest",
             },
-        }
+            referrer: "https://www.y2mate.com/youtube/YtQKPJ2s86A",
+            referrerPolicy: "strict-origin-when-cross-origin",
+            body: new URLSearchParams({
+                k_query: `https://www.youtube.com/watch?v=${id}`,
+                k_page: "home",
+                hl: "en",
+                q_auto: "0",
+            }),
+            method: "POST",
+            mode: "cors",
+            credentials: "include",
+        })
     );
+
+    return data;
+}
+export async function getY2mateData(id: string): Promise<ServerVideoInfo> {
+    const y2mateData = await fetchData(id);
+
     const googleData = await getInfo(id);
     
     return {
         vid: googleData.vid,
         related_videos: googleData.related_videos,
         videoDetails: googleData.videoDetails,
-        links: y2mateData.data.links,
+        links: y2mateData.links,
         formats: googleData.formats,
     };
 }
@@ -96,26 +128,43 @@ export async function convertY2mateData(
     id: string,
     key: string
 ): Promise<ServerConvertResults> {
-    const y2mateData = await axios.post<Y2mateConvertResult>(
-        "https://www.y2mate.com/mates/convertV2/index",
-        {
-            k: key,
-            vid: id,
-        },
-        {
-            withCredentials: true,
+    const data = await WrapResponse<ServerConvertResults>(
+        fetch("https://www.y2mate.com/mates/convertV2/index", {
             headers: {
-                "Content-Type": "multipart/form-data;",
-                "User-Agent": "Your User Agent Here",
+                accept: "*/*",
+                "accept-language":
+                    "en-GB,en;q=0.9,de-GB;q=0.8,de;q=0.7,ar-EG;q=0.6,ar;q=0.5,en-US;q=0.4",
+                "cache-control": "no-cache",
+                "content-type": "application/x-www-form-urlencoded",
+                pragma: "no-cache",
+                priority: "u=1, i",
+                "sec-ch-ua":
+                    '"Not)A;Brand";v="99", "Google Chrome";v="127", "Chromium";v="127"',
+                "sec-ch-ua-mobile": "?0",
+                "sec-ch-ua-platform": '"Windows"',
+                "sec-fetch-dest": "empty",
+                "sec-fetch-mode": "cors",
+                "sec-fetch-site": "same-origin",
+                "x-requested-with": "XMLHttpRequest",
             },
-        }
+            referrer: "https://www.y2mate.com/youtube/YtQKPJ2s86A",
+            referrerPolicy: "strict-origin-when-cross-origin",
+            body: new URLSearchParams({
+                k: key,
+                vid: id,
+            }),
+            method: "POST",
+            mode: "cors",
+            credentials: "include",
+        })
     );
+
     return {
-        dlink: y2mateData.data.dlink,
-        fquality: y2mateData.data.fquality,
-        ftype: y2mateData.data.ftype,
+        dlink: data.dlink,
+        fquality: data.fquality,
+        ftype: data.ftype,
         vid: id,
-        title: y2mateData.data.title,
+        title: data.title,
     };
 }
 export function getHttpMethod(dlink: string, range?: string) {
