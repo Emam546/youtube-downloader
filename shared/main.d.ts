@@ -22,10 +22,16 @@ export namespace ApiRender {
     }
     interface OnceMethods {}
 }
+export type DataClipped =
+    | (ServerConvertResults & {
+          clipped: true;
+          start: number;
+          end: number;
+      })
+    | (ServerConvertResults & { clipped: false });
 export namespace ApiMain {
     interface OnMethods {
-        log(...arg: unknown[]): void;
-        downloadY2mate(data: ServerConvertResults): void;
+        downloadY2mate(data: DataClipped): void;
     }
     interface OnceMethods {}
     interface HandleMethods {

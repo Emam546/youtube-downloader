@@ -15,7 +15,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import ModelPopUp from "../Model";
 import { DownloadButton } from "../downloadButton";
-import { ServerConvertResults } from "@serv/routes/videoDownloader/api";
+import VideoViewer from "../youtubeViewer";
+import { DataClipped } from "@shared/main";
 function formatBytes(bytes: number, decimals = 2) {
     if (!+bytes) return "0 Bytes";
 
@@ -63,6 +64,7 @@ export function ErrorMessage({ children }: { children: ReactNode }) {
 }
 export default function YoutubeResult() {
     const [state, setState] = useState<TabsType>("VIDEO");
+    const [[start, end], setClipDuration] = useState([0, 0]);
     const { id } = useRouter().query as { id: string };
     const [modelState, setModelState] = useState<ModelStateType | null>(null);
     const dispatch = useDispatch();
@@ -76,7 +78,7 @@ export default function YoutubeResult() {
             dispatch(videoActions.setData(data.related_videos));
         },
     });
-    const [DownloadData, setDownloadData] = useState<ServerConvertResults>();
+    const [DownloadData, setDownloadData] = useState<DataClipped>();
     useQuery({
         retry: 1,
         queryKey: ["video", "convert", modelState?.vid, modelState?.key],
@@ -91,13 +93,32 @@ export default function YoutubeResult() {
         cacheTime: 3 * 1000 * 60,
         staleTime: 3 * 1000 * 60,
         onSuccess(data) {
-            setDownloadData(data);
+            if (ClippedState) {
+                setDownloadData({
+                    ...data,
+                    start,
+                    end,
+                    clipped: true,
+                });
+            } else {
+                setDownloadData({
+                    ...data,
+                    clipped: false,
+                });
+            }
         },
     });
     useEffect(() => {
         setDownloadData(undefined);
     }, [modelState]);
-    useEffect(() => {}, [modelState]);
+    useEffect(() => {
+        if (paramQuery.data) {
+            setClipDuration([
+                0,
+                parseInt(paramQuery.data.videoDetails.lengthSeconds),
+            ]);
+        }
+    }, [id, paramQuery.isSuccess]);
     useEffect(() => {
         if (paramQuery.data)
             dispatch(videoActions.setData(paramQuery.data.related_videos));
@@ -162,13 +183,27 @@ export default function YoutubeResult() {
                             a.href = video.url;
                             a.click();
                         } else {
-                            window.api.send("downloadY2mate", {
-                                vid: id,
-                                title: data.videoDetails.title,
-                                dlink: video.url,
-                                fquality: video.qualityLabel,
-                                ftype: video.container!,
-                            });
+                            if (ClippedState) {
+                                window.api.send("downloadY2mate", {
+                                    vid: id,
+                                    title: data.videoDetails.title,
+                                    dlink: video.url,
+                                    fquality: video.qualityLabel,
+                                    ftype: video.container!,
+                                    start,
+                                    end,
+                                    clipped: true,
+                                });
+                            } else {
+                                window.api.send("downloadY2mate", {
+                                    vid: id,
+                                    title: data.videoDetails.title,
+                                    dlink: video.url,
+                                    fquality: video.qualityLabel,
+                                    ftype: video.container!,
+                                    clipped: false,
+                                });
+                            }
                         }
                     },
                 };
@@ -191,13 +226,27 @@ export default function YoutubeResult() {
                         a.href = video.url;
                         a.click();
                     } else {
-                        window.api.send("downloadY2mate", {
-                            vid: id,
-                            title: data.videoDetails.title,
-                            dlink: video.url,
-                            fquality: `${video.audioBitrate}kbps`,
-                            ftype: video.container!,
-                        });
+                        if (ClippedState) {
+                            window.api.send("downloadY2mate", {
+                                vid: id,
+                                title: data.videoDetails.title,
+                                dlink: video.url,
+                                fquality: video.qualityLabel,
+                                ftype: video.container!,
+                                start,
+                                end,
+                                clipped: true,
+                            });
+                        } else {
+                            window.api.send("downloadY2mate", {
+                                vid: id,
+                                title: data.videoDetails.title,
+                                dlink: video.url,
+                                fquality: video.qualityLabel,
+                                ftype: video.container!,
+                                clipped: false,
+                            });
+                        }
                     }
                 },
             };
@@ -214,17 +263,33 @@ export default function YoutubeResult() {
                         a.href = video.url;
                         a.click();
                     } else {
-                        window.api.send("downloadY2mate", {
-                            vid: id,
-                            title: data.videoDetails.title,
-                            dlink: video.url,
-                            fquality: video.qualityLabel,
-                            ftype: video.container!,
-                        });
+                        if (ClippedState) {
+                            window.api.send("downloadY2mate", {
+                                vid: id,
+                                title: data.videoDetails.title,
+                                dlink: video.url,
+                                fquality: video.qualityLabel,
+                                ftype: video.container!,
+                                start,
+                                end,
+                                clipped: true,
+                            });
+                        } else {
+                            window.api.send("downloadY2mate", {
+                                vid: id,
+                                title: data.videoDetails.title,
+                                dlink: video.url,
+                                fquality: video.qualityLabel,
+                                ftype: video.container!,
+                                clipped: false,
+                            });
+                        }
                     }
                 },
             };
         });
+    const duration = parseInt(paramQuery.data.videoDetails.lengthSeconds);
+    const ClippedState = start != 0 || end != duration;
     return (
         <>
             <ModelPopUp
@@ -280,6 +345,15 @@ export default function YoutubeResult() {
                     you.
                 </p>
             </ModelPopUp>
+            <VideoViewer
+                id={id}
+                start={start}
+                end={end}
+                duration={duration!}
+                setDuration={(start, end) => {
+                    setClipDuration([start, end]);
+                }}
+            />
             <section className="download-result">
                 <div className="row">
                     <div className="col-md-4">

@@ -70,6 +70,7 @@ export async function getY2mateData(id: string): Promise<ServerVideoInfo> {
         }
     );
     const googleData = await getInfo(id);
+    
     return {
         vid: googleData.vid,
         related_videos: googleData.related_videos,

@@ -62,3 +62,7 @@ next-env.d.ts
 test_scrap
 dist
 
+*.mp4
+*.mov
+
+**/test.*

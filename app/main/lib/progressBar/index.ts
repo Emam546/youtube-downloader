@@ -3,7 +3,7 @@ import {
     ConvertToIpCMainFunc,
 } from "@shared/index";
 import { Api } from "@shared/renderer/progress";
-import { FileDownloaderWindow } from "./window";
+import { BaseDownloaderWindow } from "./window";
 import { createFinishWindow } from "@app/main/helpers/create-window/finish";
 type OnMethodsType = {
     [K in keyof Api.OnMethods]: ConvertToIpCMainFunc<Api.OnMethods[K]>;
@@ -24,13 +24,13 @@ type HandelOnceMethodsType = {
 export type FlagType = "w" | "a";
 export const OnMethods: OnMethodsType = {
     cancel(e) {
-        const window = FileDownloaderWindow.fromWebContents(e.sender);
+        const window = BaseDownloaderWindow.fromWebContents(e.sender);
         if (!window) return;
         window.cancel();
         window.close();
     },
     showDownloadDialog: function (e): void {
-        const window = FileDownloaderWindow.fromWebContents(e.sender);
+        const window = BaseDownloaderWindow.fromWebContents(e.sender);
         if (!window) return;
         createFinishWindow({
             preloadData: {
@@ -49,17 +49,17 @@ export const HandleMethods: Pick<
     "setThrottle" | "setSpeed" | "triggerConnection"
 > = {
     triggerConnection: (e, state) => {
-        const window = FileDownloaderWindow.fromWebContents(e.sender);
+        const window = BaseDownloaderWindow.fromWebContents(e.sender);
         if (!window) return;
         window.trigger(state);
     },
     setSpeed: (e, speed) => {
-        const window = FileDownloaderWindow.fromWebContents(e.sender);
+        const window = BaseDownloaderWindow.fromWebContents(e.sender);
         if (!window) return;
         window.setThrottleSpeed(speed);
     },
     setThrottle: (e, state) => {
-        const window = FileDownloaderWindow.fromWebContents(e.sender);
+        const window = BaseDownloaderWindow.fromWebContents(e.sender);
         if (!window) return;
         window.setThrottleState(state);
     },

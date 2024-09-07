@@ -13,7 +13,10 @@ export async function DownloadTheFile(
                 return await DownloadTheFile(response.headers.location!, range);
 
             default:
-                throw new Error(`${response.statusCode}`);
+                console.error(response);
+                throw new Error(
+                    `Sever Failed With Status Code:${response.statusCode}`
+                );
         }
     }
 

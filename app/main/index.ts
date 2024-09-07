@@ -1,3 +1,4 @@
+import "./pre-start";
 import "./helpers/ipcMain";
 import { createMainWindow } from "./helpers/create-window/main";
 import { app } from "electron";
@@ -6,7 +7,8 @@ import { electronApp } from "@electron-toolkit/utils";
 import { lunchArgs } from "./helpers/launchHelpers";
 import path from "path";
 import { MainWindow } from "./lib/main/window";
-import { createProgressBarWindow } from "./helpers/create-window/progress-bar";
+import { createProgressBarWindow } from "./helpers/create-window/Non-Clipped";
+import { createClippedProgressBarWindow } from "./helpers/create-window/Cliped";
 const isProd = app.isPackaged;
 autoUpdater.autoDownload = true;
 autoUpdater.autoInstallOnAppQuit = true;
@@ -29,20 +31,24 @@ async function createWindow(args: string[]) {
     );
 }
 app.whenReady().then(async () => {
-    await createWindow(process.argv);
+    // await createWindow(process.argv);
     if (!isProd) {
-        const win = await createProgressBarWindow({
+        const win = await createClippedProgressBarWindow({
             preloadData: {
-                link: "http://localhost:4001/example.mov",
-                path: "newExample.env",
+                link: "http://192.168.1.2:4001/A.Man.Called.Otto.2022.480p.Bluray.AKWAM.mp4",
+                path: "newExample.mp4",
                 video: {
                     title: "Title",
                     vid: "id",
                 },
             },
             stateData: {
-                path: "newExample.env",
+                path: "newExample.mp4",
                 continued: false,
+            },
+            clippedData: {
+                start: 100,
+                end: 3000,
             },
         });
         win.setThrottleState(true);
