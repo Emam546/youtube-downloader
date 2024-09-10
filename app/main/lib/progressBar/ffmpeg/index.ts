@@ -1,174 +1,182 @@
-import { StateType } from "@app/main/lib/main/downloader";
 import { BrowserWindowConstructorOptions } from "electron";
 import { getEstimatedVideoSize, getVideoInfo } from "./utils";
-import FfmpegCommand from "fluent-ffmpeg";
-import { BaseDownloaderWindow, VideoData } from "../window";
+import { BaseDownloaderWindow, DownloaderData } from "../window";
+import ffmpeg from "fluent-ffmpeg";
+import fs from "fs";
+import { continueDownloading, getTempName } from "./continueDownloading";
 import path from "path";
+import { ProgressBarState } from "@app/renderer/shared/progress";
 export type FlagType = "w" | "a";
 export interface FfmpegVideoData {
     start: number;
     duration: number;
 }
-class FFmpeg implements NodeJS.ReadableStream {
-    readable: boolean;
-    public ffmbeg: FfmpegCommand.FfmpegCommand = FfmpegCommand();
-    private pauseState: boolean = true;
-    constructor() {
-        this.readable = true;
-    }
-    isPaused(): boolean {
-        return this.pauseState;
-    }
-    unpipe(destination?: NodeJS.WritableStream): this {
-        throw new Error("Method not implemented.");
-    }
-    unshift(chunk: string | Uint8Array, encoding?: BufferEncoding): void {
-        throw new Error("Method not implemented.");
-    }
-    wrap(oldStream: NodeJS.ReadableStream): this {
-        throw new Error("Method not implemented.");
-    }
-    [Symbol.asyncIterator](): AsyncIterableIterator<string | Buffer> {
-        throw new Error("Method not implemented.");
-    }
-    addListener(
-        eventName: string | symbol,
-        listener: (...args: any[]) => void
-    ): this {
-        this.ffmbeg.addListener(eventName, listener);
-        return this;
-    }
-    on(eventName: string | symbol, listener: (...args: any[]) => void): this {
-        this.ffmbeg.on(eventName, listener);
-        return this;
-    }
-    once(eventName: string | symbol, listener: (...args: any[]) => void): this {
-        this.ffmbeg.once(eventName, listener);
-        return this;
-    }
-    removeListener(
-        eventName: string | symbol,
-        listener: (...args: any[]) => void
-    ): this {
-        this.ffmbeg.removeListener(eventName, listener);
-        return this;
-    }
-    off(eventName: string | symbol, listener: (...args: any[]) => void): this {
-        this.ffmbeg.off(eventName, listener);
-        return this;
-    }
-    removeAllListeners(event?: string | symbol): this {
-        this.ffmbeg.removeAllListeners(event);
-        return this;
-    }
-    setMaxListeners(n: number): this {
-        this.ffmbeg.setMaxListeners(n);
-        return this;
-    }
-    getMaxListeners(): number {
-        return this.ffmbeg.getMaxListeners();
-    }
-    listeners(eventName: string | symbol): Function[] {
-        return this.ffmbeg.listeners(eventName);
-    }
-    rawListeners(eventName: string | symbol): Function[] {
-        return this.ffmbeg.rawListeners(eventName);
-    }
-    emit(eventName: string | symbol, ...args: any[]): boolean {
-        return this.ffmbeg.emit(eventName, ...args);
-    }
-    listenerCount(eventName: string | symbol): number {
-        return this.ffmbeg.listenerCount(eventName);
-    }
-    prependListener(
-        eventName: string | symbol,
-        listener: (...args: any[]) => void
-    ): this {
-        this.ffmbeg.prependListener(eventName, listener);
-        return this;
-    }
-    prependOnceListener(
-        eventName: string | symbol,
-        listener: (...args: any[]) => void
-    ): this {
-        this.ffmbeg.prependOnceListener(eventName, listener);
-        return this;
-    }
-    eventNames(): Array<string | symbol> {
-        return this.ffmbeg.eventNames();
-    }
-    //@ts-ignore
-    pipe<T extends NodeJS.WritableStream>(
-        destination: T,
-        options?: { end?: boolean | undefined }
-    ): T {
-        this.ffmbeg.pipe(destination as unknown as NodeJS.WriteStream, options);
-        return destination;
-    }
+export interface FFmpegDownloaderData extends DownloaderData {
+    ffmpegData: FfmpegVideoData;
+}
+function timeStringToSeconds(timeString) {
+    // Split the time string into hours, minutes, and seconds
+    const parts = timeString.split(":");
+    const hours = parseInt(parts[0], 10);
+    const minutes = parseInt(parts[1], 10);
+    const seconds = parseFloat(parts[2]);
 
-    read(size?: number): string | Buffer {
-        throw new Error("Method not implemented.");
-    }
-    setEncoding(encoding: BufferEncoding): this {
-        throw new Error("Method not implemented.");
-    }
-    pause(): this {
-        if (!this.isPaused()) this.ffmbeg.kill("SIGSTOP");
-        return this;
-    }
-    resume(): this {
-        if (this.isPaused()) this.ffmbeg.kill("SIGCONT");
-        return this;
-    }
+    // Convert everything to seconds
+    return hours * 3600 + minutes * 60 + seconds;
 }
 export class FfmpegCutterWindow extends BaseDownloaderWindow {
     readonly ffmpegData: FfmpegVideoData;
+    rebuildingState: boolean = false;
     constructor(
         options: BrowserWindowConstructorOptions,
-        state: StateType,
-        data: VideoData,
-        ffmpegData: FfmpegVideoData
+        data: FFmpegDownloaderData
     ) {
-        super(options, state, data);
-        this.ffmpegData = ffmpegData;
+        super(options, data);
+        this.ffmpegData = data.ffmpegData;
     }
     async download(num: number = 0, err?: any) {
         if (num > FfmpegCutterWindow.MAX_TRIES) return this.error(err);
         try {
-            const data = await getVideoInfo(this.link);
-            const videoStream = data.streams.find(
-                (stream) => stream.codec_type === "video"
+            this.curSize = 0;
+            this.changeState("connecting");
+            this.setFileSize(
+                await getEstimatedVideoSize(this.link, this.ffmpegData.duration)
             );
-            const audioStream = data.streams.find(
-                (stream) => stream.codec_type === "audio"
-            );
-            const response = new FFmpeg();
-            // if (videoStream)
-            //     response.ffmbeg = response.ffmbeg.videoCodec(
-            //         videoStream.codec_name!
-            //     );
-            // if (audioStream)
-            //     response.ffmbeg = response.ffmbeg.audioCodec(
-            //         audioStream.codec_name!
-            //     );
+            const format = path.extname(this.downloadingState.path).slice(1);
+            this.setResumability(true);
+            if (
+                this.downloadingState.continued &&
+                fs.existsSync(this.downloadingState.path)
+            ) {
+                try {
+                    const metaData = await getVideoInfo(
+                        this.downloadingState.path
+                    );
+                    const duration = metaData.format.duration!;
+                    this.rebuildingState = true;
+                    this.setThrottleState(this.enableThrottle);
+                    const command = (
+                        await continueDownloading(
+                            this.link,
+                            this.downloadingState.path,
+                            this.ffmpegData.start,
+                            this.ffmpegData.duration
+                        )
+                    )
+                        .format(format)
+                        .outputOptions("-movflags frag_keyframe+empty_moov")
+                        .on("error", (err) => this.error(err))
+                        .on("progress", ({ timemark, ...props }) => {
+                            if (
+                                this.rebuildingState &&
+                                timeStringToSeconds(timemark) > duration
+                            ) {
+                                this.setPauseButton("Pause");
+                                this.rebuildingState = false;
+                                this.setThrottleState(this.enableThrottle);
+                            }
+                        });
 
-            response.ffmbeg = response.ffmbeg
+                    const pipe = this.pipe();
+                    command.mergeToFile(
+                        pipe,
+                        path.dirname(this.downloadingState.path)
+                    );
+                    this.on("close", () => {
+                        try {
+                            command.kill("SIGKILL");
+                        } catch (err) {}
+                    });
+                    return;
+                } catch (err) {}
+            }
+            const pipe = this.pipe();
+            this.setPauseButton("Pause");
+            const command = ffmpeg()
                 .input(this.link)
-                .outputOptions(["-movflags frag_keyframe + empty_moov"])
-                .withAudioCodec("copy")
-                .withVideoCodec("copy")
-                .toFormat("mp4")
+                .format(format)
+                .outputOptions("-movflags frag_keyframe+empty_moov")
+                .outputOptions("-c copy")
                 .setStartTime(this.ffmpegData.start)
                 .duration(this.ffmpegData.duration)
-                .on("progress", (progress) => {
-                    console.log(progress.percent);
-                });
+                .on("error", (err) => this.error(err))
+                .on("start", () => {
+                    this.setPauseButton("Pause");
+                })
+                .output(pipe);
             this.on("close", () => {
-                if (response) response.ffmbeg.kill("SIGKILL");
+                try {
+                    command.kill("SIGKILL");
+                } catch (err) {}
             });
-            this.pipe(response);
+            command.run();
         } catch (err) {
             this.download(num + 1, err);
         }
+        this.setResumability(true);
+    }
+    end() {
+        this.converting()
+            .then(() => {
+                super.end();
+            })
+            .catch(this.error);
+    }
+    async converting(): Promise<void> {
+        await new Promise<void>((res) => {
+            setTimeout(() => {
+                res();
+            }, 500);
+        });
+        const tempPath = getTempName(this.downloadingState.path);
+        await new Promise<void>((res, rej) => {
+            const command = ffmpeg()
+                .input(this.downloadingState.path)
+                .outputOptions("-movflags +faststart")
+                .outputOptions("-c copy")
+                .on("progress", (percent) => {
+                    this.changeState("receiving");
+                    this.setFileSize(undefined);
+                    this.setFileSize(
+                        (percent.targetSize / percent.percent) * 100
+                    );
+                    this.onGetChunk(percent.targetSize - this.curSize);
+                })
+                .on("start", () => {
+                    this.rebuildingState = true;
+                    this.changeState("receiving");
+                    this.setResumability(false);
+                    this.curSize = 0;
+                    this.onGetChunk(0);
+                    this.setPauseButton("Pause", false);
+                    this.resetSpeed();
+                })
+                .on("end", () => {
+                    res();
+                })
+                .on("error", (err) => {
+                    rej(err);
+                })
+                .output(tempPath);
+
+            this.on("close", () => {
+                try {
+                    command.kill("SIGKILL");
+                } catch (err) {}
+            });
+            command.run();
+        });
+        fs.unlinkSync(this.downloadingState.path);
+        fs.renameSync(tempPath, this.downloadingState.path);
+    }
+    setThrottleState(state: boolean): void {
+        if (this.rebuildingState) super.setThrottleState(false);
+        else super.setThrottleState(state);
+        this.enableThrottle = state;
+    }
+    changeState(state: ProgressBarState["status"]): void {
+        if (state == "receiving" && this.rebuildingState)
+            return super.changeState("rebuilding");
+        return super.changeState(state);
     }
 }

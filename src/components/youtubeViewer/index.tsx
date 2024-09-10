@@ -2,9 +2,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Range } from "react-range";
 import ReactPlayer from "react-player/youtube";
-import { ProgressBar, RangeTracker, Thumb, Tracker } from "./range";
+import { RangeTracker, MIN_TIME, Tracker } from "./range";
 import Controls, { AspectsType, ControlButton } from "./controls";
 import classNames from "classnames";
+import { ProgressBar } from "./progressBar";
 export interface Props {
     id: string;
     duration: number;
@@ -23,14 +24,13 @@ export default function VideoViewer({
     const [curDuration, setCurDuration] = useState(start);
     const ref = useRef<ReactPlayer>(null);
     const [aspect, setAspect] = useState<AspectsType>("16:9");
-
+    const [loopState, setLoopState] = useState(true);
+    const [hasPlayed, setHasPlayed] = useState(false);
+    const [seekedOut, setSeekedOut] = useState(false);
     useEffect(() => {
-        setCurDuration(0);
+        setCurDuration(start);
+        setHasPlayed(false);
     }, [id]);
-    useEffect(() => {
-        if (!ref.current) return;
-        ref.current;
-    }, [ref, id]);
     return (
         <div>
             <div className="tw-px-2">
@@ -51,7 +51,18 @@ export default function VideoViewer({
                         height="100%"
                         playing={playing}
                         onPlay={() => {
-                            setPlaying(true);
+                            if (!hasPlayed) {
+                                if (seekedOut) setPlaying(false);
+                                else if (start > 0) ref.current?.seekTo(start);
+                                setSeekedOut(true);
+                                setHasPlayed(true);
+                            } else {
+                                if (ref.current!.getCurrentTime() >= end) {
+                                    setCurDuration(end - MIN_TIME);
+                                    ref.current?.seekTo(end - MIN_TIME);
+                                }
+                                setPlaying(true);
+                            }
                         }}
                         onPause={() => {
                             setPlaying(false);
@@ -59,13 +70,14 @@ export default function VideoViewer({
                         onProgress={({ playedSeconds }) => {
                             setCurDuration(playedSeconds);
                             if (playedSeconds < start) {
-                                ref.current?.seekTo(start);
+                                if (hasPlayed) ref.current?.seekTo(start);
                                 setCurDuration(start);
                             }
-                            if (playedSeconds > end) {
-                                ref.current?.seekTo(start);
-                                setPlaying(false);
-                                setCurDuration(start);
+                            if (playedSeconds >= end) {
+                                if (loopState) {
+                                    if (hasPlayed) ref.current?.seekTo(start);
+                                    setCurDuration(start);
+                                } else setPlaying(false);
                             }
                         }}
                         onSeek={(second) => {
@@ -75,19 +87,48 @@ export default function VideoViewer({
                         url={`https://www.youtube.com/watch?v=${id}`}
                     />
                     <div className="tw-absolute tw-bottom-0 tw-left-0 tw-w-full">
-                        <ProgressBar percent={(curDuration / duration) * 100} />
+                        <ProgressBar
+                            onSetVal={(time) => {
+                                if (time < start) {
+                                    setDuration(time, end);
+                                }
+                                if (time >= end) {
+                                    setDuration(start, time);
+                                }
+                                ref.current?.seekTo(time);
+                                setCurDuration(time);
+                            }}
+                            curTime={curDuration}
+                            duration={duration}
+                        />
                     </div>
                 </div>
                 <div>
                     <RangeTracker
                         duration={duration}
                         end={end}
-                        setDuration={(newSTart, newEnd) => {
-                            if (newSTart != start) {
-                                ref.current?.seekTo(newSTart);
-                                setCurDuration(newSTart);
+                        setDuration={(newStart, newEnd) => {
+                            if (playing) {
+                                if (newStart != start) {
+                                    ref.current?.seekTo(newStart);
+                                    setCurDuration(newStart);
+                                } else if (newEnd != end) {
+                                    ref.current?.seekTo(newEnd - MIN_TIME);
+                                    setCurDuration(newEnd - MIN_TIME);
+                                }
+                            } else {
+                                if (curDuration < start) {
+                                    ref.current?.seekTo(start);
+                                    setCurDuration(start);
+                                }
+                                if (curDuration >= end) {
+                                    ref.current?.seekTo(end);
+                                    setCurDuration(end);
+                                }
                             }
-                            setDuration(newSTart, newEnd);
+                            if (!hasPlayed) setPlaying(true);
+                            setSeekedOut(true);
+                            setDuration(newStart, newEnd);
                         }}
                         start={start}
                     />
@@ -100,15 +141,16 @@ export default function VideoViewer({
                     curTime={curDuration}
                     duration={duration}
                     end={end}
-                    loop
+                    loop={loopState}
+                    onSetLoop={setLoopState}
                     play={playing}
                     start={start}
-                    onDuration={(newSTart, newEnd) => {
-                        if (newSTart != start) {
-                            ref.current?.seekTo(newSTart);
-                            setCurDuration(newSTart);
+                    onDuration={(newStart, newEnd) => {
+                        if (newStart != start) {
+                            ref.current?.seekTo(newStart);
+                            setCurDuration(newStart);
                         }
-                        setDuration(newSTart, newEnd);
+                        setDuration(newStart, newEnd);
                     }}
                     onSeek={(second) => {
                         ref.current?.seekTo(second);

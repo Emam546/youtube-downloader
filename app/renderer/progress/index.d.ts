@@ -4,7 +4,7 @@ import {
     ProgressBarState,
     Context,
 } from "@shared/renderer/progress";
-export type TabsType = "Download" | "speedLimiter" | "Options";
+
 declare global {
     namespace ApiMain {
         interface OnMethods extends Api.OnMethods {}

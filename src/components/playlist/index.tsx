@@ -32,7 +32,6 @@ export default function PlayList() {
             <h3>PlayList</h3>
             <div className="tw-max-h-[30rem] tw-overflow-auto tw-mb-10 pr-2">
                 {paramQuery.data?.videos.map((video, i) => {
-                    console.log(video);
                     return (
                         <div key={`${listId}-${i}`}>
                             <div

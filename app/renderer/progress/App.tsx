@@ -1,5 +1,5 @@
 import { ComponentRef, useEffect, useRef, useState } from "react";
-import Header, { TabsState } from "./components/header";
+import Header from "./components/header";
 import Download from "./pages/download";
 import ProgressBar from "./components/progressBar";
 import Footer from "./components/footer";
@@ -9,24 +9,10 @@ import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import SpeedLimiter from "./pages/speed";
 import OptionsPage from "./pages/options";
-const tabs: TabsState = [
-    {
-        id: "0",
-        title: "Download Status",
-        type: "Download",
-    },
-    {
-        id: "1",
-        title: "Speed limiter",
-        type: "speedLimiter",
-    },
-    {
-        id: "2",
-        title: "Options on completion",
-        type: "Options",
-    },
-];
+import { useAppSelector } from "./store";
+
 function App(): JSX.Element {
+    const tabs = useAppSelector((state) => state.page.tabs);
     const [selected, setSelected] = useState(tabs[0].id);
     const selectedState = tabs.find((tab) => tab.id == selected)!;
     const ref = useRef<ComponentRef<"div">>(null);
@@ -45,7 +31,6 @@ function App(): JSX.Element {
                 );
             }
         });
-
         resizeObserver.observe(ref.current);
         return () => resizeObserver.disconnect();
     }, [ref, frameTitle]);

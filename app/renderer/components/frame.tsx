@@ -53,7 +53,7 @@ const Frame = React.forwardRef<ComponentRef<"div">, ComponentProps<"div">>(
                     <div className="flex justify-end">
                         <BaseButton
                             title="Minimize"
-                            disabled={true}
+                            disabled={false}
                             type="button"
                             className="hover:bg-gray-200"
                             onClick={() => {

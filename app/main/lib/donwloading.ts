@@ -5,4 +5,5 @@ export class DownloadingWindow extends BrowserWindow {
         super(...options);
         this.setAppDetails({ appId: "Download" });
     }
+    
 }

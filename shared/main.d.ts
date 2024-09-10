@@ -22,13 +22,6 @@ export namespace ApiRender {
     }
     interface OnceMethods {}
 }
-export type DataClipped =
-    | (ServerConvertResults & {
-          clipped: true;
-          start: number;
-          end: number;
-      })
-    | (ServerConvertResults & { clipped: false });
 export namespace ApiMain {
     interface OnMethods {
         downloadY2mate(data: DataClipped): void;

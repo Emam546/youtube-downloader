@@ -6,13 +6,17 @@ import { StateType } from "@app/main/lib/main/downloader";
 import { HandleMethods, OnMethods } from "@app/main/lib/progressBar";
 import { ObjectEntries } from "@utils/index";
 import { convertFunc } from "@utils/app";
-import { FileDownloaderWindow } from "@app/main/lib/progressBar/window";
+import {
+    defaultPageData,
+    DownloadingStatus,
+} from "@app/main/lib/progressBar/window";
 import { DownloadTray } from "@app/main/lib/progressBar/tray";
+import { FileDownloaderWindow } from "@app/main/lib/progressBar/directDownlaod";
 export interface Props {
     preloadData: Omit<ProgressBarState, "status">;
     stateData: StateType;
+    downloadingStatus?: DownloadingStatus;
 }
-
 export const createProgressBarWindow = async (
     vars: Props,
     options?: BrowserWindowConstructorOptions
@@ -21,8 +25,9 @@ export const createProgressBarWindow = async (
     const preloadData: Context = {
         ...stateData,
         status: "connecting",
-        throttle: false,
-        downloadSpeed: 1024 * 50,
+        throttle: vars.downloadingStatus?.enableThrottle || false,
+        downloadSpeed: vars.downloadingStatus?.downloadSpeed || 1024 * 50,
+        pageData: defaultPageData,
     };
     const win = new FileDownloaderWindow(
         {
@@ -48,16 +53,21 @@ export const createProgressBarWindow = async (
                 ],
             },
         },
-        vars.stateData,
-        vars.preloadData
+        {
+            fileStatus: vars.stateData,
+            downloadingStatus: {
+                downloadSpeed: preloadData.downloadSpeed,
+                enableThrottle: preloadData.throttle,
+            },
+            videoData: { link: preloadData.link, video: preloadData.video },
+            pageData: preloadData.pageData,
+        }
     );
     win.webContents.setWindowOpenHandler((details) => {
         shell.openExternal(details.url);
         return { action: "deny" };
     });
 
-    win.enableThrottle = preloadData.throttle;
-    win.downloadSpeed = preloadData.downloadSpeed;
     if (is.dev) {
         await win.loadURL(`${process.env["ELECTRON_RENDERER_URL"]}/progress`);
         win.webContents.openDevTools();

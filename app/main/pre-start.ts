@@ -1,2 +1,3 @@
 import ffmpeg from "fluent-ffmpeg";
-// ffmpeg.setFfmpegPath("/path/to/your/ffmpeg");
+import { path } from "@ffmpeg-installer/ffmpeg";
+ffmpeg.setFfmpegPath(path.replace("app.asar", "app.asar.unpacked"));

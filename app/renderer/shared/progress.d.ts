@@ -2,7 +2,8 @@ export type ConnectionStatus =
     | "receiving"
     | "pause"
     | "connecting"
-    | "completed";
+    | "completed"
+    | "rebuilding";
 export interface DownloadingData {
     fileSize?: number;
     downloaded: number;
@@ -19,10 +20,32 @@ export interface ProgressBarState {
         vid: string;
     };
 }
+export type TabsType = "Download" | "speedLimiter" | "Options";
+export interface TabState {
+    type: TabsType;
+    title: string;
+    id: string;
+    enabled: boolean;
+}
+export interface ProgressData {
+    tabs: TabState[];
+    footer: {
+        pause: {
+            enabled: boolean;
+            text: string;
+        };
+        cancel: {
+            enabled: boolean;
+            text: string;
+        };
+    };
+}
 export interface Context extends ProgressBarState {
     throttle: boolean;
     downloadSpeed: number;
+    pageData: ProgressData;
 }
+
 export namespace ApiRender {
     interface OnMethods {
         onSpeed(speed: number): void;
@@ -31,6 +54,7 @@ export namespace ApiRender {
         onConnectionStatus(status: ConnectionStatus): void;
         onResumeCapacity(status: boolean): void;
         onEnd(): void;
+        onSetPageData(data: ProgressData): void;
     }
     interface OnceMethods {}
 }

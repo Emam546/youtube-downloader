@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
+
 import axios from "axios";
 import { getInfo, videoInfo } from "ytdl-core";
 import https from "https";
@@ -95,19 +97,21 @@ export async function fetchData(id: string): Promise<Y2mateVideoData> {
             credentials: "include",
         })
     );
-
     return data;
 }
 export async function getY2mateData(id: string): Promise<ServerVideoInfo> {
-    const y2mateData = await fetchData(id);
-
+    let y2mateData: null | Y2mateVideoData = null;
+    try {
+        y2mateData = await fetchData(id);
+    } catch (error) {
+        /* empty */
+    }
     const googleData = await getInfo(id);
-    
     return {
         vid: googleData.vid,
         related_videos: googleData.related_videos,
         videoDetails: googleData.videoDetails,
-        links: y2mateData.links,
+        links: y2mateData?.links || { mp3: {}, mp4: {}, other: {} },
         formats: googleData.formats,
     };
 }
@@ -118,11 +122,24 @@ export interface ServerConvertResults {
     vid: Y2mateConvertResult["vid"];
     title: Y2mateConvertResult["title"];
 }
-export function getFileName(title: string, quality: string, type: string) {
-    return `YoutubeDownloader - ${title}_v${quality}.${type}`.replace(
-        /[/\\?%*:|"<>]/g,
-        "-"
-    );
+export type DataClipped =
+    | (ServerConvertResults & {
+          clipped: true;
+          start: number;
+          end: number;
+      })
+    | (ServerConvertResults & { clipped: false });
+export function getFileName<T extends DataClipped>(data: T) {
+    if (data.clipped) {
+        return `YoutubeDownloader - ${data.title}_v${data.fquality} ${data.start}:${data.end}.${data.ftype}`.replace(
+            /[/\\?%*:|"<>]/g,
+            "-"
+        );
+    } else
+        return `YoutubeDownloader - ${data.title}_v${data.fquality}.${data.ftype}`.replace(
+            /[/\\?%*:|"<>]/g,
+            "-"
+        );
 }
 export async function convertY2mateData(
     id: string,

@@ -79,7 +79,7 @@ router.get("/download", async function (req, res) {
         "cf-cache-status": response.headers["cf-cache-status"],
 
         "content-disposition": `attachment; filename="${encodeURIComponent(
-            getFileName(data.title, data.fquality, data.ftype)
+            getFileName({ ...data, clipped: false })
         )}"`,
     });
     response.pipe(res);

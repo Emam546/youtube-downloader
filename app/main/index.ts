@@ -7,8 +7,7 @@ import { electronApp } from "@electron-toolkit/utils";
 import { lunchArgs } from "./helpers/launchHelpers";
 import path from "path";
 import { MainWindow } from "./lib/main/window";
-import { createProgressBarWindow } from "./helpers/create-window/Non-Clipped";
-import { createClippedProgressBarWindow } from "./helpers/create-window/Cliped";
+import { TestWindows } from "./test";
 const isProd = app.isPackaged;
 autoUpdater.autoDownload = true;
 autoUpdater.autoInstallOnAppQuit = true;
@@ -31,29 +30,8 @@ async function createWindow(args: string[]) {
     );
 }
 app.whenReady().then(async () => {
-    // await createWindow(process.argv);
-    if (!isProd) {
-        const win = await createClippedProgressBarWindow({
-            preloadData: {
-                link: "http://192.168.1.2:4001/A.Man.Called.Otto.2022.480p.Bluray.AKWAM.mp4",
-                path: "newExample.mp4",
-                video: {
-                    title: "Title",
-                    vid: "id",
-                },
-            },
-            stateData: {
-                path: "newExample.mp4",
-                continued: false,
-            },
-            clippedData: {
-                start: 100,
-                end: 3000,
-            },
-        });
-        win.setThrottleState(true);
-        win.setThrottleSpeed(10 * 1024);
-    }
+    await createWindow(process.argv);
+    if (!isProd) await TestWindows();
     if (isProd) autoUpdater.checkForUpdatesAndNotify();
 });
 electronApp.setAppUserModelId("com.youtube-downloader");
@@ -84,7 +62,7 @@ app.on("window-all-closed", () => {
 });
 
 app.on("window-all-closed", () => {
-    if (process.platform !== "darwin") {
+    if (process.platform !== "darwin") 
         app.quit();
-    }
+    
 });

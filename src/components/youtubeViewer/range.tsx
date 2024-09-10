@@ -12,19 +12,6 @@ export interface Props {
     setDuration(start: number, end: number): any;
 }
 
-export function ProgressBar({ percent }: { percent: number }) {
-    return (
-        <div className="tw-w-full tw-bg-black/25 tw-h-4">
-            <div
-                className="tw-h-full tw-bg-blue-400"
-                style={{
-                    width: `${percent}%`,
-                }}
-            ></div>
-        </div>
-    );
-}
-
 export interface ThumbProps extends Omit<IThumbProps, "ref"> {
     isDragged: boolean;
 }
@@ -138,7 +125,7 @@ export function Tracker({ props, children, duration }: TrackerProps) {
         </div>
     );
 }
-const MIN_TIME = 5;
+export const MIN_TIME = 5;
 export interface RangeProps {
     duration: number;
     start: number;

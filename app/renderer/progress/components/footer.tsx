@@ -4,7 +4,7 @@ import classNames from "classnames";
 
 export default function Footer() {
     const status = useAppSelector((state) => state.status.status);
-
+    const pageData = useAppSelector((state) => state.page.footer);
     return (
         <footer className="flex mx-6">
             <div className="flex-1"></div>
@@ -20,32 +20,17 @@ export default function Footer() {
                             status == "pause"
                         );
                     }}
-                    disabled={status == "completed"}
+                    disabled={!pageData.pause.enabled }
                 >
-                    {(status == "receiving" || status == "connecting") &&
-                        "Pause"}
-                    {status == "pause" && "Start"}
+                    {pageData.pause.text}
                 </Button>
                 <Button
                     onClick={() => {
                         window.api.send("cancel");
                     }}
+                    disabled={!pageData.cancel.enabled}
                 >
-                    Cancel
-                </Button>
-            </div>
-            <div
-                className={classNames({
-                    hidden: status != "completed",
-                    visible: status == "completed",
-                })}
-            >
-                <Button
-                    onClick={() => {
-                        window.api.send("closeWindow");
-                    }}
-                >
-                    Close
+                    {pageData.cancel.text}
                 </Button>
             </div>
         </footer>

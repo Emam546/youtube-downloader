@@ -1,6 +1,7 @@
 import React, { ComponentProps } from "react";
 import classNames from "classnames";
-import { TabsType } from "..";
+import { TabState, TabsType } from "@renderer/shared/progress";
+
 export function Tab({ className, ...props }: ComponentProps<"li">) {
     return (
         <li
@@ -12,16 +13,12 @@ export function Tab({ className, ...props }: ComponentProps<"li">) {
         />
     );
 }
-export interface State {
-    type: TabsType;
-    title: string;
-    id: string;
-}
-export type TabsState = Array<State>;
+
+export type TabsState = Array<TabState>;
 export interface Props extends ComponentProps<"header"> {
     tabs: TabsState;
     selected: string;
-    onSelectTab?: (state: State) => any;
+    onSelectTab?: (state: TabState) => any;
 }
 export default function Header({
     tabs,
@@ -35,13 +32,14 @@ export default function Header({
             {...props}
         >
             <ul className="flex">
-                {tabs.map(({ id, title, ...props }) => {
+                {tabs.map(({ id, title, enabled, ...props }) => {
                     return (
                         <Tab
                             key={id}
                             onClick={() =>
-                                onSelectTab?.({ id, title, ...props })
+                                onSelectTab?.({ id, title, enabled, ...props })
                             }
+                            aria-disabled={!enabled}
                             aria-selected={selected == id}
                         >
                             {title}

@@ -33,7 +33,6 @@ export default function Footer() {
                             0,
                             window.context.path.lastIndexOf("\\")
                         );
-                        console.log(folder);
                         window.api.send("openFolder", folder);
                     }}
                 >

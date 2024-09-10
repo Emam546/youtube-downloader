@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { ConnectionStatus, DownloadingData } from "@shared/renderer/progress";
+import { ConnectionStatus } from "@shared/renderer/progress";
 
 export type DownloadingDataSlice = {
     status: ConnectionStatus;

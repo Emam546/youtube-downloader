@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { validateURL, youtube_parser } from "@utils/youtube";
+import { youtube_parser } from "@utils/youtube";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
@@ -12,10 +12,18 @@ interface DataFrom {
 function isVideo(val: unknown): val is NavigateVideo {
     return window.context != null && window.context.video != undefined;
 }
-function constructUrl(id: string | null, listId: string | null) {
+export type YoutubeParams = [
+    string | null,
+    string | null,
+    [number | null, number | null] | null
+];
+function constructUrl(...[id, listId, time]: YoutubeParams) {
     const url = new URL("https://www.youtube.com/watch");
     if (id) url.searchParams.set("v", id);
     if (listId) url.searchParams.set("list", listId);
+    if (time && time[0]) {
+        url.searchParams.set("t", `${time[0]}s`);
+    }
     return url;
 }
 function appendPathToBaseUrl(...paths: string[]) {
@@ -32,17 +40,29 @@ function appendPathToBaseUrl(...paths: string[]) {
     return baseUrl;
 }
 const baseUrl = "/youtube/";
-function extractParams(youtubeUrl: URL): [string | null, string | null] {
+function extractParams(youtubeUrl: URL): YoutubeParams {
     const id = youtube_parser(youtubeUrl.href);
     const list = youtubeUrl.searchParams.get("list");
-    return [id || null, list];
+    let start =
+        youtubeUrl.searchParams.get("start") ||
+        youtubeUrl.searchParams.get("t");
+    const end = youtubeUrl.searchParams.get("end");
+    return [
+        id || null,
+        list,
+        [start ? parseInt(start) : null, end ? parseInt(end) : null],
+    ];
 }
 function getUrl(youtubeUrl: URL) {
-    const [id, list] = extractParams(youtubeUrl);
+    const [id, list, time] = extractParams(youtubeUrl);
     const url = id ? appendPathToBaseUrl(baseUrl, id) : baseUrl;
 
     const searchParams = new URLSearchParams();
     if (list) searchParams.set("list", list);
+    if (time) {
+        if (time[0]) searchParams.set("start", time[0].toString());
+        if (time[1]) searchParams.set("end", time[1].toString());
+    }
     return `${url}?${searchParams.toString()}`;
 }
 function isValidUrl(string: string) {
@@ -55,11 +75,18 @@ function isValidUrl(string: string) {
 }
 export function CanNavigate(val: string): boolean {
     if (!isValidUrl(val)) return false;
-    return extractParams(new URL(val)).some((val) => val != null);
+    return extractParams(new URL(val))
+        .slice(0, 2)
+        .some((val) => val != null);
+}
+function getTime(val: unknown): number | null {
+    if (typeof val == "string" && !isNaN(parseInt(val))) return parseInt(val);
+    return null;
 }
 export default function InputHolder() {
     const router = useRouter();
     const navigate = router.push;
+    const { start, end } = router.query;
     const { register, handleSubmit, setValue, formState } = useForm<DataFrom>();
     useEffect(() => {
         if (router.asPath.startsWith("/youtube")) {
@@ -67,10 +94,14 @@ export default function InputHolder() {
             const match = window.location.pathname.match(regex);
             const urlParams = new URLSearchParams(window.location.search);
             const list = urlParams.get("list");
-
+            const start = urlParams.get("start");
+            const end = urlParams.get("end");
             setValue(
                 "search",
-                constructUrl(match ? match[1] : null, list).href
+                constructUrl(match ? match[1] : null, list, [
+                    getTime(start),
+                    getTime(end),
+                ]).href
             );
         }
         if (router.asPath.startsWith("/search")) {
@@ -82,8 +113,10 @@ export default function InputHolder() {
     }, []);
     useEffect(() => {
         function analyzeUrl(href: string) {
-            const [id, list] = extractParams(new URL(href));
-            setValue("search", constructUrl(id, list).href);
+            setValue(
+                "search",
+                constructUrl(...extractParams(new URL(href))).href
+            );
         }
         if (window.Environment == "desktop") {
             window.api.on("getYoutubeUrl", (_, url) => {

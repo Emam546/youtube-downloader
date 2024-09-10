@@ -1,16 +1,15 @@
-import { ProgressBarState } from "@shared/renderer/progress";
+import { ProgressBarState, ProgressData } from "@shared/renderer/progress";
 import { StateType } from "@app/main/lib/main/downloader";
 import fs, { WriteStream } from "fs-extra";
-import { DownloadTheFile } from "./downloader";
 import {
     BrowserWindow,
     BrowserWindowConstructorOptions,
     dialog,
 } from "electron";
-import axios from "axios";
 import { DownloadingWindow } from "../donwloading";
 import { PowerStarter, ModifiedThrottle } from "./utils";
-
+import { is } from "@electron-toolkit/utils";
+import internal from "stream";
 export type FlagType = "w" | "a";
 export interface VideoData {
     link: string;
@@ -25,26 +24,69 @@ export interface PipeListener extends NodeJS.EventEmitter {
         options?: { end?: boolean | undefined }
     ): T;
 }
+export interface DownloadingStatus {
+    enableThrottle: boolean;
+    downloadSpeed: number;
+}
+export interface DownloaderData {
+    fileStatus: StateType;
+    videoData: VideoData;
+    downloadingStatus: DownloadingStatus;
+    pageData: ProgressData;
+}
+export const defaultPageData: ProgressData = {
+    footer: {
+        cancel: {
+            enabled: true,
+            text: "Cancel",
+        },
+        pause: {
+            enabled: false,
+            text: "Pause",
+        },
+    },
+    tabs: [
+        {
+            id: "0",
+            title: "Download Status",
+            type: "Download",
+            enabled: true,
+        },
+        {
+            id: "1",
+            title: "Speed limiter",
+            type: "speedLimiter",
+            enabled: true,
+        },
+        {
+            id: "2",
+            title: "Options on completion",
+            type: "Options",
+            enabled: true,
+        },
+    ],
+};
+
 export class BaseDownloaderWindow extends DownloadingWindow {
     public static readonly MAX_TRIES = 3;
-    public static readonly INTERVAL_Bytes = 1024 * 100;
+    private startTime = Date.now();
     public static Windows: Record<string, BaseDownloaderWindow> = {};
-    public readonly flag: FlagType;
+    public flag: FlagType;
     private stream?: WriteStream;
-    private curTimeOut?: ReturnType<typeof setTimeout>;
-    private lastTime = Date.now();
     private sleepId = new PowerStarter();
-    readonly curStream: ModifiedThrottle;
+    private readonly curStream: ModifiedThrottle;
     private speedTransfer: number = 0;
+    pageData: ProgressData;
     readonly link: string;
     readonly videoData: VideoData["video"];
     resumable?: boolean;
-    enableThrottle: boolean = true;
-    downloadSpeed = 1024 * 50;
+    enableThrottle: boolean;
+    downloadSpeed: number;
     fileSize?: number;
     curSize: number;
     downloadingState: StateType;
     state: ProgressBarState["status"] = "connecting";
+
     private static addWindow(window: BaseDownloaderWindow) {
         this.Windows[window.id] = window;
     }
@@ -61,27 +103,45 @@ export class BaseDownloaderWindow extends DownloadingWindow {
     }
     constructor(
         options: BrowserWindowConstructorOptions,
-        state: StateType,
-        data: VideoData
+        data: DownloaderData
     ) {
         super(options);
+        this.enableThrottle = data.downloadingStatus.enableThrottle;
+        this.downloadSpeed = data.downloadingStatus.downloadSpeed;
         this.curStream = new ModifiedThrottle({
             bps: this.enableThrottle
                 ? Math.max(1024, this.downloadSpeed)
                 : Number.MAX_SAFE_INTEGER,
-            highWaterMark: 1024,
+            writableHighWaterMark: 1024 * 5,
+            delayTime: 5000,
         });
-        this.flag = state.continued && fs.existsSync(state.path) ? "a" : "w";
-        this.downloadingState = state;
+
+        this.flag =
+            data.fileStatus.continued && fs.existsSync(data.fileStatus.path)
+                ? "a"
+                : "w";
+        this.downloadingState = data.fileStatus;
         this.curSize = this.flag == "a" ? this.getRealSize() : 0;
-        this.link = data.link;
-        this.videoData = data.video;
+        this.link = data.videoData.link;
+        this.videoData = data.videoData.video;
         this.on("close", () => {
             BaseDownloaderWindow.removeWindow(this);
         });
+        this.curStream.on("resume", () => {
+            this.resetSpeed();
+        });
+        this.curStream.on("pause", () => {
+            if (this.state == "receiving" && !this.curStream.closed)
+                this.changeState("connecting");
+        });
 
+        this.curStream.on("data", (data: Buffer) =>
+            this.onGetChunk(data.byteLength)
+        );
+        this.pageData = data.pageData;
         BaseDownloaderWindow.addWindow(this);
     }
+
     getRealSize() {
         if (fs.existsSync(this.downloadingState.path)) {
             const state = fs.statSync(this.downloadingState.path);
@@ -94,67 +154,44 @@ export class BaseDownloaderWindow extends DownloadingWindow {
         if (state != this.state) this.onChangeState(state);
         this.state = state;
     }
-    pipe<T extends NodeJS.ReadableStream>(response: T): T {
-        if (this.curTimeOut) clearInterval(this.curTimeOut);
+
+    pipe(): internal.Writable {
+        if (this.stream && !this.stream.destroyed)
+            throw new Error("there is unclosed stream file");
         this.stream = fs.createWriteStream(this.downloadingState.path, {
             flags: this.flag,
         });
-        response.pipe(this.curStream, { end: false });
         this.stream.on("error", (err) => this.error(err));
-
-        this.curStream.on("resume", () => {
-            response.resume();
-            this.resetSpeed();
-            this.sleepId.start();
+        this.stream.on("finish", () => {
+            this.stream!.close();
+            this.end();
         });
-        this.curStream.on("pause", () => {
-            response.pause();
-            this.sleepId.stop();
-        });
-        this.curStream.on("data", (data) => this.data(data));
-        this.curStream.on("end", () => this.end());
-        this.curStream.on("close", () => this.stream!.close());
-        this.curStream.pipe(this.stream!);
-        this.curStream.resume();
+        this.curStream.pipe(this.stream);
+        return this.curStream;
+    }
+    onGetChunk(size: number) {
         this.sleepId.start();
-        return response;
-    }
-
-    private data(data: Buffer) {
-        this.speedTransfer += data.byteLength;
-        this.curSize += data.byteLength;
-
-        if (this.curTimeOut) clearTimeout(this.curTimeOut);
-        if (this.state == "pause") return;
-        this.curTimeOut = setTimeout(() => {
-            if (this.state != "pause") this.changeState("connecting");
-            this.curTimeOut = undefined;
-        }, 3000);
-        this.changeState("receiving");
+        this.speedTransfer += size;
+        this.curSize += size;
         this.onDownloaded(this.curSize);
-        if (this.speedTransfer > BaseDownloaderWindow.INTERVAL_Bytes) {
-            const speed = Math.round(
-                this.speedTransfer / ((Date.now() - this.lastTime) / 1000)
-            );
-            this.onSpeed(speed);
-            this.resetSpeed();
-        }
-    }
-    private resetSpeed() {
-        this.lastTime = Date.now();
-        this.speedTransfer = 0;
+        const speed = Math.round(
+            this.speedTransfer / Math.ceil((Date.now() - this.startTime) / 1000)
+        );
+        this.onSpeed(speed);
+        if (this.state != "pause") this.changeState("receiving");
     }
     end() {
         this.changeState("completed");
         this.onDownloaded(this.curSize);
         this.sleepId.stop();
+        this.setProgressBar(-1);
         this.onEnd();
     }
     setResumability(state: boolean) {
         this.resumable = state;
         this.onResumability(state);
     }
-    setFileSize(size: number) {
+    setFileSize(size?: number) {
         this.fileSize = size;
         this.onFileSize(size);
     }
@@ -164,19 +201,26 @@ export class BaseDownloaderWindow extends DownloadingWindow {
     }
     setThrottleState(state: boolean) {
         this.enableThrottle = state;
-        if (!this.curStream) return;
-        this.curStream.bps = state
-            ? Math.max(1024, this.downloadSpeed)
-            : Number.MAX_SAFE_INTEGER;
+        this.resetSpeed();
+        this.curStream.setSpeed(
+            state ? Math.max(1024, this.downloadSpeed) : Number.MAX_SAFE_INTEGER
+        );
+    }
+    resetSpeed() {
+        this.speedTransfer = 0;
+        this.startTime = Date.now();
     }
     trigger(state: boolean) {
-        if (this.isDestroyed()) return;
         if (state) {
             this.changeState("connecting");
             this.curStream.resume();
+            this.setPauseButton("Pause");
+            this.sleepId.start();
         } else {
-            this.changeState("pause");
             this.curStream.pause();
+            this.sleepId.stop();
+            this.changeState("pause");
+            this.setPauseButton("Start");
         }
     }
     cancel() {
@@ -185,15 +229,19 @@ export class BaseDownloaderWindow extends DownloadingWindow {
         this.close();
     }
     error(err: any) {
-        console.error(err);
-        // dialog.showErrorBox("Error Happened", err.toString());
+        console.error("ErrorDebugging", err);
+        if (!is.dev) dialog.showErrorBox("Error Happened", err.toString());
         this.close();
     }
-
+    setPauseButton(state: "Pause" | "Start", enabled = true) {
+        this.pageData.footer.pause.text = state;
+        this.pageData.footer.pause.enabled = enabled;
+        this.onSetPageData(this.pageData);
+    }
     private onEnd() {
         this.webContents.send("onEnd");
     }
-    private onFileSize(size: number) {
+    private onFileSize(size?: number) {
         if (this.isDestroyed()) return;
         this.webContents.send("onFileSize", size);
     }
@@ -214,57 +262,8 @@ export class BaseDownloaderWindow extends DownloadingWindow {
         if (this.isDestroyed()) return;
         this.webContents.send("onConnectionStatus", state);
     }
-}
-export class FileDownloaderWindow extends BaseDownloaderWindow {
-    private onResponsePause() {}
-    private onResponseResume() {}
-    constructor(
-        options: BrowserWindowConstructorOptions,
-        state: StateType,
-        data: VideoData
-    ) {
-        super(options, state, data);
-    }
-    async download(num: number = 0, err?: any) {
-        if (num > BaseDownloaderWindow.MAX_TRIES) return this.error(err);
-        try {
-            const res = await axios.head(this.link, {
-                validateStatus(status) {
-                    return status < 400;
-                },
-            });
-            const acceptRanges = res.headers["accept-ranges"];
-            if (acceptRanges && acceptRanges === "bytes")
-                this.setResumability(true);
-            else this.setResumability(false);
-            if (res.headers["content-length"]) {
-                const length = parseInt(
-                    res.headers["content-length"] as string
-                );
-                if (!isNaN(length)) {
-                    if (length == this.curSize) return this.end();
-                    this.setFileSize(length);
-                }
-            }
-
-            const range = `bytes=${this.curSize}-`;
-            this.changeState("connecting");
-            const response = await DownloadTheFile(
-                this.link,
-                this.resumable ? range : undefined
-            );
-            const length = response.headers["content-length"];
-            if (length) this.setFileSize(parseInt(length));
-            response.on("pause", () => this.onResponsePause());
-            response.on("resume", () => this.onResponseResume());
-            response.on("error", (err) => this.error(err));
-
-            this.on("close", () => {
-                if (response) response.destroy();
-            });
-            this.pipe(response);
-        } catch (err) {
-            this.download(num + 1, err);
-        }
+    private onSetPageData(pageData: ProgressData) {
+        if (this.isDestroyed()) return;
+        this.webContents.send("onSetPageData", pageData);
     }
 }

@@ -1,7 +1,4 @@
-import {
-    ServerConvertResults,
-    getFileName,
-} from "@serv/routes/videoDownloader/api";
+import { DataClipped, getFileName } from "@serv/routes/videoDownloader/api";
 import { BrowserWindow, dialog } from "electron";
 import fs from "fs-extra";
 export interface Options {
@@ -13,11 +10,8 @@ export interface StateType {
     path: string;
     continued: boolean;
 }
-export async function Downloader(
-    data: ServerConvertResults,
-    window: BrowserWindow
-) {
-    const Name = getFileName(data.title, data.fquality, data.ftype);
+export async function Downloader(data: DataClipped, window: BrowserWindow) {
+    const Name = getFileName(data);
     const { canceled, filePath: newpath } = await dialog.showSaveDialog({
         title: "Download Video",
         defaultPath: Name,

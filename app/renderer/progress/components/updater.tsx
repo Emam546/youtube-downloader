@@ -3,13 +3,14 @@ import { useAppDispatch, useAppSelector } from "../store";
 import { DownloadActions } from "../store/downloading";
 import { StatusActions } from "../store/status";
 import { ShutDownType } from "../store/options";
+import { PageActions } from "../store/pageData";
 
 export default function Updater() {
     const dispatch = useAppDispatch();
     const { downloaded, fileSize } = useAppSelector(
         (status) => status.download
     );
-    const speed = useAppSelector((state) => state.status.downloadSpeed);
+    const speedLimiter = useAppSelector((state) => state.status.downloadSpeed);
     const options = useAppSelector((state) => state.options);
     useEffect(() => {
         let title: string = window.context.video.title;
@@ -23,12 +24,12 @@ export default function Updater() {
     }, [downloaded, fileSize]);
     useEffect(() => {
         const t = setTimeout(() => {
-            if (isNaN(speed)) return;
-            const val = Math.round(parseFloat(speed.toString()));
+            if (isNaN(speedLimiter)) return;
+            const val = Math.round(parseFloat(speedLimiter.toString()));
             if (val) window.api.invoke("setSpeed", val);
         }, 3000);
         return () => clearTimeout(t);
-    }, [speed]);
+    }, [speedLimiter]);
     useEffect(() => {
         window.api.on("onResumeCapacity", (_, state) => {
             dispatch(DownloadActions.setResumeCapability(state));
@@ -44,6 +45,9 @@ export default function Updater() {
         });
         window.api.on("onConnectionStatus", (_, status) => {
             dispatch(StatusActions.setStatus(status));
+        });
+        window.api.on("onSetPageData", (_, data) => {
+            dispatch(PageActions.setStatus(data));
         });
     }, []);
     useEffect(() => {

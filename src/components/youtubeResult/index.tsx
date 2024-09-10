@@ -16,7 +16,8 @@ import {
 import ModelPopUp from "../Model";
 import { DownloadButton } from "../downloadButton";
 import VideoViewer from "../youtubeViewer";
-import { DataClipped } from "@shared/main";
+import TypeApplication from "../TypeApllication";
+import { DataClipped } from "@serv/routes/videoDownloader/api";
 function formatBytes(bytes: number, decimals = 2) {
     if (!+bytes) return "0 Bytes";
 
@@ -62,10 +63,27 @@ export function ErrorMessage({ children }: { children: ReactNode }) {
         </div>
     );
 }
+function getTime(data: unknown, defaultN: number, maxTime: number) {
+    if (typeof data == "string") return minMax(parseInt(data), maxTime);
+    return defaultN;
+}
+function minMax(val: number, max: number, min: number = 0) {
+    return Math.max(min, Math.min(val, max));
+}
 export default function YoutubeResult() {
     const [state, setState] = useState<TabsType>("VIDEO");
-    const [[start, end], setClipDuration] = useState([0, 0]);
-    const { id } = useRouter().query as { id: string };
+    const router = useRouter();
+
+    const {
+        id,
+        start: startQ,
+        end: endQ,
+    } = router.query as {
+        id: string;
+        start?: string;
+        end?: string;
+    };
+
     const [modelState, setModelState] = useState<ModelStateType | null>(null);
     const dispatch = useDispatch();
     const paramQuery = useQuery({
@@ -74,12 +92,9 @@ export default function YoutubeResult() {
         enabled: id != undefined && validateID(id),
         cacheTime: 1 * 1000 * 60,
         staleTime: 1 * 1000 * 60,
-        onSuccess: (data) => {
-            dispatch(videoActions.setData(data.related_videos));
-        },
     });
     const [DownloadData, setDownloadData] = useState<DataClipped>();
-    useQuery({
+    const AskingQuery = useQuery({
         retry: 1,
         queryKey: ["video", "convert", modelState?.vid, modelState?.key],
         queryFn: async ({ signal }) => {
@@ -92,38 +107,34 @@ export default function YoutubeResult() {
         enabled: modelState != null,
         cacheTime: 3 * 1000 * 60,
         staleTime: 3 * 1000 * 60,
-        onSuccess(data) {
-            if (ClippedState) {
-                setDownloadData({
-                    ...data,
-                    start,
-                    end,
-                    clipped: true,
-                });
-            } else {
-                setDownloadData({
-                    ...data,
-                    clipped: false,
-                });
-            }
-        },
     });
     useEffect(() => {
         setDownloadData(undefined);
     }, [modelState]);
     useEffect(() => {
+        if (!AskingQuery.data) return;
+        if (ClippedState) {
+            setDownloadData({
+                ...AskingQuery.data,
+                start,
+                end,
+                clipped: true,
+            });
+        } else {
+            setDownloadData({
+                ...AskingQuery.data,
+                clipped: false,
+            });
+        }
+    }, [AskingQuery.data]);
+    useEffect(() => {
         if (paramQuery.data) {
-            setClipDuration([
-                0,
-                parseInt(paramQuery.data.videoDetails.lengthSeconds),
-            ]);
+            dispatch(videoActions.setData(paramQuery.data.related_videos));
+        } else {
+            dispatch(videoActions.setData(null));
         }
     }, [id, paramQuery.isSuccess]);
-    useEffect(() => {
-        if (paramQuery.data)
-            dispatch(videoActions.setData(paramQuery.data.related_videos));
-        else dispatch(videoActions.setData(null));
-    }, [id]);
+
     if (!id) return null;
     if (!validateID(id)) return <ErrorMessage>Invalid video id</ErrorMessage>;
     if (paramQuery.isLoading) return <Loading />;
@@ -289,7 +300,13 @@ export default function YoutubeResult() {
             };
         });
     const duration = parseInt(paramQuery.data.videoDetails.lengthSeconds);
+    const [start, end] = [
+        getTime(startQ, 0, duration),
+        getTime(endQ, duration, duration),
+    ];
+
     const ClippedState = start != 0 || end != duration;
+
     return (
         <>
             <ModelPopUp
@@ -345,15 +362,27 @@ export default function YoutubeResult() {
                     you.
                 </p>
             </ModelPopUp>
-            <VideoViewer
-                id={id}
-                start={start}
-                end={end}
-                duration={duration!}
-                setDuration={(start, end) => {
-                    setClipDuration([start, end]);
-                }}
-            />
+            <TypeApplication
+                defaultState={false}
+                env="desktop"
+            >
+                <VideoViewer
+                    start={start}
+                    end={end}
+                    duration={duration}
+                    id={id}
+                    setDuration={(start, end) => {
+                        router.replace(
+                            {
+                                pathname: router.pathname, // Keep the current path
+                                query: { ...router.query, start, end }, // Add or update the query parameters
+                            },
+                            {},
+                            { scroll: false }
+                        );
+                    }}
+                />
+            </TypeApplication>
             <section className="download-result">
                 <div className="row">
                     <div className="col-md-4">
