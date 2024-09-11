@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
 
 import axios from "axios";
-import { getInfo, videoInfo } from "ytdl-core";
+import { getInfo, videoInfo } from "@distube/ytdl-core";
 import https from "https";
 import http from "http";
 import { IncomingMessage } from "http";
