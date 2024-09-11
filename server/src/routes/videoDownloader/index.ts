@@ -19,9 +19,11 @@ router.get("/", async function (req, res) {
         const data = await getY2mateData(req.query.v);
         res.status(200).json({ msg: "Success", status: true, data });
     } catch (err) {
-        return res
-            .status(404)
-            .json({ msg: "The video is not exist", status: false, err });
+        return res.status(404).json({
+            msg: "The video is not exist",
+            status: false,
+            err: (err as Error).toString(),
+        });
     }
 });
 router.get("/convert", async function (req, res) {

@@ -104,8 +104,9 @@ export async function getY2mateData(id: string): Promise<ServerVideoInfo> {
     try {
         y2mateData = await fetchData(id);
     } catch (error) {
-        /* empty */
+        console.log(error);
     }
+
     const googleData = await getInfo(id);
     return {
         vid: googleData.vid,
