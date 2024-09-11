@@ -5,7 +5,7 @@ import {
     TimeLeftStatus,
     TransferStatus,
 } from "./Systems";
-import ConnectionStatusComp from "./connectionStatus";
+import ConnectionStatusComp from "./connection";
 export default function Download() {
     return (
         <div>
