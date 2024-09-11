@@ -124,7 +124,7 @@ export class FfmpegCutterWindow extends BaseDownloaderWindow {
             .then(() => {
                 super.end();
             })
-            .catch(this.error);
+            .catch((err) => this.error(err));
     }
     async converting(): Promise<void> {
         await new Promise<void>((res) => {
