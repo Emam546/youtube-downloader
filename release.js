@@ -23,7 +23,7 @@ const options = {
     draft: true,
     prerelease: false,
     reuseRelease: true,
-    reuseDraftOnly: true,
+    reuseDraftOnly: false,
     skipAssetsCheck: false,
     skipDuplicatedAssets: false,
     skipIfPublished: false,

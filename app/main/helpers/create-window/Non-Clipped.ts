@@ -70,9 +70,11 @@ export const createProgressBarWindow = async (
     });
 
     if (!isDev) {
+        await win.loadFile(path.join(__dirname, "../windows/progress.html"));
+    } else {
         await win.loadURL(`${process.env["ELECTRON_RENDERER_URL"]}/progress`);
         win.webContents.openDevTools();
-    } else await win.loadFile(path.join(__dirname, "../windows/progress.html"));
+    }
     win.show();
     win.download();
     DownloadTray.addWindow(win);

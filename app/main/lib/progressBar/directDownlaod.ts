@@ -4,8 +4,6 @@ import { DownloadTheFile } from "./downloader";
 import { BaseDownloaderWindow, DownloaderData } from "./window";
 
 export class FileDownloaderWindow extends BaseDownloaderWindow {
-    private onResponsePause() {}
-    private onResponseResume() {}
     constructor(
         options: BrowserWindowConstructorOptions,
         data: DownloaderData
@@ -42,8 +40,6 @@ export class FileDownloaderWindow extends BaseDownloaderWindow {
             );
             const length = response.headers["content-length"];
             if (length) this.setFileSize(parseInt(length));
-            response.on("pause", () => this.onResponsePause());
-            response.on("resume", () => this.onResponseResume());
             response.on("error", (err) => this.error(err));
             response.once("data", () => {
                 this.setPauseButton("Pause");

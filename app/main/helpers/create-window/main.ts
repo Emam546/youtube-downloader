@@ -75,9 +75,7 @@ export const createMainWindow = async (
     });
     win.on("close", saveState);
     if (isProd && appServe) {
-        appServe(win).then(() => {
-            win.loadURL("app://-");
-        });
+        await appServe(win);
     } else if (isDev) {
         await win.loadURL(`http://localhost:3000`);
         win.webContents.openDevTools();
