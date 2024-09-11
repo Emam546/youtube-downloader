@@ -43,7 +43,8 @@
     "src",
     "server",
     "shared",
-    "utils"
+    "utils",
+    ".next/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

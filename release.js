@@ -12,7 +12,6 @@ function readDir(dir) {
         })
         .map((file) => path.join(dir, file));
 }
-const folder = "./dist";
 const options = {
     token: process.env.GH_TOKEN,
     owner: packageJson.build.publish.owner,
@@ -29,7 +28,7 @@ const options = {
     skipIfPublished: false,
     editRelease: false,
     deleteEmptyTag: false,
-    assets: readDir(folder),
+    assets: readDir("./dist"),
 };
 function formatDate(date) {
     const year = date.getFullYear();
@@ -37,7 +36,7 @@ function formatDate(date) {
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
 }
-console.log("start the operation");
+console.log(readDir("./dist"));
 publishRelease(options, function (err, release) {
     if (err) return console.error(err);
     console.log("finish Release");
