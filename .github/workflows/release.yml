@@ -19,7 +19,9 @@ jobs:
                   node-version: 20.0.0
             - name: install dependencies
               run: npm install
-            - name: build
-              run: npm run build:desk
+            - name: packing
+              run: npm run pack
+            - name: packing
+              run: npm run build:inno:win
             - name: publish
               run: npm run publish

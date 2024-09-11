@@ -43,7 +43,6 @@
     "src",
     "server",
     "shared",
-    ".next/types/**/*.ts",
     "utils"
   ],
   "exclude": [

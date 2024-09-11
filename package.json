@@ -5,6 +5,14 @@
   "description": "A Youtube videos downloader app",
   "repository": "https://github.com/Emam546/youtube-downloader",
   "author": "Imam Ashour",
+  "build": {
+    "publish": {
+      "owner": "Emam546",
+      "provider": "github",
+      "releaseType": "release",
+      "repo": "youtube-downloader"
+    }
+  },
   "scripts": {
     "build:server": "npx ts-node build.ts",
     "build:next": "next build",
@@ -20,8 +28,10 @@
     "dev-electron": "electron-vite dev",
     "dev:desk": "concurrently -n \"NEXT,ELECTRON\" -c \"yellow,blue\" --kill-others \"next dev\" \"npm run dev-electron\"",
     "build:desk": "npm run build:next&&next export -o ./out/renderer && npm run build:electron",
-    "build:win": "npm run build:desk && electron-builder --win",
-    "publish": "electron-builder -p always"
+    "build:win": "electron-builder --win",
+    "build:inno:win": "innosetup-compiler setup.iss --verbose",
+    "publish": "node release.js",
+    "pack": "npm run build:desk&&npm run build:win"
   },
   "nodemonConfig": {
     "watch": [
@@ -36,7 +46,6 @@
   "dependencies": {
     "@distube/ytdl-core": "^4.14.4",
     "@electron-toolkit/preload": "^3.0.1",
-    "@electron-toolkit/tsconfig": "^1.0.1",
     "@electron-toolkit/utils": "^3.0.0",
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
@@ -51,7 +60,6 @@
     "bcrypt": "^5.1.0",
     "classnames": "^2.5.1",
     "command-line-args": "^5.2.1",
-    "concurrently": "^8.2.2",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
@@ -83,6 +91,7 @@
     "ytdl-core": "^4.11.2"
   },
   "devDependencies": {
+    "@electron-toolkit/tsconfig": "^1.0.1",
     "@types/bcrypt": "^5.0.0",
     "@types/bootstrap": "^5.2.6",
     "@types/command-line-args": "^5.2.0",
@@ -106,23 +115,25 @@
     "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.13",
     "bootstrap": "^5.3.0",
+    "concurrently": "^8.2.2",
     "electron": "^31.1.0",
     "electron-builder": "^24.13.3",
     "electron-vite": "^2.3.0",
+    "electron-windows-inno-installer": "^2.0.0",
     "eslint": "^8.32.0",
     "eslint-config-next": "13.4.4",
     "eslint-plugin-node": "^11.1.0",
     "find": "^0.3.0",
     "fs-extra": "^11.2.0",
-    "gh-pages": "^5.0.0",
+    "innosetup-compiler": "^6.3.1",
     "jest": "^29.4.0",
     "nodemon": "^3.1.4",
     "postcss": "^8.4.21",
+    "publish-release": "^1.6.1",
     "sass": "^1.58.3",
     "supertest": "^6.3.3",
     "tailwindcss": "^3.2.7",
     "ts-jest": "^29.0.5",
-    "ts-mocha": "^10.0.0",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.1.2",
     "typescript": "^4.9.4"
