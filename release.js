@@ -12,6 +12,7 @@ function readDir(dir) {
         })
         .map((file) => path.join(dir, file));
 }
+const assets = readDir("./dist");
 const options = {
     token: process.env.GH_TOKEN,
     owner: packageJson.build.publish.owner,
@@ -28,28 +29,12 @@ const options = {
     skipIfPublished: false,
     editRelease: false,
     deleteEmptyTag: false,
-    assets: readDir("./dist"),
+    assets: assets,
 };
-function formatDate(date) {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-}
-console.log(readDir("./dist"));
+
+console.log(assets);
 publishRelease(options, function (err, release) {
     if (err) return console.error(err);
     console.log("finish Release");
     // `release`: object returned from github about the newly created release
 });
-// const f = fs.createWriteStream("release.json", "w");
-// f.write(
-//     JSON.stringify({
-//         name: options.name,
-//         version: packageJson.version,
-//         date: formatDate(new Date()),
-//         changelog: "",
-//         updateURL: `https://github.com/Emam546/youtube-downloader/releases/download/${options.name}/youtube-downloader-setup-${packageJson.version}-win.exe`,
-//     })
-// );
-// f.close();
