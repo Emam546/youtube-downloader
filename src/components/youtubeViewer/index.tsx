@@ -24,7 +24,7 @@ export default function VideoViewer({
     const [curDuration, setCurDuration] = useState(start);
     const ref = useRef<ReactPlayer>(null);
     const [aspect, setAspect] = useState<AspectsType>("16:9");
-    const [loopState, setLoopState] = useState(true);
+    const [loopState, setLoopState] = useState(false);
     const [hasPlayed, setHasPlayed] = useState(false);
     const [seekedOut, setSeekedOut] = useState(false);
     useEffect(() => {
@@ -108,13 +108,13 @@ export default function VideoViewer({
                         duration={duration}
                         end={end}
                         setDuration={(newStart, newEnd) => {
-                            if (playing) {
+                            if (!playing) {
                                 if (newStart != start) {
                                     ref.current?.seekTo(newStart);
                                     setCurDuration(newStart);
                                 } else if (newEnd != end) {
-                                    ref.current?.seekTo(newEnd - MIN_TIME);
-                                    setCurDuration(newEnd - MIN_TIME);
+                                    ref.current?.seekTo(newEnd);
+                                    setCurDuration(newEnd);
                                 }
                             } else {
                                 if (curDuration < start) {
@@ -122,8 +122,8 @@ export default function VideoViewer({
                                     setCurDuration(start);
                                 }
                                 if (curDuration >= end) {
-                                    ref.current?.seekTo(end);
-                                    setCurDuration(end);
+                                    ref.current?.seekTo(end - MIN_TIME);
+                                    setCurDuration(end - MIN_TIME);
                                 }
                             }
                             if (!hasPlayed) setPlaying(true);

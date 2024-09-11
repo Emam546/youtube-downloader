@@ -12,6 +12,7 @@ import {
 } from "@app/main/lib/progressBar/window";
 import { DownloadTray } from "@app/main/lib/progressBar/tray";
 import { FileDownloaderWindow } from "@app/main/lib/progressBar/directDownlaod";
+import { isDev } from "@app/main/utils";
 export interface Props {
     preloadData: Omit<ProgressBarState, "status">;
     stateData: StateType;
@@ -68,7 +69,7 @@ export const createProgressBarWindow = async (
         return { action: "deny" };
     });
 
-    if (is.dev) {
+    if (!isDev) {
         await win.loadURL(`${process.env["ELECTRON_RENDERER_URL"]}/progress`);
         win.webContents.openDevTools();
     } else await win.loadFile(path.join(__dirname, "../windows/progress.html"));

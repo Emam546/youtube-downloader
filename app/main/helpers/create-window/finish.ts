@@ -8,9 +8,11 @@ import { is } from "@electron-toolkit/utils";
 import { Context } from "@shared/renderer/finish";
 import { convertFunc } from "@utils/app";
 import { DownloadingWindow } from "@app/main/lib/donwloading";
+import { isDev } from "@app/main/utils";
 export interface Props {
     preloadData: Context;
 }
+
 export const createFinishWindow = async (
     vars: Props,
     options?: BrowserWindowConstructorOptions
@@ -45,7 +47,7 @@ export const createFinishWindow = async (
         shell.openExternal(details.url);
         return { action: "deny" };
     });
-    if (is.dev) {
+    if (isDev) {
         await win.loadURL(`${process.env["ELECTRON_RENDERER_URL"]}/finish`);
     } else await win.loadFile(path.join(__dirname, "../windows/finish.html"));
     win.show();

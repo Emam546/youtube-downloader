@@ -66,7 +66,7 @@ export class FfmpegCutterWindow extends BaseDownloaderWindow {
                         .format(format)
                         .outputOptions("-movflags frag_keyframe+empty_moov")
                         .on("error", (err) => this.error(err))
-                        .on("progress", ({ timemark, ...props }) => {
+                        .on("progress", ({ timemark, ...percent }) => {
                             if (
                                 this.rebuildingState &&
                                 timeStringToSeconds(timemark) > duration
@@ -75,6 +75,10 @@ export class FfmpegCutterWindow extends BaseDownloaderWindow {
                                 this.rebuildingState = false;
                                 this.setThrottleState(this.enableThrottle);
                             }
+                            const curSize =
+                                (percent.targetSize / percent.percent) * 100;
+                            if (this.fileSize != curSize)
+                                this.setFileSize(curSize);
                         });
 
                     const pipe = this.pipe();

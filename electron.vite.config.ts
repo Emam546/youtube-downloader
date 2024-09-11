@@ -1,17 +1,20 @@
 import { defineConfig, externalizeDepsPlugin } from "electron-vite";
 import { resolve } from "path";
 import react from "@vitejs/plugin-react";
-
+const isDevelopment = process.env.NODE_ENV == "development";
 export default defineConfig({
     main: {
         plugins: [externalizeDepsPlugin()],
         build: {
             rollupOptions: {
                 input: {
-                    index: resolve(__dirname, "app/main/index.ts"),
+                    index: isDevelopment
+                        ? resolve(__dirname, "app/main/dev.ts")
+                        : resolve(__dirname, "app/main/index.ts"),
                 },
             },
         },
+
         resolve: {
             alias: {
                 "@shared": resolve("shared"),

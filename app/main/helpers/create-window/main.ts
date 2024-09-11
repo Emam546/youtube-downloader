@@ -1,4 +1,5 @@
 import {
+    app,
     BrowserWindow,
     BrowserWindowConstructorOptions,
     ipcMain,
@@ -8,12 +9,10 @@ import path from "path";
 import serve from "electron-serve";
 import { ObjectEntries } from "@utils/index";
 import { OnMethods, HandleMethods } from "@app/main/lib/main";
-import { is } from "@electron-toolkit/utils";
 import { convertFunc } from "@utils/app";
 import { Context } from "@shared/main";
 import { MainWindow } from "@app/main/lib/main/window";
-
-const isProd = !is.dev;
+import { isDev, isProd } from "@app/main/utils";
 
 const appServe = isProd
     ? serve({
@@ -79,13 +78,13 @@ export const createMainWindow = async (
         appServe(win).then(() => {
             win.loadURL("app://-");
         });
-    } else {
+    } else if (isDev) {
         await win.loadURL(`http://localhost:3000`);
         win.webContents.openDevTools();
         win.webContents.on("did-fail-load", () => {
             win.webContents.reloadIgnoringCache();
         });
-    }
+    } else throw new Error("Unrecognized environment");
     return win;
 };
 ObjectEntries(OnMethods).forEach(([key, val]) => {

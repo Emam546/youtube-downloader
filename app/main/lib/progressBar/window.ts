@@ -126,6 +126,7 @@ export class BaseDownloaderWindow extends DownloadingWindow {
         this.videoData = data.videoData.video;
         this.on("close", () => {
             BaseDownloaderWindow.removeWindow(this);
+            this.sleepId.stop();
         });
         this.curStream.on("resume", () => {
             this.resetSpeed();
@@ -229,9 +230,8 @@ export class BaseDownloaderWindow extends DownloadingWindow {
         this.close();
     }
     error(err: any) {
-        console.error("ErrorDebugging", err);
-        if (!is.dev) dialog.showErrorBox("Error Happened", err.toString());
-        this.close();
+        dialog.showErrorBox("Error Happened", err.toString());
+        if (!this.isDestroyed()) this.close();
     }
     setPauseButton(state: "Pause" | "Start", enabled = true) {
         this.pageData.footer.pause.text = state;

@@ -1,13 +1,13 @@
 import "./Non-Clipped";
 import { BrowserWindowConstructorOptions, shell } from "electron";
 import path from "path";
-import { is } from "@electron-toolkit/utils";
 import { Context } from "@shared/renderer/progress";
 import { convertFunc } from "@utils/app";
 import { FfmpegCutterWindow } from "@app/main/lib/progressBar/ffmpeg";
 import { DownloadTray } from "@app/main/lib/progressBar/tray";
 import { defaultPageData } from "@app/main/lib/progressBar/window";
 import { Props as NonClippedProps } from "./Non-Clipped";
+import { isDev } from "@app/main/utils";
 export interface ClippedData {
     start: number;
     end: number;
@@ -15,7 +15,6 @@ export interface ClippedData {
 export interface Props extends NonClippedProps {
     clippedData: ClippedData;
 }
-
 export const createClippedProgressBarWindow = async (
     vars: Props,
     options?: BrowserWindowConstructorOptions
@@ -70,7 +69,7 @@ export const createClippedProgressBarWindow = async (
         shell.openExternal(details.url);
         return { action: "deny" };
     });
-    if (is.dev) {
+    if (isDev) {
         await win.loadURL(`${process.env["ELECTRON_RENDERER_URL"]}/progress`);
         win.webContents.openDevTools();
     } else await win.loadFile(path.join(__dirname, "../windows/progress.html"));

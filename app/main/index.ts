@@ -7,8 +7,7 @@ import { electronApp } from "@electron-toolkit/utils";
 import { lunchArgs } from "./helpers/launchHelpers";
 import path from "path";
 import { MainWindow } from "./lib/main/window";
-import { TestWindows } from "./test";
-const isProd = app.isPackaged;
+
 autoUpdater.autoDownload = true;
 autoUpdater.autoInstallOnAppQuit = true;
 if (process.defaultApp) {
@@ -19,7 +18,7 @@ if (process.defaultApp) {
     }
 } else app.setAsDefaultProtocolClient("youtube-downloader");
 
-if (!isProd) {
+if (!app.isPackaged) {
     app.setPath("userData", `${app.getPath("userData")} (development)`);
 }
 async function createWindow(args: string[]) {
@@ -31,8 +30,7 @@ async function createWindow(args: string[]) {
 }
 app.whenReady().then(async () => {
     await createWindow(process.argv);
-    if (!isProd) await TestWindows();
-    if (isProd) autoUpdater.checkForUpdatesAndNotify();
+    if (app.isPackaged) autoUpdater.checkForUpdatesAndNotify();
 });
 electronApp.setAppUserModelId("com.youtube-downloader");
 
@@ -62,7 +60,6 @@ app.on("window-all-closed", () => {
 });
 
 app.on("window-all-closed", () => {
-    if (process.platform !== "darwin") 
-        app.quit();
-    
+    if (process.platform !== "darwin") app.quit();
 });
+export default app;
