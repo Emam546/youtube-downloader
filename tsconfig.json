@@ -32,9 +32,6 @@
         "./utils/*"
       ]
     },
-    "typeRoots": [
-      "./src/types"
-    ],
     "plugins": [
       {
         "name": "next"
@@ -44,6 +41,7 @@
   },
   "include": [
     "src",
+    "src/types",
     "server",
     "shared",
     "utils",

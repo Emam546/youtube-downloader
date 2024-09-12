@@ -21,7 +21,7 @@
     },
     "include": [
         "src",
-        "server",
+        "server/spec",
         "app",
         "shared",
         "utils"
