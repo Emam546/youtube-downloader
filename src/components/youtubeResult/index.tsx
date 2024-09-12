@@ -18,8 +18,9 @@ import { DownloadButton } from "../downloadButton";
 import VideoViewer from "../youtubeViewer";
 import TypeApplication from "../TypeApllication";
 import { DataClipped } from "@serv/routes/videoDownloader/api";
+import { videoFormat } from "@distube/ytdl-core";
 function formatBytes(bytes: number, decimals = 2) {
-    if (!+bytes) return "0 Bytes";
+    if (!+bytes) return "MB";
 
     const k = 1024;
     const dm = decimals < 0 ? 0 : decimals;
@@ -69,6 +70,20 @@ function getTime(data: unknown, defaultN: number, maxTime: number) {
 }
 function minMax(val: number, max: number, min: number = 0) {
     return Math.max(min, Math.min(val, max));
+}
+declare module "@distube/ytdl-core" {
+    interface videoFormat {
+        loudnessDb?: number;
+    }
+}
+export function AudioLoudnessType(
+    a: number,
+    b: number
+): "High" | "Low" | "Same" {
+    const diff = Math.abs(Math.round(a)) - Math.abs(Math.round(b));
+    if (diff == 0) return "Same";
+    if (a < b) return "Low";
+    return "High";
 }
 export default function YoutubeResult() {
     const [state, setState] = useState<TabsType>("VIDEO");
@@ -145,7 +160,9 @@ export default function YoutubeResult() {
             </ErrorMessage>
         );
     }
+
     const data = paramQuery.data;
+    console.log(data.info);
     const videos: VideoData[] = [
         ...Object.values(data.links.mp4)
             .filter((v) => v.q != "auto")
@@ -222,28 +239,48 @@ export default function YoutubeResult() {
     ].sort((a, b) => {
         return parseInt(b.q) - parseInt(a.q);
     });
+
     const audios: VideoData[] = data.formats
         .filter((v) => v.hasAudio && !v.hasVideo)
-        .map((video) => {
+        .map((audio) => {
+            console.log(
+                audio.audioBitrate,
+                audio.loudnessDb,
+                audio.isHLS,
+                audio
+            );
+            const loudnessType = AudioLoudnessType(
+                audio.loudnessDb!,
+                data.info.loudness
+            );
             return {
-                sizeText: `${formatBytes(parseInt(video.contentLength), 0)}`,
-
-                fileTypeText: `${video.container.toUpperCase()} - ${
-                    video.audioBitrate
-                }kbps`,
+                sizeText: `${formatBytes(parseInt(audio.contentLength), 0)}`,
+                fileTypeText: (
+                    <p>
+                        {`${audio.container.toUpperCase()} - (${audio.audioCodec?.toUpperCase()}) ${
+                            audio.audioBitrate
+                        }kbps`}
+                        {loudnessType != "Same" && (
+                            <span className="label bg-primary">
+                                {loudnessType == "Low" && "Quiet"}
+                                {loudnessType == "High" && "Loud"}
+                            </span>
+                        )}
+                    </p>
+                ),
                 download() {
                     if (window.Environment == "web") {
                         const a = document.createElement("a");
-                        a.href = video.url;
+                        a.href = audio.url;
                         a.click();
                     } else {
                         if (ClippedState) {
                             window.api.send("downloadY2mate", {
                                 vid: id,
                                 title: data.videoDetails.title,
-                                dlink: video.url,
-                                fquality: video.qualityLabel,
-                                ftype: video.container!,
+                                dlink: audio.url,
+                                fquality: audio.qualityLabel,
+                                ftype: audio.container!,
                                 start,
                                 end,
                                 clipped: true,
@@ -252,9 +289,9 @@ export default function YoutubeResult() {
                             window.api.send("downloadY2mate", {
                                 vid: id,
                                 title: data.videoDetails.title,
-                                dlink: video.url,
-                                fquality: video.qualityLabel,
-                                ftype: video.container!,
+                                dlink: audio.url,
+                                fquality: audio.qualityLabel,
+                                ftype: audio.container!,
                                 clipped: false,
                             });
                         }
@@ -267,7 +304,16 @@ export default function YoutubeResult() {
         .map((video) => {
             return {
                 sizeText: `${formatBytes(parseInt(video.contentLength), 0)}`,
-                fileTypeText: `Video Only ${video.qualityLabel} (.${video.container})`,
+                fileTypeText: (
+                    <p>
+                        {`Video Only ${
+                            video.qualityLabel
+                        } (${video.videoCodec?.toUpperCase()}) (.${
+                            video.container
+                        })`}
+                    </p>
+                ),
+
                 download() {
                     if (window.Environment == "web") {
                         const a = document.createElement("a");
@@ -384,7 +430,7 @@ export default function YoutubeResult() {
                 />
             </TypeApplication>
             <section className="download-result">
-                <div className="row">
+                <div className="tw-flex">
                     <div className="col-md-4">
                         <div>
                             <div className="thumb-nail">

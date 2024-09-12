@@ -38,12 +38,16 @@ export interface Y2mateVideoData {
     a: string;
     links: VideoFormats;
 }
+export interface AdditionInfo {
+    loudness: number;
+}
 export interface ServerVideoInfo {
     vid?: Y2mateVideoData["vid"];
     videoDetails: videoInfo["videoDetails"];
     related_videos: videoInfo["related_videos"];
     links: Y2mateVideoData["links"];
     formats: videoInfo["formats"];
+    info: AdditionInfo;
 }
 export interface Y2mateConvertResult {
     status: string;
@@ -107,13 +111,17 @@ export async function getY2mateData(id: string): Promise<ServerVideoInfo> {
         console.log(error);
     }
 
-    const googleData = await getInfo(id);
+    const googleData = await getInfo(id, { requestOptions: {} });
     return {
         vid: googleData.vid,
         related_videos: googleData.related_videos,
         videoDetails: googleData.videoDetails,
         links: y2mateData?.links || { mp3: {}, mp4: {}, other: {} },
         formats: googleData.formats,
+        info: {
+            loudness:
+                googleData.player_response.playerConfig.audioConfig.loudnessDb,
+        },
     };
 }
 export interface ServerConvertResults {
@@ -220,10 +228,6 @@ export async function DownloadVideoFromY2Mate(
     range?: string
 ): Promise<[ServerConvertResults, IncomingMessage]> {
     const data = await convertY2mateData(id, key);
-    const response = await getHttpMethod(
-        data.dlink,
-
-        range
-    );
+    const response = await getHttpMethod(data.dlink, range);
     return [data, response];
 }

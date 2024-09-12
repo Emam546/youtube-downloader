@@ -32,6 +32,9 @@
         "./utils/*"
       ]
     },
+    "typeRoots": [
+      "./src/types"
+    ],
     "plugins": [
       {
         "name": "next"
