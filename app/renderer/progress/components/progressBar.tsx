@@ -11,7 +11,7 @@ export default function ProgressBar() {
 
     return (
         <div className="my-3">
-            <div className="w-full bg-secondary-color h-5 dark:bg-gray-700 border-gray-600/25 border">
+            <div className="w-full bg-secondary-color h-5 border-gray-600/25 border">
                 <div
                     className="bg-green-600 h-full"
                     style={{ width: `${per}%` }}

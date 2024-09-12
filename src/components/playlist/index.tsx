@@ -39,7 +39,7 @@ export default function PlayList() {
                                 aria-selected={id == video.videoId}
                             >
                                 <div className="tw-flex tw-items-center">
-                                    <p className="tw-w-5">{i}</p>
+                                    <p className="tw-w-5">{i + 1}</p>
                                 </div>
                                 <div className="tw-flex-1">
                                     <Link
