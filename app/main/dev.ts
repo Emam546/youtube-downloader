@@ -28,7 +28,7 @@ async function ContinuedWithThrottle() {
             enableThrottle: true,
         },
     });
-    win.trigger(false);
+    // win.trigger(false);
     await new Promise<void>((res) => {
         win.on("closed", () => {
             res();

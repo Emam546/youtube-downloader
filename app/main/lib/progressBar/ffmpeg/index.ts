@@ -39,9 +39,6 @@ export class FfmpegCutterWindow extends BaseDownloaderWindow {
         try {
             this.curSize = 0;
             this.changeState("connecting");
-            this.setFileSize(
-                await getEstimatedVideoSize(this.link, this.ffmpegData.duration)
-            );
             const format = path.extname(this.downloadingState.path).slice(1);
             this.setResumability(true);
             if (
@@ -75,10 +72,12 @@ export class FfmpegCutterWindow extends BaseDownloaderWindow {
                                 this.rebuildingState = false;
                                 this.setThrottleState(this.enableThrottle);
                             }
-                            const curSize =
-                                (percent.targetSize / percent.percent) * 100;
+                            const curSize = percent.targetSize * 1024;
                             if (this.fileSize != curSize)
                                 this.setFileSize(curSize);
+                        })
+                        .on("start", () => {
+                            this.setPauseButton("Pause");
                         });
 
                     const pipe = this.pipe();
@@ -103,6 +102,10 @@ export class FfmpegCutterWindow extends BaseDownloaderWindow {
                 .outputOptions("-c copy")
                 .setStartTime(this.ffmpegData.start)
                 .duration(this.ffmpegData.duration)
+                .on("progress", (percent) => {
+                    const curSize = percent.targetSize * 1024;
+                    if (this.fileSize != curSize) this.setFileSize(curSize);
+                })
                 .on("error", (err) => this.error(err))
                 .on("start", () => {
                     this.setPauseButton("Pause");
@@ -141,10 +144,9 @@ export class FfmpegCutterWindow extends BaseDownloaderWindow {
                 .on("progress", (percent) => {
                     this.changeState("receiving");
                     this.setFileSize(undefined);
-                    this.setFileSize(
-                        (percent.targetSize / percent.percent) * 100
-                    );
                     this.onGetChunk(percent.targetSize - this.curSize);
+                    const curSize = percent.targetSize * 1024;
+                    if (this.fileSize != curSize) this.setFileSize(curSize);
                 })
                 .on("start", () => {
                     this.rebuildingState = true;

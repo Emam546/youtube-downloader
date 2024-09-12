@@ -45,7 +45,7 @@ export class FileDownloaderWindow extends BaseDownloaderWindow {
                 this.setPauseButton("Pause");
             });
             this.on("close", () => {
-                if (response) response.destroy();
+                if (!response.closed) response.destroy();
             });
             response.pipe(this.pipe());
         } catch (err) {

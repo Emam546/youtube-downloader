@@ -126,14 +126,14 @@ export class BaseDownloaderWindow extends DownloadingWindow {
         this.videoData = data.videoData.video;
         this.on("close", () => {
             BaseDownloaderWindow.removeWindow(this);
+            if (!this.curStream.closed) this.curStream.destroy();
             this.sleepId.stop();
         });
-        this.curStream.on("resume", () => {
+        this.curStream.on("reset-speed", () => {
             this.resetSpeed();
         });
-        this.curStream.on("pause", () => {
-            if (this.state == "receiving" && !this.curStream.closed)
-                this.changeState("connecting");
+        this.curStream.on("delayed-pause", () => {
+            if (this.state == "receiving") this.changeState("connecting");
         });
 
         this.curStream.on("data", (data: Buffer) =>
@@ -163,9 +163,10 @@ export class BaseDownloaderWindow extends DownloadingWindow {
             flags: this.flag,
         });
         this.stream.on("error", (err) => this.error(err));
-        this.stream.on("finish", () => {
-            this.stream!.close();
-            this.end();
+        this.curStream.on("end", () => {
+            this.stream!.once("finish", () => {
+                this.end();
+            });
         });
         this.curStream.pipe(this.stream);
         return this.curStream;
@@ -214,15 +215,14 @@ export class BaseDownloaderWindow extends DownloadingWindow {
     trigger(state: boolean) {
         if (state) {
             this.changeState("connecting");
-            this.curStream.resume();
             this.setPauseButton("Pause");
             this.sleepId.start();
         } else {
-            this.curStream.pause();
             this.sleepId.stop();
             this.changeState("pause");
             this.setPauseButton("Start");
         }
+        this.curStream.trigger(state);
     }
     cancel() {
         if (fs.existsSync(this.downloadingState.path))

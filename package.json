@@ -120,7 +120,6 @@
     "electron": "^31.1.0",
     "electron-builder": "^24.13.3",
     "electron-vite": "^2.3.0",
-    "electron-windows-inno-installer": "^2.0.0",
     "eslint": "^8.32.0",
     "eslint-config-next": "13.4.4",
     "eslint-plugin-node": "^11.1.0",
