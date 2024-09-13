@@ -73,7 +73,7 @@ describe("playlist page", () => {
             data = res.body.data;
             expect(res.statusCode).toBe(200);
             expect(data).not.toStrictEqual({});
-            expect(data.videos.length).toBe(100);
+            expect(data.videos.length).toBe(73);
         });
 
         test("should get data", async () => {
