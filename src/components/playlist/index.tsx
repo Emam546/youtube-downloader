@@ -31,7 +31,7 @@ export default function PlayList() {
         if (!element) return;
         const offsetTop = element.offsetTop - scrollContainer.current.offsetTop;
         scrollContainer.current.scrollTo({
-            behavior: "instant",
+            behavior: "instant" as ScrollBehavior,
             top: offsetTop,
         });
     }, [listId, paramQuery.isSuccess, scrollContainer]);
