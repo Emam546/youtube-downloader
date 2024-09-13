@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { UserContext } from "@src/context/info";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -11,8 +11,8 @@ export function TextFun() {
     return (
         <div className="text-content-main">
             <div className="container">
-                <div className="tw-py-10 tw-px-6 text-center">
-                    <h3 className="tw-my-5">
+                <div className="tw-py-10 tw-px-6 tw-text-center">
+                    <h3 className="tw-my-3 tw-text-3xl">
                         <strong>YouTube Video Downloader</strong>
                     </h3>
                     <p className="tw-font-medium">
@@ -25,22 +25,22 @@ export function TextFun() {
                         websites.
                     </p>
                 </div>
-                <div className="row">
-                    <div className="col-sm-6">
+                <div className="tw-flex">
+                    <div className="tw-w-full sm:tw-w-6/12">
                         <div>
-                            <h6 className="tw-my-1">
+                            <h6 className="tw-my-1 tw-font-semibold tw-text-2xl">
                                 Instructions
                             </h6>
-                            <ul className="tw-list-inside tw-text-sm tw-px-1">
-                                <li>
+                            <ul className="tw-px-1">
+                                <li className="tw-py-1">
                                     1 .Search by name or directly paste the link
                                     of video you want to convert
                                 </li>
-                                <li>
+                                <li className="tw-py-1">
                                     2 .Click {'"'}Start{'"'} button to begin
                                     converting process
                                 </li>
-                                <li>
+                                <li className="tw-py-1">
                                     3 .Select the video/audio format you want to
                                     download, then click {'"'}Download{'"'}{" "}
                                     button
@@ -48,61 +48,64 @@ export function TextFun() {
                             </ul>
                         </div>
                     </div>
-                    <div className="col-sm-6">
+                    <div className="tw-w-full sm:tw-w-6/12">
                         <div>
-                            <h6 className="tw-text-base tw-my-1 tw-list-decimal">
+                            <h6 className="tw-my-1 tw-font-semibold tw-text-2xl">
                                 Features
                             </h6>
-                            <ul className="tw-list-inside tw-text-sm tw-px-1">
-                                <li>• Unlimited downloads and always free</li>
-                                <li>• High-speed video converter</li>
-                                <li>• No registration required</li>
-                                <li>• Support downloading with all formats</li>
+                            <ul className="tw-px-1">
+                                <li className="tw-py-1">
+                                    • Unlimited downloads and always free
+                                </li>
+                                <li className="tw-py-1">
+                                    • High-speed video converter
+                                </li>
+                                <li className="tw-py-1">
+                                    • No registration required
+                                </li>
+                                <li className="tw-py-1">
+                                    • Support downloading with all formats
+                                </li>
                             </ul>
                         </div>
                     </div>
                 </div>
-                <div className="row my-5">
-                    <div className="col-sm-4">
-                        <div className="text-center tw-py-5 tw-px-3">
+                <div className="tw-flex tw-my-5">
+                    <div className="tw-w-full sm:tw-w-4/12">
+                        <div className="tw-text-center tw-py-5 tw-px-3">
                             <FontAwesomeIcon
                                 icon={faGift}
-                                className="tw-text-4xl tw-mb-3"
+                                className="tw-text-5xl tw-mb-3"
                             />
-                            <h4 className="tw-text-primary tw-font-semibold tw-my-2">
+
+                            <h4 className="tw-text-primary tw-font-medium tw-my-2 tw-text-2xl">
                                 Free Download
                             </h4>
-                            <p className="tw-text-sm">
-                                Unlimited conversion and free download.
-                            </p>
+                            <p>Unlimited conversion and free download.</p>
                         </div>
                     </div>
-                    <div className="col-sm-4">
-                        <div className="text-center tw-py-5 tw-px-3">
+                    <div className="tw-w-full sm:tw-w-4/12">
+                        <div className="tw-text-center tw-py-5 tw-px-3">
                             <FontAwesomeIcon
                                 icon={faClapperboard}
-                                className="tw-text-4xl tw-mb-3"
+                                className="tw-text-5xl tw-mb-3"
                             />
-                            <h4 className="tw-text-primary tw-font-semibold tw-my-2">
+                            <h4 className="tw-text-primary tw-font-medium tw-my-2 tw-text-2xl">
                                 Video & Audio
                             </h4>
-                            <p className="tw-text-sm">
-                                Directly Download Video & Music.
-                            </p>
+                            <p>Directly Download Video & Music.</p>
                         </div>
                     </div>
-                    <div className="col-sm-4">
-                        <div className="text-center tw-py-5 tw-px-3">
+                    <div className="tw-w-full sm:tw-w-4/12">
+                        <div className="tw-text-center tw-py-5 tw-px-3">
                             <FontAwesomeIcon
+                                className="tw-text-5xl tw-mb-3"
                                 icon={faDownload}
-                                className="tw-text-4xl tw-mb-3"
                             />
-                            <h4 className="tw-text-primary tw-font-semibold tw-my-2">
+                            <h4 className="tw-text-primary tw-font-medium tw-my-2 tw-text-2xl">
                                 Easy Download
                             </h4>
-                            <p className="tw-text-sm">
-                                Fully compatible with all browsers.
-                            </p>
+                            <p>Fully compatible with all browsers.</p>
                         </div>
                     </div>
                 </div>

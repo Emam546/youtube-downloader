@@ -10,10 +10,14 @@
             "@serv/*": [
                 "./server/src/*"
             ],
+            "@utils/*": [
+                "./utils/*"
+            ],
         }
     },
     "include": [
-        "server",
+        "server/src",
+        "utils",
         "./build.ts"
-    ]
+    ],
 }

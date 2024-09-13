@@ -1,27 +1,20 @@
+/* eslint-disable jsx-a11y/role-supports-aria-props */
 import { useQuery } from "@tanstack/react-query";
 import { validateID } from "@utils/youtube";
 import { useDispatch } from "react-redux";
 import { videoActions } from "@src/store/res-slice";
 import { ReactNode, useEffect, useState } from "react";
 import Loading from "../Loading";
-import classnames from "classnames";
 import { convertVideo, getVideoData, instance } from "@src/API";
 import { useRouter } from "next/router";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-    faFileVideo,
-    faMusic,
-    faVideo,
-} from "@fortawesome/free-solid-svg-icons";
-import ModelPopUp from "../Model";
-import { DownloadButton } from "../downloadButton";
 import VideoViewer from "../youtubeViewer";
 import TypeApplication from "../TypeApllication";
 import { DataClipped } from "@serv/routes/videoDownloader/api";
-import { videoFormat } from "@distube/ytdl-core";
+import TableDownload, { TabsData } from "./table";
+import Thumbnail from "./thumbnail";
+import { Model } from "./model";
 function formatBytes(bytes: number, decimals = 2) {
     if (!+bytes) return "MB";
-
     const k = 1024;
     const dm = decimals < 0 ? 0 : decimals;
     const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
@@ -31,32 +24,6 @@ function formatBytes(bytes: number, decimals = 2) {
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 }
 
-interface VideoData {
-    sizeText: ReactNode;
-    fileTypeText: ReactNode;
-    download: () => any;
-}
-function MapData({ video }: { video: VideoData }) {
-    return (
-        <tr>
-            <td className="flex-shrink-1">{video.fileTypeText}</td>
-            <td>{video.sizeText}</td>
-            <td className="button-column">
-                <DownloadButton
-                    onClick={video.download}
-                    className="btn btn-success"
-                />
-            </td>
-        </tr>
-    );
-}
-
-type TabsType = "VIDEO" | "AUDIO" | "OTHERS";
-interface ModelStateType {
-    key: string;
-    vid: string;
-    quality: string;
-}
 export function ErrorMessage({ children }: { children: ReactNode }) {
     return (
         <div className="tw-bg-blue-100 tw-py-4 tw-px-2 tw-mb-5">
@@ -76,6 +43,11 @@ declare module "@distube/ytdl-core" {
         loudnessDb?: number;
     }
 }
+export interface ModelStateType {
+    key: string;
+    vid: string;
+    quality: string;
+}
 export function AudioLoudnessType(
     a: number,
     b: number
@@ -86,9 +58,7 @@ export function AudioLoudnessType(
     return "High";
 }
 export default function YoutubeResult() {
-    const [state, setState] = useState<TabsType>("VIDEO");
     const router = useRouter();
-
     const {
         id,
         start: startQ,
@@ -162,8 +132,8 @@ export default function YoutubeResult() {
     }
 
     const data = paramQuery.data;
-    console.log(data.info);
-    const videos: VideoData[] = [
+
+    const videos: TabsData = [
         ...Object.values(data.links.mp4)
             .filter((v) => v.q != "auto")
             .filter(
@@ -240,15 +210,9 @@ export default function YoutubeResult() {
         return parseInt(b.q) - parseInt(a.q);
     });
 
-    const audios: VideoData[] = data.formats
+    const audios: TabsData = data.formats
         .filter((v) => v.hasAudio && !v.hasVideo)
         .map((audio) => {
-            console.log(
-                audio.audioBitrate,
-                audio.loudnessDb,
-                audio.isHLS,
-                audio
-            );
             const loudnessType = AudioLoudnessType(
                 audio.loudnessDb!,
                 data.info.loudness
@@ -299,7 +263,7 @@ export default function YoutubeResult() {
                 },
             };
         });
-    const others: VideoData[] = data.formats
+    const others: TabsData = data.formats
         .filter((v) => v.hasVideo && !v.hasAudio)
         .map((video) => {
             return {
@@ -355,59 +319,41 @@ export default function YoutubeResult() {
 
     return (
         <>
-            <ModelPopUp
-                open={modelState != null}
+            <Model
+                modelState={modelState != null}
                 title={data.videoDetails.title}
                 onClose={() => {
                     setModelState(null);
                 }}
-            >
-                <div className="tw-flex tw-items-center tw-justify-center tw-mb-4">
-                    {DownloadData != undefined ? (
-                        <DownloadButton
-                            onClick={() => {
-                                if (window.Environment == "desktop") {
-                                    window.api.send(
-                                        "downloadY2mate",
-                                        DownloadData
-                                    );
-                                    setModelState(null);
-                                } else {
-                                    const baseURL =
-                                        instance.defaults.baseURL ||
-                                        location.origin;
+                loading={DownloadData == undefined}
+                onDownload={() => {
+                    if (!DownloadData)
+                        throw new Error("undefined Download State");
+                    if (window.Environment == "desktop") {
+                        window.api.send("downloadY2mate", DownloadData);
+                        setModelState(null);
+                    } else {
+                        const baseURL =
+                            instance.defaults.baseURL || location.origin;
 
-                                    const downloadURL = new URL(
-                                        "/api/watch/download",
-                                        baseURL
-                                    );
-                                    downloadURL.searchParams.append(
-                                        "k",
-                                        modelState!.key
-                                    );
-                                    downloadURL.searchParams.append(
-                                        "vid",
-                                        DownloadData.vid
-                                    );
-                                    const link = downloadURL.href;
-                                    const a = document.createElement("a");
-                                    a.href = link;
-                                    a.rel = "noopener noreferrer";
-                                    a.click();
-                                }
-                            }}
-                            className="tw-min-w-[10rem]"
-                        />
-                    ) : (
-                        <Loading />
-                    )}
-                </div>
-                <p>
-                    Thank you for using our service. If you could share our
-                    website with your friends, that would be a great help. Thank
-                    you.
-                </p>
-            </ModelPopUp>
+                        const downloadURL = new URL(
+                            "/api/watch/download",
+                            baseURL
+                        );
+                        downloadURL.searchParams.append("k", modelState!.key);
+                        downloadURL.searchParams.append(
+                            "vid",
+                            DownloadData.vid
+                        );
+                        const link = downloadURL.href;
+                        const a = document.createElement("a");
+                        a.href = link;
+                        a.rel = "noopener noreferrer";
+                        a.click();
+                    }
+                }}
+            />
+
             <TypeApplication
                 defaultState={false}
                 env="desktop"
@@ -429,91 +375,18 @@ export default function YoutubeResult() {
                     }}
                 />
             </TypeApplication>
-            <section className="download-result">
-                <div className="tw-flex">
-                    <div className="col-md-4">
-                        <div>
-                            <div className="thumb-nail">
-                                <img
-                                    src={
-                                        data.videoDetails.thumbnails.at(-1)?.url
-                                    }
-                                    alt={data.videoDetails.title}
-                                />
-                            </div>
-                            <div className="thumb-nail-caption">
-                                <b>{data.videoDetails.title}</b>
-                            </div>
-                        </div>
+            <section className="tw-my-2.5">
+                <div className="tw-grid tw-grid-cols-12 tw-flex-1 tw-gap-6">
+                    <div className="tw-col-span-12 md:tw-col-span-4">
+                        <Thumbnail videoDetails={data.videoDetails} />
                     </div>
-                    <div className="col-md-8">
-                        <div>
-                            <ul className="icon-nav tw-select-none">
-                                <li
-                                    className={classnames({
-                                        active: state == "VIDEO",
-                                    })}
-                                    onClick={() => setState("VIDEO")}
-                                >
-                                    <FontAwesomeIcon icon={faVideo} />
-                                    <span>Video</span>
-                                </li>
-                                <li
-                                    className={classnames({
-                                        active: state == "AUDIO",
-                                    })}
-                                    onClick={() => setState("AUDIO")}
-                                >
-                                    <FontAwesomeIcon icon={faMusic} />
-                                    <span>Audio</span>
-                                </li>
-                                <li
-                                    className={classnames({
-                                        active: state == "OTHERS",
-                                    })}
-                                    onClick={() => setState("OTHERS")}
-                                >
-                                    <FontAwesomeIcon icon={faFileVideo} />
-                                    <span>Others</span>
-                                </li>
-                            </ul>
-                            <div className="tab-content">
-                                <div>
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th>File type</th>
-                                                <th>File size</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {state == "VIDEO" &&
-                                                videos.map((video, i) => (
-                                                    <MapData
-                                                        key={`${data.vid}-${i}-${video.fileTypeText}`}
-                                                        video={video}
-                                                    />
-                                                ))}
-                                            {state == "AUDIO" &&
-                                                audios.map((video, i) => (
-                                                    <MapData
-                                                        key={`${data.vid}-${i}-${video.fileTypeText}`}
-                                                        video={video}
-                                                    />
-                                                ))}
-                                            {state == "OTHERS" &&
-                                                others.map((video, i) => (
-                                                    <MapData
-                                                        key={`${data.vid}-${i}-${video.fileTypeText}`}
-                                                        video={video}
-                                                    />
-                                                ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
+                    <div className="tw-col-span-12 md:tw-col-span-8">
+                        <TableDownload
+                            id={data.vid!}
+                            videos={videos}
+                            audios={audios}
+                            others={others}
+                        />
                     </div>
                 </div>
             </section>

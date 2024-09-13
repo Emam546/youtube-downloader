@@ -8,6 +8,12 @@ type ConvertToIpCMainFunc<T extends (...args: any) => any> = (
     event: IpcMainEvent,
     ...args: Parameters<T>
 ) => void;
+type ExcludeFirst<T extends any[]> = T extends [infer First, ...infer Rest]
+    ? Rest
+    : never;
+type ConvertFromIpCMainFunc<
+    T extends (event: IpcMainEvent, ...args: any) => any
+> = (...args: ExcludeFirst<Parameters<T>>) => ReturnType<T>;
 type ConvertToIpCHandleMainFunc<T extends (...args: any[]) => any> = (
     event: IpcMainInvokeEvent,
     ...args: Parameters<T>

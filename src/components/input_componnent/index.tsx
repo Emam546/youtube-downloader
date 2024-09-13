@@ -126,52 +126,59 @@ export default function InputHolder() {
         }
     }, []);
     return (
-        <form
-            action=""
-            method="POST"
-            className="text-center tw-px-2 sm:tw-px-10  tw-py-10 main-form"
-            autoComplete="off"
-            onSubmit={handleSubmit((data) => {
-                const value = data.search;
-                if (CanNavigate(value))
-                    return navigate(getUrl(new URL(data.search)));
-                else return navigate(`/search/${value}`);
-            })}
-        >
-            <h2 className="tw-font-medium">
-                Download Video and Audio from YouTube
-            </h2>
-            <div className="input-container">
-                <div className="tw-flex-grow position-relative">
-                    <input
-                        type="text"
-                        placeholder="Search or paste link here..."
-                        {...register("search", {
-                            onChange(e: ChangeEvent<HTMLInputElement>) {
-                                const value = e.currentTarget.value;
-                                if (CanNavigate(value))
-                                    return navigate(getUrl(new URL(value)));
-                            },
-                        })}
-                    />
+        <div className="tw-w-[700px] tw-max-w-full tw-min-w-fit tw-mx-auto tw-px-2 sm:tw-px-10 tw-py-10">
+            <form
+                action=""
+                method="POST"
+                autoComplete="off"
+                onSubmit={handleSubmit((data) => {
+                    const value = data.search;
+                    if (CanNavigate(value))
+                        return navigate(getUrl(new URL(data.search)));
+                    else return navigate(`/search/${value}`);
+                })}
+            >
+                <h2 className="tw-text-3xl tw-font-normal tw-text-center tw-mb-7">
+                    Download Video and Audio from YouTube
+                </h2>
+                <div className="tw-flex tw-mx-auto tw-my-4">
+                    <div className="tw-flex-grow position-relative">
+                        <input
+                            type="text"
+                            placeholder="Search or paste link here..."
+                            {...register("search", {
+                                onChange(e: ChangeEvent<HTMLInputElement>) {
+                                    const value = e.currentTarget.value;
+                                    if (CanNavigate(value))
+                                        return navigate(getUrl(new URL(value)));
+                                },
+                            })}
+                            className="focus:tw-outline-none tw-flex-1 tw-shrink tw-border-[6px] tw-rounded-l tw-text-[#555] tw-bg-white tw-min-w-0 tw-w-full tw-border-r-0 tw-border-primary tw-px-3 tw-py-3 tw-h-full"
+                        />
+                    </div>
+                    <button
+                        type="submit"
+                        disabled={formState.isSubmitting}
+                        title="start"
+                        className="tw-text-white tw-bg-primary tw-rounded-r-3 tw-flex tw-items-center tw-gap-x-2 tw-cursor-pointer tw-p-5 sm:tw-px-6 hover:tw-bg-primary/80 tw-text-sm"
+                    >
+                        <span className="tw-hidden sm:tw-block">Start</span>
+                        <FontAwesomeIcon
+                            icon={faArrowRight}
+                            className="tw-font-bold tw-text-lg"
+                        />
+                    </button>
                 </div>
-                <button
-                    type="submit"
-                    disabled={formState.isSubmitting}
-                    title="search"
-                    className="tw-p-4 tw-flex tw-items-center tw-gap-x-2"
-                >
-                    <span>Start</span>
-                    <FontAwesomeIcon
-                        icon={faArrowRight}
-                        className="tw-font-bold tw-text-lg"
-                    />
-                </button>
-            </div>
-            <p className="terms tw-text-xs tw-p-2">
-                By using our service you are accepting our
-                <Link href="/terms-of-service">Terms of Use.</Link>
-            </p>
-        </form>
+                <p className="terms tw-text-xs tw-p-2 tw-text-center tw-text-[#666]">
+                    By using our service you are accepting our
+                    <Link
+                        className="tw-text-primary tw-no-underline"
+                        href="/terms-of-service"
+                    >
+                        Terms of Use.
+                    </Link>
+                </p>
+            </form>
+        </div>
     );
 }

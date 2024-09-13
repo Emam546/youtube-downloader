@@ -4,23 +4,23 @@ import { UserContext } from "@src/context/info";
 export default function Footer() {
     const { siteName } = useContext(UserContext);
     return (
-        <footer className="text-center tw-py-10 tw-border-t tw-border-[#dcdfe4] tw-border-solid">
-            <p className="my-4">
+        <footer className="tw-text-lg tw-py-10 tw-border-t tw-border-[#dcdfe4] tw-border-solid">
+            <p className="tw-my-4 tw-text-center">
                 @ 2016 - {new Date().getFullYear()} {siteName}
             </p>
-            <ul className="tw-flex tw-gap-4 flex-wrap justify-content-center tw-text-sm">
+            <ul className="tw-flex tw-gap-4 flex-wrap tw-justify-center tw-text-sm">
                 <li>
                     <a
                         href="#"
-                        className="link-primary text-black text-decoration-none"
+                        className="hover:tw-text-primary tw-text-black tw-no-underline"
                     >
-                        About{" "}
+                        About
                     </a>
                 </li>
                 <li>
                     <a
                         href="#"
-                        className="link-primary text-black text-decoration-none"
+                        className="hover:tw-text-primary tw-text-black tw-no-underline"
                     >
                         FAQ
                     </a>
@@ -28,7 +28,7 @@ export default function Footer() {
                 <li>
                     <a
                         href="#"
-                        className="link-primary text-black text-decoration-none"
+                        className="hover:tw-text-primary tw-text-black tw-no-underline"
                     >
                         Contact
                     </a>
@@ -36,7 +36,7 @@ export default function Footer() {
                 <li>
                     <a
                         href="#"
-                        className="link-primary text-black text-decoration-none"
+                        className="hover:tw-text-primary tw-text-black tw-no-underline"
                     >
                         Terms of services
                     </a>
@@ -44,9 +44,8 @@ export default function Footer() {
                 <li>
                     <a
                         href="#"
-                        className="link-primary text-black text-decoration-none"
+                        className="hover:tw-text-primary tw-text-black tw-no-underline"
                     >
-                        {" "}
                         Privacy Policy
                     </a>
                 </li>

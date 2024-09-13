@@ -1,8 +1,4 @@
-import {
-    ApiMain as Api,
-    ApiRender as OrgApiRender,
-    Context,
-} from "@shared/main";
+import { ApiMain as Api, ApiRender as OrgApiRender, Context } from "./api";
 
 declare global {
     namespace ApiMain {

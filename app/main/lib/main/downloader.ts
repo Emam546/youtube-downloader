@@ -10,6 +10,17 @@ export interface StateType {
     path: string;
     continued: boolean;
 }
+export async function GetFilePath(fileName: string) {
+    const { canceled, filePath: newpath } = await dialog.showSaveDialog({
+        title: "Download Image",
+        defaultPath: fileName,
+        buttonLabel: "Save",
+        properties: ["showOverwriteConfirmation", "createDirectory"],
+        showsTagField: false,
+    });
+    if (canceled || !newpath) return null;
+    return newpath;
+}
 export async function Downloader(data: DataClipped, window: BrowserWindow) {
     const Name = getFileName(data);
     const { canceled, filePath: newpath } = await dialog.showSaveDialog({

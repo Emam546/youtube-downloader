@@ -30,6 +30,9 @@
       ],
       "@utils/*": [
         "./utils/*"
+      ],
+      "@app/*": [
+        "./app/*"
       ]
     },
     "plugins": [
@@ -37,13 +40,13 @@
         "name": "next"
       }
     ],
-    "skipLibCheck": true
+    "skipLibCheck": false
   },
   "include": [
     "src",
-    "src/types",
     "server",
     "shared",
+    "app/main",
     "utils",
     ".next/types/**/*.ts"
   ],

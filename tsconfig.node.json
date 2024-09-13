@@ -5,6 +5,7 @@
         "./app/main/**/*",
         "./app/preload/**/*",
         "./app/renderer/shared/*",
+        "./src/types/api.d.ts",
         "./server/src",
         "shared/**/*",
         "utils",
@@ -33,6 +34,9 @@
             "@utils/*": [
                 "./utils/*"
             ],
+            "@src/*": [
+                "./src/*"
+            ]
         },
     }
 }

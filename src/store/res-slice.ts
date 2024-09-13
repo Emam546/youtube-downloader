@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { relatedVideo, videoFormat } from "ytdl-core";
+import { relatedVideo, videoFormat } from "@distube/ytdl-core";
 
 export type VideoInfo = relatedVideo[] | null;
 

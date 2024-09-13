@@ -47,7 +47,7 @@ export default function RelatedVideos() {
     return (
         <section>
             <h3>Related Videos</h3>
-            <div className="related-videos tw-mt-2">
+            <div className="tw-grid tw-gap-8 tw-mt-2 tw-grid-cols-1 sm:tw-grid-cols-2 md:tw-grid-cols-3 lg:tw-grid-cols-4">
                 {data.map((video, i) => {
                     return (
                         <Link

@@ -4,7 +4,6 @@ import { useEffect } from "react";
 export default function Main() {
     const push = useRouter().push;
     useEffect(() => {
-        
         push("/");
     });
     return <></>;

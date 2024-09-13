@@ -74,6 +74,7 @@
     "helmet": "^6.0.1",
     "jet-logger": "^1.2.6",
     "jet-validator": "^1.0.4",
+    "mime-types": "^2.1.35",
     "module-alias": "^2.2.2",
     "morgan": "^1.10.0",
     "next": "^13.5.6",
@@ -88,8 +89,7 @@
     "react-redux": "^8.0.7",
     "throttle": "^1.0.3",
     "youtube-playlists-js": "^1.0.3",
-    "youtube-searches": "^1.0.1",
-    "ytdl-core": "^4.11.2"
+    "youtube-searches": "^1.0.1"
   },
   "devDependencies": {
     "@electron-toolkit/tsconfig": "^1.0.1",
@@ -105,6 +105,7 @@
     "@types/jest": "^29.4.0",
     "@types/jsonfile": "^6.1.1",
     "@types/jsonwebtoken": "^9.0.1",
+    "@types/mime-types": "^2.1.4",
     "@types/morgan": "^1.9.4",
     "@types/node": "^18.11.18",
     "@types/react": "^18.0.26",
