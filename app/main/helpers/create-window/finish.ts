@@ -48,7 +48,7 @@ export const createFinishWindow = async (
         return { action: "deny" };
     });
     if (isDev) {
-        await win.loadURL(`${process.env["ELECTRON_RENDERER_URL"]}/finish`);
+        await win.loadURL(`${process.env["ELECTRON_RENDERER_URL"] as string}/finish`);
     } else await win.loadFile(path.join(__dirname, "../windows/finish.html"));
     win.show();
     win.moveTop();

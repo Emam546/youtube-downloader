@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/role-supports-aria-props */
 import { useQuery } from "@tanstack/react-query";
 import { validateID } from "@utils/youtube";
 import { useDispatch } from "react-redux";

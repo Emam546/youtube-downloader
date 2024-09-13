@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { exec } from "child_process";
 export function OpenFile(filePath: string) {
     return new Promise((res, rej) => {

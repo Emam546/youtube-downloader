@@ -33,14 +33,17 @@
       ],
       "@app/*": [
         "./app/*"
-      ]
+      ],
+      "@shared/renderer/*": [
+        "./app/renderer/shared/*"
+      ],
     },
     "plugins": [
       {
         "name": "next"
       }
     ],
-    "skipLibCheck": false
+    "skipLibCheck": true
   },
   "include": [
     "src",

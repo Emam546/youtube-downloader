@@ -8,7 +8,6 @@ import {
 } from "electron";
 import { DownloadingWindow } from "../donwloading";
 import { PowerStarter, ModifiedThrottle } from "./utils";
-import { is } from "@electron-toolkit/utils";
 import internal from "stream";
 export type FlagType = "w" | "a";
 export interface VideoData {
@@ -75,7 +74,7 @@ export class BaseDownloaderWindow extends DownloadingWindow {
     private stream?: WriteStream;
     private sleepId = new PowerStarter();
     private readonly curStream: ModifiedThrottle;
-    private speedTransfer: number = 0;
+    private speedTransfer = 0;
     pageData: ProgressData;
     readonly link: string;
     readonly videoData: VideoData["video"];
@@ -230,6 +229,7 @@ export class BaseDownloaderWindow extends DownloadingWindow {
         this.close();
     }
     error(err: any) {
+        
         dialog.showErrorBox("Error Happened", err.toString());
         if (!this.isDestroyed()) this.close();
     }

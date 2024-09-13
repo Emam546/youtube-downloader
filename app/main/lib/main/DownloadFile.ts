@@ -1,6 +1,5 @@
 import { DownloadFile } from "@serv/routes/download/api";
 import fs from "fs";
-
 import { GetFilePath } from "./downloader";
 import { createFinishWindow } from "@app/main/helpers/create-window/finish";
 import { removeUnwantedChars } from "@serv/routes/videoDownloader/api";

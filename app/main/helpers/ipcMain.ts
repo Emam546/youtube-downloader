@@ -1,7 +1,4 @@
-import {
-    ConvertToIpCMainFunc,
-    ConvertToIpCHandleMainFunc,
-} from "@shared/index";
+import { ConvertToIpCMainFunc, ConvertToIpCHandleMainFunc } from "@shared/api";
 import { ObjectEntries } from "@utils/index";
 import { app, BrowserWindow, ipcMain } from "electron";
 import {
@@ -11,7 +8,7 @@ import {
     ShutDown,
     SleepComputer,
 } from "../lib/ipcmain";
-
+import { ApiMain } from "@shared/api";
 type OnMethodsType = {
     [K in keyof ApiMain.OnMethods]: ConvertToIpCMainFunc<ApiMain.OnMethods[K]>;
 };
@@ -32,6 +29,7 @@ type HandelOnceMethodsType = {
 };
 export const OnMethods: OnMethodsType = {
     log(_, ...arg) {
+        // eslint-disable-next-line no-console
         console.log(...arg);
     },
     setTitle: function (event, name: string): void {
@@ -68,13 +66,13 @@ export const OnMethods: OnMethodsType = {
         if (!window) return;
         window.hide();
     },
-    quitApp: function (e): void {
+    quitApp: function (): void {
         app.quit();
     },
-    shutDownComputer: function (e, force: boolean): void {
+    shutDownComputer: function (_, force: boolean): void {
         ShutDown(force);
     },
-    sleepComputer: function (e): void {
+    sleepComputer: function (): void {
         SleepComputer();
     },
 };

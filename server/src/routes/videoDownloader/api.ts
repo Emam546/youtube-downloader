@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
-
 import axios from "axios";
 import { getInfo, videoInfo } from "@distube/ytdl-core";
 import https from "https";
 import http from "http";
 import { IncomingMessage } from "http";
+import logger from "jet-logger";
 export const instance = axios.create({
     baseURL: "https://www.y2mate.com",
 });
@@ -108,7 +107,7 @@ export async function getY2mateData(id: string): Promise<ServerVideoInfo> {
     try {
         y2mateData = await fetchData(id);
     } catch (error) {
-        console.log(error);
+        logger.err(error);
     }
 
     const googleData = await getInfo(id, { requestOptions: {} });

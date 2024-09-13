@@ -10,7 +10,7 @@ export class FileDownloaderWindow extends BaseDownloaderWindow {
     ) {
         super(options, data);
     }
-    async download(num: number = 0, err?: any) {
+    async download(num = 0, err?: any) {
         if (num > BaseDownloaderWindow.MAX_TRIES) return this.error(err);
         try {
             const res = await axios.head(this.link, {
@@ -18,7 +18,7 @@ export class FileDownloaderWindow extends BaseDownloaderWindow {
                     return status < 400;
                 },
             });
-            const acceptRanges = res.headers["accept-ranges"];
+            const acceptRanges = res.headers["accept-ranges"] as string |undefined;
             if (acceptRanges && acceptRanges === "bytes")
                 this.setResumability(true);
             else this.setResumability(false);

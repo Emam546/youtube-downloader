@@ -99,12 +99,12 @@ export interface ModifiedThrottle {
     ): this;
 }
 export class ModifiedThrottle extends Transform {
-    private startDownloading: boolean = false;
-    private isPausedManually: boolean = false;
+    private startDownloading = false;
+    private isPausedManually = false;
     private pauseTimeout: NodeJS.Timeout | null = null;
     private delayTime: number;
     public bps: number;
-    totalBytes: number = 0;
+    totalBytes = 0;
     startTime: number = Date.now();
     currentCall?: () => void;
     currentTimeOut?: ReturnType<typeof setTimeout>;

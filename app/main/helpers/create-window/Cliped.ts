@@ -70,7 +70,9 @@ export const createClippedProgressBarWindow = async (
         return { action: "deny" };
     });
     if (isDev) {
-        await win.loadURL(`${process.env["ELECTRON_RENDERER_URL"]}/progress`);
+        await win.loadURL(
+            `${process.env["ELECTRON_RENDERER_URL"] as string}/progress`
+        );
         win.webContents.openDevTools();
     } else await win.loadFile(path.join(__dirname, "../windows/progress.html"));
     win.show();

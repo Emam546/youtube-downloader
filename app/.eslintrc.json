@@ -1,0 +1,13 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "extends": "@electron-toolkit",
+  "rules": {
+    "no-console": 1
+  },
+  "ignorePatterns": [
+    "spec",
+    "preload",
+    "renderer"
+  ]
+}

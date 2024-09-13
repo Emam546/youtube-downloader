@@ -72,7 +72,7 @@ export const createProgressBarWindow = async (
     if (!isDev) {
         await win.loadFile(path.join(__dirname, "../windows/progress.html"));
     } else {
-        await win.loadURL(`${process.env["ELECTRON_RENDERER_URL"]}/progress`);
+        await win.loadURL(`${process.env["ELECTRON_RENDERER_URL"] as string}/progress`);
         win.webContents.openDevTools();
     }
     win.show();

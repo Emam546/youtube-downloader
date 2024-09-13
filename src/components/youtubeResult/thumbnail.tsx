@@ -23,7 +23,6 @@ export default function Thumbnail({ videoDetails }: Props) {
                     },
                     { responseType: "blob" }
                 );
-                console.log(typeof largeImage.url, largeImage.url);
                 const blob = new Blob([response.data], { type: "image/jpeg" });
                 const url = URL.createObjectURL(blob);
                 // Create a link element

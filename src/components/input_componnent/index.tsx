@@ -107,7 +107,6 @@ export default function InputHolder() {
             const regex = /\/search\/(.+)/;
             const match = window.location.pathname.match(regex);
             if (!match) return;
-            console.log(match[1]);
             setValue("search", decodeURIComponent(match[1]));
         }
     }, []);

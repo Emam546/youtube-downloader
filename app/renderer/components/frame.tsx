@@ -1,4 +1,3 @@
-/* eslint-disable react/display-name */
 import "./frame.css";
 import React, {
     ComponentProps,

@@ -3,7 +3,10 @@ import { createProgressBarWindow } from "@app/main/helpers/create-window/Non-Cli
 import { BrowserWindow } from "electron";
 import { Downloader } from "./downloader";
 import { DataClipped } from "@serv/routes/videoDownloader/api";
-
+export type DownloadY2mate = (
+    e: Electron.IpcMainEvent,
+    data: DataClipped
+) => Promise<boolean>;
 export async function DownloadY2mate(
     e: Electron.IpcMainEvent,
     data: DataClipped

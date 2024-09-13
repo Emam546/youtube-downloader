@@ -1,7 +1,7 @@
 import {
     ConvertToIpCHandleMainFunc,
     ConvertToIpCMainFunc,
-} from "@shared/index";
+} from "@shared/api";
 import { Api } from "@shared/renderer/finish";
 type OnMethodsType = {
     [K in keyof Api.OnMethods]: ConvertToIpCMainFunc<Api.OnMethods[K]>;

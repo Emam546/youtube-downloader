@@ -10,7 +10,7 @@ import serve from "electron-serve";
 import { ObjectEntries } from "@utils/index";
 import { OnMethods, HandleMethods } from "@app/main/lib/main";
 import { convertFunc } from "@utils/app";
-import { Context } from "@shared/main";
+import { Context } from "@src/types/api";
 import { MainWindow } from "@app/main/lib/main/window";
 import { isDev, isProd } from "@app/main/utils";
 
@@ -23,7 +23,7 @@ export const createMainWindow = async (
     options: BrowserWindowConstructorOptions,
     preloadData?: Context
 ): Promise<BrowserWindow> => {
-    let state: Electron.BrowserWindowConstructorOptions = {
+    const state: Electron.BrowserWindowConstructorOptions = {
         show: false,
         autoHideMenuBar: true,
     };

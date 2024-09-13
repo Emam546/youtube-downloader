@@ -1,7 +1,7 @@
 import {
     ConvertToIpCHandleMainFunc,
     ConvertToIpCMainFunc,
-} from "@shared/index";
+} from "@shared/api";
 import { Api } from "@shared/renderer/progress";
 import { BaseDownloaderWindow } from "./window";
 import { createFinishWindow } from "@app/main/helpers/create-window/finish";

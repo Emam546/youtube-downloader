@@ -1,5 +1,5 @@
 import { BrowserWindowConstructorOptions } from "electron";
-import { getEstimatedVideoSize, getVideoInfo } from "./utils";
+import { getVideoInfo } from "./utils";
 import { BaseDownloaderWindow, DownloaderData } from "../window";
 import ffmpeg from "fluent-ffmpeg";
 import fs from "fs";
@@ -14,7 +14,7 @@ export interface FfmpegVideoData {
 export interface FFmpegDownloaderData extends DownloaderData {
     ffmpegData: FfmpegVideoData;
 }
-function timeStringToSeconds(timeString) {
+function timeStringToSeconds(timeString: string) {
     // Split the time string into hours, minutes, and seconds
     const parts = timeString.split(":");
     const hours = parseInt(parts[0], 10);
@@ -26,7 +26,7 @@ function timeStringToSeconds(timeString) {
 }
 export class FfmpegCutterWindow extends BaseDownloaderWindow {
     readonly ffmpegData: FfmpegVideoData;
-    rebuildingState: boolean = false;
+    rebuildingState = false;
     constructor(
         options: BrowserWindowConstructorOptions,
         data: FFmpegDownloaderData
@@ -34,7 +34,7 @@ export class FfmpegCutterWindow extends BaseDownloaderWindow {
         super(options, data);
         this.ffmpegData = data.ffmpegData;
     }
-    async download(num: number = 0, err?: any) {
+    async download(num = 0, err?: unknown) {
         if (num > FfmpegCutterWindow.MAX_TRIES) return this.error(err);
         try {
             this.curSize = 0;
@@ -49,7 +49,8 @@ export class FfmpegCutterWindow extends BaseDownloaderWindow {
                     const metaData = await getVideoInfo(
                         this.downloadingState.path
                     );
-                    const duration = metaData.format.duration!;
+                    const duration = metaData.format.duration;
+                    if (!duration) throw new Error("Unrecognized time");
                     this.rebuildingState = true;
                     this.setThrottleState(this.enableThrottle);
                     const command = (
@@ -66,13 +67,16 @@ export class FfmpegCutterWindow extends BaseDownloaderWindow {
                         .on("progress", ({ timemark, ...percent }) => {
                             if (
                                 this.rebuildingState &&
-                                timeStringToSeconds(timemark) > duration
+                                timeStringToSeconds(timemark as string) >
+                                    duration
                             ) {
                                 this.setPauseButton("Pause");
                                 this.rebuildingState = false;
                                 this.setThrottleState(this.enableThrottle);
                             }
-                            const curSize = percent.targetSize * 1024;
+
+                            const curSize =
+                                (percent.targetSize as number) * 1024;
                             if (this.fileSize != curSize)
                                 this.setFileSize(curSize);
                         })
@@ -88,10 +92,14 @@ export class FfmpegCutterWindow extends BaseDownloaderWindow {
                     this.on("close", () => {
                         try {
                             command.kill("SIGKILL");
-                        } catch (err) {}
+                        } catch (err) {
+                            /* empty */
+                        }
                     });
                     return;
-                } catch (err) {}
+                } catch (err) {
+                    /* empty */
+                }
             }
             const pipe = this.pipe();
             this.setPauseButton("Pause");
@@ -114,7 +122,9 @@ export class FfmpegCutterWindow extends BaseDownloaderWindow {
             this.on("close", () => {
                 try {
                     command.kill("SIGKILL");
-                } catch (err) {}
+                } catch (err) {
+                    /* empty */
+                }
             });
             command.run();
         } catch (err) {
@@ -168,7 +178,9 @@ export class FfmpegCutterWindow extends BaseDownloaderWindow {
             this.on("close", () => {
                 try {
                     command.kill("SIGKILL");
-                } catch (err) {}
+                } catch (err) {
+                    /* empty */
+                }
             });
             command.run();
         });

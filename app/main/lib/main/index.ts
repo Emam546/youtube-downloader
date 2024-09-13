@@ -1,7 +1,7 @@
 import {
     ConvertToIpCHandleMainFunc,
     ConvertToIpCMainFunc,
-} from "@shared/index";
+} from "@shared/api";
 import {
     convertY2mateData,
     getY2mateData,
@@ -46,8 +46,7 @@ export const HandleMethods: HandelMethodsType = {
     getPlaylistData(_, id: string) {
         return getPlayListData(id);
     },
-    Download(e, props) {
-        console.log("Yes");
+    Download(_, props) {
         return DownloadFileToDesktop(props);
     },
 };

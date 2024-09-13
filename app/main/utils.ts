@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { is } from "@electron-toolkit/utils";
 import { app } from "electron";
 console.log(process.env.NODE_ENV);
