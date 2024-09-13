@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { useForm } from "react-hook-form";
 import { ChangeEvent, useEffect } from "react";
-import { NavigateVideo } from "@shared/main";
+import { NavigateVideo } from "@src/types/api";
 interface DataFrom {
     search: string;
 }
@@ -86,7 +86,6 @@ function getTime(val: unknown): number | null {
 export default function InputHolder() {
     const router = useRouter();
     const navigate = router.push;
-    const { start, end } = router.query;
     const { register, handleSubmit, setValue, formState } = useForm<DataFrom>();
     useEffect(() => {
         if (router.asPath.startsWith("/youtube")) {
@@ -105,10 +104,11 @@ export default function InputHolder() {
             );
         }
         if (router.asPath.startsWith("/search")) {
-            const regex = /\/search\/([a-zA-Z0-9]+)/;
+            const regex = /\/search\/(.+)/;
             const match = window.location.pathname.match(regex);
             if (!match) return;
-            setValue("search", match[1]);
+            console.log(match[1]);
+            setValue("search", decodeURIComponent(match[1]));
         }
     }, []);
     useEffect(() => {
@@ -135,7 +135,8 @@ export default function InputHolder() {
                     const value = data.search;
                     if (CanNavigate(value))
                         return navigate(getUrl(new URL(data.search)));
-                    else return navigate(`/search/${value}`);
+                    else
+                        return navigate(`/search/${encodeURIComponent(value)}`);
                 })}
             >
                 <h2 className="tw-text-3xl tw-font-normal tw-text-center tw-mb-7">
