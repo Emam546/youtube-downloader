@@ -7,7 +7,16 @@ function App(): JSX.Element {
     const ref = useRef<ComponentRef<"div">>(null);
     useEffect(() => {
         if (!ref.current) return;
-        window.api.send("setContentHeight", ref.current.scrollHeight);
+        let prevWidth: number = 0;
+        let resizeObserver = new ResizeObserver((entries) => {
+            const { height } = entries[0].contentRect;
+            if (height !== prevWidth) {
+                prevWidth = height;
+                window.api.send("setContentHeight", ref.current!.offsetHeight);
+            }
+        });
+        resizeObserver.observe(ref.current);
+        return () => resizeObserver.disconnect();
     }, [ref]);
     return (
         <div
