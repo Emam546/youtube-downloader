@@ -20,7 +20,7 @@ export type YoutubeParams = [
 function constructUrl(...[id, listId, time]: YoutubeParams) {
     const url = new URL("https://www.youtube.com/watch");
     if (id) url.searchParams.set("v", id);
-    if (listId) url.searchParams.set("list", listId);
+    if (listId && listId.startsWith("PL")) url.searchParams.set("list", listId);
     if (time && time[0]) {
         url.searchParams.set("t", `${time[0]}s`);
     }

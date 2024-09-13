@@ -1,15 +1,19 @@
+/* eslint-disable react/no-unescaped-entities */
 import { getListData } from "@src/API";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import Loading from "../Loading";
 import { ErrorMessage } from "../youtubeResult";
 import Link from "next/link";
+import { SectionHeader } from "../common/header";
+import { Component, ComponentRef, useEffect, useRef } from "react";
 
 export default function PlayList() {
     const { list: listId, id } = useRouter().query as {
         list: string;
         id?: string;
     };
+
     const paramQuery = useQuery({
         queryKey: ["list", listId],
         queryFn: ({ signal }) => getListData(listId, signal),
@@ -17,9 +21,25 @@ export default function PlayList() {
         cacheTime: 1 * 1000 * 60,
         staleTime: 1 * 1000 * 60,
     });
-
-    if (!listId) return null;
-    if (paramQuery.isLoading) return null;
+    const scrollContainer = useRef<ComponentRef<"div">>(null);
+    useEffect(() => {
+        if (!listId || !paramQuery.isSuccess) return;
+        if (!scrollContainer.current) return;
+        const element = document.querySelector<HTMLDivElement>(
+            ".list[aria-selected=true]"
+        );
+        if (!element) return;
+        const offsetTop = element.offsetTop - scrollContainer.current.offsetTop;
+        scrollContainer.current.scrollTo({
+            behavior: "instant",
+            top: offsetTop,
+        });
+    }, [listId, paramQuery.isSuccess, scrollContainer]);
+    if (!listId || !listId.startsWith("PL")) return null;
+    if (paramQuery.isLoading) {
+        if (id) return null;
+        else return <Loading />;
+    }
     if (paramQuery.isError) {
         return (
             <ErrorMessage>
@@ -27,15 +47,22 @@ export default function PlayList() {
             </ErrorMessage>
         );
     }
+
     return (
         <section className="tw-my-10">
-            <h3>PlayList</h3>
-            <div className="tw-max-h-[30rem] tw-overflow-auto tw-mb-10 pr-2">
+            <SectionHeader>PlayList</SectionHeader>
+            {!paramQuery.data && (
+                <p className="tw-mx-3">The playlist dosen't exist</p>
+            )}
+            <div
+                className="tw-max-h-[30rem] tw-overflow-auto tw-mb-10 pr-2"
+                ref={scrollContainer}
+            >
                 {paramQuery.data?.videos.map((video, i) => {
                     return (
                         <div key={`${listId}-${i}`}>
                             <div
-                                className="tw-flex tw-items-stretch px-3 py-3 tw-rounded-xl hover:tw-bg-blue-100 aria-selected:tw-bg-blue-50"
+                                className="list tw-flex tw-items-stretch px-3 py-3 tw-rounded-xl hover:tw-bg-blue-100 aria-selected:tw-bg-blue-50"
                                 aria-selected={id == video.videoId}
                             >
                                 <div className="tw-flex tw-items-center">
