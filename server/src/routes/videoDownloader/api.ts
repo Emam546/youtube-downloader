@@ -138,16 +138,17 @@ export type DataClipped =
           end: number;
       })
     | (ServerConvertResults & { clipped: false });
+export function removeUnwantedChars(val: string) {
+    return val.replace(/[/\\?%*:|"<>]/g, "-");
+}
 export function getFileName<T extends DataClipped>(data: T) {
     if (data.clipped) {
-        return `YoutubeDownloader - ${data.title}_v${data.fquality} ${data.start}:${data.end}.${data.ftype}`.replace(
-            /[/\\?%*:|"<>]/g,
-            "-"
+        return removeUnwantedChars(
+            `YoutubeDownloader - ${data.title}_v${data.fquality} ${data.start}:${data.end}.${data.ftype}`
         );
     } else
-        return `YoutubeDownloader - ${data.title}_v${data.fquality}.${data.ftype}`.replace(
-            /[/\\?%*:|"<>]/g,
-            "-"
+        return removeUnwantedChars(
+            `YoutubeDownloader - ${data.title}_v${data.fquality}.${data.ftype}`
         );
 }
 export async function convertY2mateData(
@@ -224,7 +225,6 @@ export function getHttpMethod(dlink: string, range?: string) {
 export async function DownloadVideoFromY2Mate(
     id: string,
     key: string,
-
     range?: string
 ): Promise<[ServerConvertResults, IncomingMessage]> {
     const data = await convertY2mateData(id, key);
