@@ -29,10 +29,10 @@
     "dev-electron": "electron-vite dev",
     "dev:desk": "concurrently -n \"NEXT,ELECTRON\" -c \"yellow,blue\" --kill-others \"next dev\" \"npm run dev-electron\"",
     "build:desk": "npm run build:next&&next export -o ./out/renderer && npm run build:electron",
-    "build:win": "electron-builder --win",
+    "build:win": "electron-builder --win -p never",
     "build:inno:win": "innosetup-compiler setup.iss --verbose",
     "publish": "node release.js",
-    "pack": "npm run build:desk&&npm run build:win -p never"
+    "pack": "npm run build:desk&&npm run build:win"
   },
   "nodemonConfig": {
     "watch": [
