@@ -1,6 +1,6 @@
-import { DownloadButton } from "../downloadButton";
-import Loading from "../Loading";
-import ModelPopUp from "../Model";
+import { DownloadButton } from "@src/components/downloadButton";
+import Loading from "@src/components/Loading";
+import ModelPopUp from "@src/components/Model";
 
 export interface Props {
     onClose: () => void;
