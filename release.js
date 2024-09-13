@@ -12,11 +12,13 @@ function readDir(dir) {
         })
         .map((file) => path.join(dir, file));
 }
+//https://github.com/Emam546/youtube-downloader/releases/download/v1.1.3/youtube-downloader.Setup.1.1.3.exe
+//https://github.com/Emam546/youtube-downloader/releases/download/v1.1.3/youtube-downloader-Setup-1.1.3.exe
 const assets = readDir("./dist");
 const options = {
     token: process.env.GH_TOKEN,
-    owner: packageJson.build.publish.owner,
-    repo: packageJson.build.publish.repo,
+    owner: packageJson.publish.owner,
+    repo: packageJson.publish.repo,
     tag: `v${packageJson.version}`,
     name: `v${packageJson.version}`,
     notes: "",

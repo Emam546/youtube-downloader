@@ -5,13 +5,11 @@
   "description": "A Youtube videos downloader app",
   "repository": "https://github.com/Emam546/youtube-downloader",
   "author": "Imam Ashour",
-  "build": {
-    "publish": {
-      "owner": "Emam546",
-      "provider": "github",
-      "releaseType": "release",
-      "repo": "youtube-downloader"
-    }
+  "publish": {
+    "owner": "Emam546",
+    "provider": "github",
+    "releaseType": "release",
+    "repo": "youtube-downloader"
   },
   "scripts": {
     "build:server": "ts-node build.ts",
