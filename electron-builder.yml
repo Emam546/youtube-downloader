@@ -27,15 +27,23 @@ mac:
     - NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
   notarize: false
 npmRebuild: false
+
+productName: youtube-downloader
+publish:
+  - provider: github
+    owner: Emam546
+    repo: youtube-downloader
+    releaseType: release
+
+win:
+  target:
+    - nsis
 nsis:
   allowElevation: true
   allowToChangeInstallationDirectory: true
-  artifactName: ${productName}-setup-${version}-win-builder.${ext}
+  artifactName: ${productName}-Setup-${version}.${ext}
   createDesktopShortcut: always
-  oneClick: false
-  perMachine: false
+  oneClick: false  # Set to true if you want one-click installation
+  perMachine: true  # Choose per-machine installation mode
+  createStartMenuShortcut: true  # Creates a start menu shortcut
   shortcutName: ${productName}
-productName: youtube-downloader
-
-win:
-  target: nsis
