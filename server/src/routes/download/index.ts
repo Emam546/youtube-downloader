@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { ObjectEntries } from "@utils/index";
 import { DownloadFile } from "./api";
 const router = Router();
 function isString(val: unknown): val is string {
@@ -12,7 +11,7 @@ router.post<Record<string, never>, unknown, { imageUrl?: unknown }>(
             return res.status(400).json({ error: "Image URL is required" });
 
         const response = await DownloadFile(req.body.imageUrl);
-        ObjectEntries(response.headers).map(([head, val]) => {
+        Object.entries(response.headers).map(([head, val]) => {
             res.setHeader(head, val as string);
         });
         response.data.pipe(res);

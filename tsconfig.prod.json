@@ -6,7 +6,6 @@
   },
   "exclude": [
     "server/spec",
-    "src",
     "build.ts"
   ]
 }

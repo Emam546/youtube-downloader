@@ -47,7 +47,7 @@
   },
   "include": [
     "src",
-    "server",
+    "server/src",
     "shared",
     "app/main",
     "utils",

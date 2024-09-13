@@ -1,9 +1,8 @@
 import cookieParser from "cookie-parser";
+import "express-async-errors";
 import morgan from "morgan";
 import helmet from "helmet";
-import express, { Request, Response } from "express";
-
-import "express-async-errors";
+import express, { NextFunction, Request, Response } from "express";
 import baseRoute from "./routes";
 import logger from "jet-logger";
 import EnvVars from "@serv/declarations/major/EnvVars";
@@ -36,8 +35,10 @@ if (EnvVars.nodeEnv === NodeEnvs.Production) {
 
 // Add APIs
 app.use("/api", baseRoute);
+
 // Setup error handler
-app.use((err: Error, _: Request, res: Response) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+app.use((err: Error, _: Request, res: Response, next: NextFunction) => {
     logger.err(err, true);
     let status = HttpStatusCodes.BAD_REQUEST;
     if (err instanceof RouteError) status = err.status;
