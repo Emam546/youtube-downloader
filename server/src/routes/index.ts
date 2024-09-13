@@ -1,6 +1,7 @@
 import { Router } from "express";
 import playListRouter from "./playlist";
 import videoDownloader from "./videoDownloader";
+import download from "./download";
 import search from "./search";
 import cache from "@serv/util/cache";
 import nodeCache from "node-cache";
@@ -22,4 +23,5 @@ router.use(cors({ origin: "*" }));
 router.use("/playlist", playListRouter);
 router.use("/watch", videoDownloader);
 router.use("/search", search);
+router.use("/download", download);
 export default router;
