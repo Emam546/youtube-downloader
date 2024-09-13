@@ -7,6 +7,7 @@ import { getSearchData } from "@src/API";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { ErrorMessage } from "../youtubeResult";
+import { SectionHeader } from "../common/header";
 type RelatedVideos = { title: string; id: string } & ReturnedSearch;
 export default function RelatedVideos() {
     let data = useSelector<StoreData, RelatedVideos[] | undefined>(
@@ -46,7 +47,7 @@ export default function RelatedVideos() {
     }
     return (
         <section>
-            <h3>Related Videos</h3>
+            <SectionHeader>Related Videos</SectionHeader>
             <div className="tw-grid tw-gap-8 tw-mt-2 tw-grid-cols-1 sm:tw-grid-cols-2 md:tw-grid-cols-3 lg:tw-grid-cols-4">
                 {data.map((video, i) => {
                     return (
