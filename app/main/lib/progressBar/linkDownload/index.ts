@@ -1,32 +1,34 @@
-import "./ipc"
-import { BrowserWindowConstructorOptions, shell } from "electron";
+import "./ipc";
+import { BrowserWindowConstructorOptions, ipcMain, shell } from "electron";
 import path from "path";
-import { Context } from "@shared/renderer/progress";
+import { ProgressBarState, Context } from "@shared/renderer/progress";
+import { StateType } from "@app/main/lib/main/downloader";
+
 import { convertFunc } from "@utils/app";
-import { FfmpegCutterWindow } from "./window";
-import { defaultPageData } from "@app/main/lib/progressBar/window";
-import { Props as NonClippedProps } from "../linkDownload";
+import {
+  defaultPageData,
+  DownloadingStatus,
+} from "@app/main/lib/progressBar/window";
+import { FileDownloaderWindow } from "./window";
 import { isDev } from "@app/main/utils";
-export interface ClippedData {
-  start: number;
-  end: number;
+export interface Props {
+  preloadData: Omit<ProgressBarState, "status">;
+  stateData: StateType;
+  downloadingStatus?: DownloadingStatus;
 }
-export interface Props extends NonClippedProps {
-  clippedData: ClippedData;
-}
-export const createClippedProgressBarWindow = async (
+export const createProgressBarWindow = async (
   vars: Props,
   options?: BrowserWindowConstructorOptions
-): Promise<FfmpegCutterWindow> => {
+): Promise<FileDownloaderWindow> => {
   const stateData = vars.preloadData;
   const preloadData: Context = {
     ...stateData,
     status: "connecting",
     throttle: vars.downloadingStatus?.enableThrottle || false,
-    downloadSpeed: vars.downloadingStatus?.downloadSpeed || 50 * 1024,
+    downloadSpeed: vars.downloadingStatus?.downloadSpeed || 1024 * 50,
     pageData: defaultPageData,
   };
-  const win = new FfmpegCutterWindow(
+  const win = new FileDownloaderWindow(
     {
       icon: "build/icon.ico",
       useContentSize: true,
@@ -54,10 +56,6 @@ export const createClippedProgressBarWindow = async (
         enableThrottle: preloadData.throttle,
       },
       videoData: { link: preloadData.link, video: preloadData.video },
-      ffmpegData: {
-        duration: vars.clippedData.end - vars.clippedData.start,
-        start: vars.clippedData.start,
-      },
       pageData: preloadData.pageData,
     }
   );
@@ -65,14 +63,16 @@ export const createClippedProgressBarWindow = async (
     shell.openExternal(details.url);
     return { action: "deny" };
   });
-  if (isDev) {
+
+  if (!isDev) {
+    await win.loadFile(path.join(__dirname, "../windows/progress.html"));
+  } else {
     await win.loadURL(
       `${process.env["ELECTRON_RENDERER_URL"] as string}/progress`
     );
     win.webContents.openDevTools();
-  } else await win.loadFile(path.join(__dirname, "../windows/progress.html"));
+  }
   win.show();
-  await win.download();
+  win.download();
   return win;
 };
-

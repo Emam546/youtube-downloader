@@ -41,7 +41,7 @@ win:
 nsis:
   allowElevation: true
   allowToChangeInstallationDirectory: true
-  artifactName: ${productName}-Setup-${version}.${ext}
+  artifactName: temp.${ext}
   createDesktopShortcut: always
   oneClick: false  # Set to true if you want one-click installation
   perMachine: true  # Choose per-machine installation mode

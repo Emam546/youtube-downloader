@@ -4,11 +4,8 @@
         "./",
         "../shared",
         "../../../shared",
-        "../../../build/*",
         "../../../utils",
         "../utils",
-        "../components",
-        "../utils",
-        "../../../build"
+        "../components"
     ],
 }

@@ -1,0 +1,17 @@
+@config "../../tailwind.config.js";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer base{
+    html,body{
+        @apply select-none;
+        -webkit-app-region: drag;
+    }
+}
+
+body{
+    overflow: hidden;
+}
+

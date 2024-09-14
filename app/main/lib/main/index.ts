@@ -1,53 +1,91 @@
+import "./ipc";
 import {
-    ConvertToIpCHandleMainFunc,
-    ConvertToIpCMainFunc,
-} from "@shared/api";
-import {
-    convertY2mateData,
-    getY2mateData,
-} from "@serv/routes/videoDownloader/api";
-import { getSearchData } from "@serv/routes/search/api";
-import { ApiMain } from "@src/types/api";
-import { getPlayListData } from "@serv/routes/playlist/api";
-import { DownloadY2mate } from "./downloadY2mate";
-import { DownloadFileToDesktop } from "./DownloadFile";
-type OnMethodsType = {
-    [K in keyof ApiMain.OnMethods]: ConvertToIpCMainFunc<ApiMain.OnMethods[K]>;
-};
-type OnceMethodsType = {
-    [K in keyof ApiMain.OnceMethods]: ConvertToIpCMainFunc<
-        ApiMain.OnceMethods[K]
-    >;
-};
-type HandelMethodsType = {
-    [K in keyof ApiMain.HandleMethods]: ConvertToIpCHandleMainFunc<
-        ApiMain.HandleMethods[K]
-    >;
-};
-type HandelOnceMethodsType = {
-    [K in keyof ApiMain.HandleOnceMethods]: ConvertToIpCHandleMainFunc<
-        ApiMain.HandleOnceMethods[K]
-    >;
-};
-export const OnMethods: OnMethodsType = {
-    downloadY2mate: DownloadY2mate,
-};
-export const OnceMethods: OnceMethodsType = {};
-export const HandleMethods: HandelMethodsType = {
-    getVideoData(_, ...args) {
-        return getY2mateData(...args);
+  BrowserWindow,
+  BrowserWindowConstructorOptions,
+  shell,
+} from "electron";
+import path from "path";
+import serve from "electron-serve";
+import { convertFunc } from "@utils/app";
+import { Context } from "@src/types/api";
+import { MainWindow } from "@app/main/lib/main/window";
+import { isDev, isProd } from "@app/main/utils";
+
+const appServe = isProd
+  ? serve({
+      directory: path.join(__dirname, "../renderer"),
+    })
+  : null;
+export const createMainWindow = async (
+  options: BrowserWindowConstructorOptions,
+  preloadData?: Context
+): Promise<BrowserWindow> => {
+  const state: Electron.BrowserWindowConstructorOptions = {
+    show: false,
+    autoHideMenuBar: true,
+  };
+
+  const getCurrentPosition = () => {
+    const position = win.getPosition();
+    const size = win.getSize();
+    return {
+      x: position[0],
+      y: position[1],
+      width: size[0],
+      height: size[1],
+    };
+  };
+
+  const saveState = () => {
+    if (!win.isMinimized() && !win.isMaximized()) {
+      Object.assign(state, getCurrentPosition());
+    }
+    // store.set(key, state);
+  };
+
+  const win = new MainWindow({
+    ...options,
+    ...state,
+    icon: "build/icon.ico",
+    webPreferences: {
+      ...state.webPreferences,
+      ...options.webPreferences,
+      sandbox: false,
+      preload: path.join(__dirname, "../preload/index.js"),
+      additionalArguments: [
+        convertFunc(
+          encodeURIComponent(JSON.stringify(preloadData || null)),
+          "data"
+        ),
+      ],
     },
-    getSearchData(_, ...args) {
-        return getSearchData(...args);
-    },
-    startConvertingVideo(_, ...args) {
-        return convertY2mateData(...args);
-    },
-    getPlaylistData(_, id: string) {
-        return getPlayListData(id);
-    },
-    Download(_, props) {
-        return DownloadFileToDesktop(props);
-    },
+  });
+
+  win.on("ready-to-show", () => {
+    win.maximize();
+    win.show();
+  });
+
+  win.webContents.setWindowOpenHandler((details) => {
+    shell.openExternal(details.url);
+    return { action: "deny" };
+  });
+  win.on("close", saveState);
+  if (isProd && appServe) {
+    await appServe(win);
+  } else if (isDev) {
+    await win.loadURL(`http://localhost:3000`);
+    win.webContents.openDevTools();
+    win.webContents.on("did-fail-load", () => {
+      win.webContents.reloadIgnoringCache();
+    });
+  } else throw new Error("Unrecognized environment");
+  return win;
 };
-export const HandleOnceMethods: HandelOnceMethodsType = {};
+
+// ObjectEntries(OnceMethods).forEach(([key, val]) => {
+//     ipcMain.once(key, val);
+// });
+// ObjectEntries(HandleOnceMethods).forEach(([key, val]) => {
+//     ipcMain.handleOnce(key, val);
+// });

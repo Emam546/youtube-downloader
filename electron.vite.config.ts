@@ -3,59 +3,54 @@ import { resolve } from "path";
 import react from "@vitejs/plugin-react";
 const isDevelopment = process.env.NODE_ENV == "development";
 export default defineConfig({
-    main: {
-        plugins: [externalizeDepsPlugin()],
-        build: {
-            rollupOptions: {
-                input: {
-                    index: isDevelopment
-                        ? resolve(__dirname, "app/main/dev.ts")
-                        : resolve(__dirname, "app/main/index.ts"),
-                },
-            },
+  main: {
+    plugins: [externalizeDepsPlugin()],
+    build: {
+      rollupOptions: {
+        input: {
+          index: isDevelopment
+            ? resolve(__dirname, "app/main/dev.ts")
+            : resolve(__dirname, "app/main/index.ts"),
         },
+      },
+    },
 
-        resolve: {
-            alias: {
-                "@shared": resolve("shared"),
-                "@app": resolve("./app"),
-                "@serv": resolve("./server/src"),
-                "@utils": resolve("./utils"),
-                "@shared/renderer/*": resolve("./app/renderer/shared"),
-                "@serv/*": resolve("./server/src"),
-                "@utils/*": resolve("./utils"),
-            },
-        },
+    resolve: {
+      alias: {
+        "@app": resolve("./app"),
+        "@serv": resolve("./server/src"),
+        "@utils": resolve("./utils"),
+      },
     },
-    preload: {
-        plugins: [externalizeDepsPlugin()],
-        build: {
-            rollupOptions: {
-                input: {
-                    index: resolve(__dirname, "./app/preload/index.ts"),
-                },
-            },
+  },
+  preload: {
+    plugins: [externalizeDepsPlugin()],
+    build: {
+      rollupOptions: {
+        input: {
+          index: resolve(__dirname, "./app/preload/index.ts"),
         },
+      },
     },
-    renderer: {
-        root: "./app/renderer",
-        build: {
-            outDir: "./out/windows/",
-            rollupOptions: {
-                input: {
-                    progress: resolve(__dirname, "app/renderer/progress.html"),
-                    finish: resolve(__dirname, "app/renderer/finish.html"),
-                },
-            },
+  },
+  renderer: {
+    root: "./app/renderer",
+    build: {
+      outDir: "./out/windows/",
+      rollupOptions: {
+        input: {
+          progress: resolve(__dirname, "app/renderer/progress.html"),
+          finish: resolve(__dirname, "app/renderer/finish.html"),
+          update: resolve(__dirname, "app/renderer/update.html"),
         },
-        resolve: {
-            alias: {
-                "@renderer": resolve("./app/renderer"),
-                "@shared": resolve("./shared"),
-                "@shared/renderer/*": resolve("./app/renderer/shared"),
-                "@utils": resolve("./utils"),
-            },
-        },
-        plugins: [react()],
+      },
     },
+    resolve: {
+      alias: {
+        "@renderer": resolve("./app/renderer"),
+        "@utils": resolve("./utils"),
+      },
+    },
+    plugins: [react()],
+  },
 });
