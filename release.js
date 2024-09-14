@@ -22,7 +22,7 @@ const options = {
   deleteEmptyTag: false,
   assets: assets,
 };
-const missedFile = files.some((file) => !fs.existsSync(file));
+const missedFile = assets.find((file) => !fs.existsSync(file));
 if (missedFile) throw new Error("missed File");
 console.log(assets);
 publishRelease(options, function (err, release) {
