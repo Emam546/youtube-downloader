@@ -4,8 +4,18 @@ import {
   BrowserWindowConstructorOptions,
   dialog,
 } from "electron";
-import { PowerStarter } from "./progressBar/utils";
+import { powerSaveBlocker } from "electron";
 
+export class PowerStarter {
+  private id: number | null = null;
+  start() {
+    if (this.id == null)
+      this.id = powerSaveBlocker.start("prevent-app-suspension");
+  }
+  stop() {
+    if (this.id != null) powerSaveBlocker.stop(this.id);
+  }
+}
 export class DownloadingWindow extends BrowserWindow {
   constructor(...options: ConstructorParameters<typeof BrowserWindow>) {
     super(...options);

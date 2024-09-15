@@ -1,15 +1,5 @@
-import { powerSaveBlocker } from "electron";
 import { Transform, TransformCallback, TransformOptions } from "stream";
-export class PowerStarter {
-    private id: number | null = null;
-    start() {
-        if (this.id == null)
-            this.id = powerSaveBlocker.start("prevent-app-suspension");
-    }
-    stop() {
-        if (this.id != null) powerSaveBlocker.stop(this.id);
-    }
-}
+
 
 export interface Options extends TransformOptions {
     bps: number;
