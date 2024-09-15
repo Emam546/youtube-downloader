@@ -9,11 +9,11 @@ export class UpdaterWindow extends DownloaderWindow {
   ) {
     super(options);
     this.autoUpdater = autoUpdater;
-    autoUpdater.on("error", () => {
-      this.close();
+    autoUpdater.on("error", (e) => {
+      this.error(e);
     });
     autoUpdater.on("updater-downloaded", () => {
-      this.close();
+      this.end();
     });
     autoUpdater.on("progress", (info) => {
       this.onGetChunk(info.chunk.length);
