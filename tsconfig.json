@@ -29,6 +29,6 @@
     ],
     "skipLibCheck": true
   },
-  "include": ["src", "utils", ".next/types/**/*.ts"],
+  "include": ["src", "shared", "utils", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
 }

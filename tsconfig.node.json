@@ -4,6 +4,7 @@
     "composite": true,
     "types": ["electron-vite/node"],
     "baseUrl": "./",
+    "rootDir": "./",
     "skipLibCheck": false,
     "paths": {
       "@app/*": ["./app/*"],
