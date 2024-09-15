@@ -10,7 +10,6 @@
         "composite": true,
         "baseUrl": "./",
         "skipLibCheck": false,
-        "rootDir": "./",
         "paths": {
             "@renderer/*": [
                 "./app/renderer/*"

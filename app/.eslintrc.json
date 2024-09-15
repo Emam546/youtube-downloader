@@ -5,9 +5,8 @@
   "rules": {
     "no-console": 1
   },
-  "ignorePatterns": [
-    "spec",
-    "preload",
-    "renderer"
-  ]
+  "parserOptions": {
+    "project": "./tsconfig.node.json"
+  },
+  "ignorePatterns": ["spec", "preload", "renderer"]
 }

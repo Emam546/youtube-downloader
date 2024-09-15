@@ -11,7 +11,7 @@
     "plugin:node/recommended"
   ],
   "parserOptions": {
-    "project": "./tsconfig.json"
+    "project": "./tsconfig.server.json"
   },
   "rules": {
     "no-console": 1,
