@@ -4,6 +4,13 @@ import https from "https";
 import http from "http";
 import { IncomingMessage } from "http";
 import logger from "jet-logger";
+
+function hasOwnProperty<K extends PropertyKey, T>(
+  obj: unknown,
+  key: K
+): obj is Record<K, T> {
+  return Object.prototype.hasOwnProperty.call(obj, key);
+}
 export const instance = axios.create({
   baseURL: "https://www.y2mate.com",
 });
@@ -66,8 +73,8 @@ export async function WrapResponse<T>(
     throw new Error(`${res.statusText} With Code Status ${res.status}`);
   return (await res.json()) as T;
 }
-export async function fetchData(id: string): Promise<Y2mateVideoData> {
-  const data = await WrapResponse<Y2mateVideoData>(
+export async function fetchData(id: string): Promise<Y2mateVideoData | null> {
+  const data = await WrapResponse(
     fetch("https://www.y2mate.com/mates/en948/analyzeV2/ajax", {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -100,7 +107,13 @@ export async function fetchData(id: string): Promise<Y2mateVideoData> {
       credentials: "include",
     })
   );
-  return data;
+  if (isGoodY2mateData(data)) return data;
+  return null;
+}
+function isGoodY2mateData(data: unknown): data is Y2mateVideoData {
+  if (!hasOwnProperty(data, "status") || data.status != "ok") return false;
+  if (!hasOwnProperty(data, "links")) return false;
+  return true;
 }
 export async function getY2mateData(id: string): Promise<ServerVideoInfo> {
   let y2mateData: null | Y2mateVideoData = null;
@@ -109,7 +122,6 @@ export async function getY2mateData(id: string): Promise<ServerVideoInfo> {
   } catch (error) {
     logger.err(error);
   }
-
   const googleData = await getInfo(id, { requestOptions: {} });
   return {
     vid: googleData.vid,
