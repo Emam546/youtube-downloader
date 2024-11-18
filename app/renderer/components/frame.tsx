@@ -35,15 +35,15 @@ const Frame = React.forwardRef<ComponentRef<"div">, ComponentProps<"div">>(
             <div
                 ref={ref}
                 {...props}
-                className="frame-drag flex items-center justify-between bg-white max-w-full"
+                className="flex items-center justify-between max-w-full bg-white frame-drag"
             >
-                <div className="flex items-center flex-1 gap-x-2 px-1">
+                <div className="flex items-center flex-1 px-1 gap-x-2">
                     <img
                         src={icon}
                         className="w-5"
                         alt=""
                     />
-                    <p className="text-ellipsis overflow-hidden max-w-xs whitespace-nowrap">
+                    <p className="max-w-xs overflow-hidden text-ellipsis whitespace-nowrap">
                         {title}
                     </p>
                 </div>
@@ -52,11 +52,10 @@ const Frame = React.forwardRef<ComponentRef<"div">, ComponentProps<"div">>(
                     <div className="flex justify-end">
                         <BaseButton
                             title="Minimize"
-                            disabled={false}
                             type="button"
                             className="hover:bg-gray-200"
                             onClick={() => {
-                                window.api.send("hideWindow");
+                                window.api.send("minimizeWindow");
                             }}
                         >
                             <FontAwesomeIcon icon={faMinus} />
@@ -66,7 +65,7 @@ const Frame = React.forwardRef<ComponentRef<"div">, ComponentProps<"div">>(
                             type="button"
                             className="enabled:hover:bg-gray-200 disabled:text-gray-300"
                             onClick={() => {
-                                window.api.send("minimizeWindow");
+                                window.api.send("ToggleWindowMaximizeState");
                             }}
                         >
                             <FontAwesomeIcon icon={faSquare} />

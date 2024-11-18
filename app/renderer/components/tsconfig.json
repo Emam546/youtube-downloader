@@ -9,6 +9,6 @@
         "../utils",
         "../components",
         "../utils",
-        "../../../build"
+        "../../../build/icon.ico"
     ],
 }
