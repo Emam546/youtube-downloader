@@ -123,7 +123,6 @@ export class BaseDownloaderWindow extends DownloaderWindow {
       webContents
     ) as BaseDownloaderWindow;
   }
-
   getRealSize() {
     if (fs.existsSync(this.downloadingState.path)) {
       const state = fs.statSync(this.downloadingState.path);

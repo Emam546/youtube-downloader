@@ -135,9 +135,6 @@ export default class AppUpdater extends EventEmitter {
     this.emit("update-available", update);
     return update;
   }
-  getWindowsName(update: Release) {
-    return update.assets.find((asset) => asset.name.includes("win"));
-  }
   async downloadUpdate(update: Release) {
     const directory = app.getPath("temp");
     const regEx = PlatForms[process.platform];

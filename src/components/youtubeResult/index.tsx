@@ -4,12 +4,13 @@ import { useDispatch } from "react-redux";
 import { videoActions } from "@src/store/res-slice";
 import { ReactNode, useEffect } from "react";
 import Loading from "../Loading";
-import { getVideoData } from "@src/API";
+import { getYoutubeVideoData } from "@src/API";
 import { useRouter } from "next/router";
 import VideoViewer from "../youtubeViewer";
 import TypeApplication from "../TypeApllication";
 import TableDownload from "./table";
 import Thumbnail from "./thumbnail";
+import { getTime } from "@src/utils/time";
 
 export function ErrorMessage({ children }: { children: ReactNode }) {
   return (
@@ -18,13 +19,7 @@ export function ErrorMessage({ children }: { children: ReactNode }) {
     </div>
   );
 }
-function getTime(data: unknown, defaultN: number, maxTime: number) {
-  if (typeof data == "string") return minMax(parseInt(data), maxTime);
-  return defaultN;
-}
-function minMax(val: number, max: number, min: number = 0) {
-  return Math.max(min, Math.min(val, max));
-}
+
 declare module "@distube/ytdl-core" {
   interface videoFormat {
     loudnessDb?: number;
@@ -46,7 +41,7 @@ export default function YoutubeResult() {
   const dispatch = useDispatch();
   const paramQuery = useQuery({
     queryKey: ["video", id],
-    queryFn: ({ signal }) => getVideoData(id, signal),
+    queryFn: ({ signal }) => getYoutubeVideoData(id, signal),
     enabled: id != undefined && validateID(id),
     cacheTime: 1 * 1000 * 60,
     staleTime: 1 * 1000 * 60,
@@ -113,6 +108,7 @@ export default function YoutubeResult() {
             />
           </div>
         </div>
+
       </section>
     </>
   );

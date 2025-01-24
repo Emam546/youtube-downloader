@@ -2,6 +2,7 @@ import "./ipc";
 import {
   BrowserWindow,
   BrowserWindowConstructorOptions,
+  globalShortcut,
   shell,
 } from "electron";
 import path from "path";
@@ -78,6 +79,13 @@ export const createMainWindow = async (
     win.webContents.openDevTools();
     win.webContents.on("did-fail-load", () => {
       win.webContents.reloadIgnoringCache();
+    });
+    globalShortcut.register("Ctrl+Shift+I", () => {
+      if (win.webContents.isDevToolsOpened()) {
+        win.webContents.closeDevTools();
+      } else {
+        win.webContents.openDevTools();
+      }
     });
   } else throw new Error("Unrecognized environment");
   return win;

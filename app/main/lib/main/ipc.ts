@@ -10,6 +10,7 @@ import { DownloadY2mate } from "./downloadY2mate";
 import { DownloadFileToDesktop } from "./DownloadFile";
 import { ObjectEntries } from "@utils/index";
 import { ipcMain } from "electron";
+import { downloadVideoAndExtractMetadata } from "./getVideoData";
 type OnMethodsType = {
   [K in keyof ApiMain.OnMethods]: ConvertToIpCMainFunc<ApiMain.OnMethods[K]>;
 };
@@ -34,6 +35,9 @@ export const OnMethods: OnMethodsType = {
 export const OnceMethods: OnceMethodsType = {};
 export const HandleMethods: HandelMethodsType = {
   getVideoData(_, ...args) {
+    return downloadVideoAndExtractMetadata(...args);
+  },
+  getYoutubeVideoData(_, ...args) {
     return getY2mateData(...args);
   },
   getSearchData(_, ...args) {
