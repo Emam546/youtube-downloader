@@ -51,7 +51,6 @@ export default function VideoViewer({
             height="100%"
             playing={playing}
             onPlay={() => {
-              window.api.send("log", "start");
               if (!hasPlayed) {
                 if (seekedOut) setPlaying(false);
                 else {
