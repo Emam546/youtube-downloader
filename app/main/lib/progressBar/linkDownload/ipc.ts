@@ -20,7 +20,7 @@ type HandelOnceMethodsType = {
     Api.HandleOnceMethods[K]
   >;
 };
-export type FlagType = "w" | "a";
+
 export const OnMethods: OnMethodsType = {
   cancel(e) {
     const window = BaseDownloaderWindow.fromWebContents(e.sender);
@@ -34,7 +34,7 @@ export const OnMethods: OnMethodsType = {
     createFinishWindow({
       preloadData: {
         fileSize: window.fileSize || window.curSize,
-        link: `https://www.youtube.com/watch?v=${window.videoData.vid}`,
+        link: window.videoData.previewLink,
         path: window.downloadingState.path,
       },
     }).then(() => {

@@ -1,7 +1,5 @@
-import { createClippedProgressBarWindow } from "./lib/progressBar/ffmpeg";
+import { createClippedProgressBarWindow } from "./lib/progressBar/ffmpgeCutter";
 import app from "./index";
-import { createUpdateWindow } from "./lib/update";
-import { autoUpdater } from "electron-updater";
 const link = "https://www.w3schools.com/html/mov_bbb.mp4";
 const start = 100;
 const end = 3 + start;
@@ -14,7 +12,7 @@ async function ContinuedWithThrottle() {
       path: output,
       video: {
         title: "Title",
-        vid: "id",
+        previewLink: "",
       },
     },
     stateData: {

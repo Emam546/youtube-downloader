@@ -6,12 +6,23 @@ import {
   faMusic,
   faVideo,
 } from "@fortawesome/free-solid-svg-icons";
+<<<<<<< HEAD
 import { DataClipped, ServerVideoInfo } from "@serv/routes/videoDownloader/api";
 import { convertVideoY2mate, instance } from "@src/API";
 import { useQuery } from "@tanstack/react-query";
+=======
+import {
+  ClippingDataType,
+  VideoDataInfoType,
+  ServerVideoInfo,
+} from "@serv/routes/videoDownloader/api";
+import { VideoData as MergeVideoData } from "@app/main/lib/main/mergeVideo";
+import { instance } from "@src/API";
+>>>>>>> master
 import { Model } from "./model";
 import MapData, { VideoData } from "./column";
 import { Label } from "./label";
+import ytdl, { videoFormat, chooseFormat } from "@distube/ytdl-core";
 
 type TabsType = "VIDEO" | "AUDIO" | "OTHERS";
 
@@ -57,6 +68,27 @@ export function AudioLoudnessType(
   if (diff == 0) return "Same";
   if (a < b) return "Low";
   return "High";
+<<<<<<< HEAD
+=======
+}
+type VideoYoutubeLink = ClippingDataType<
+  Omit<VideoDataInfoType, "previewLink"> & { vid: string }
+>;
+type MergeVideoYoutubeLink = ClippingDataType<
+  Omit<MergeVideoData, "previewLink"> & { vid: string }
+>;
+function downloadYoutube(data: VideoYoutubeLink) {
+  return window.api.send("downloadVideoLink", {
+    previewLink: `https://www.youtube.com/watch?v=${data.vid}`,
+    ...data,
+  });
+}
+function MergeVideo(data: MergeVideoYoutubeLink) {
+  return window.api.send("mergeVideo", {
+    previewLink: `https://www.youtube.com/watch?v=${data.vid}`,
+    ...data,
+  });
+>>>>>>> master
 }
 export type TabsData = VideoData[];
 export interface Props {
@@ -76,6 +108,7 @@ export default function TableDownload({
   const [state, setState] = useState<TabsType>("VIDEO");
   const ClippedState = start != 0 || end != duration;
   const [modelState, setModelState] = useState<ModelStateType | null>(null);
+<<<<<<< HEAD
   const [DownloadData, setDownloadData] = useState<DataClipped>();
   const AskingQuery = useQuery({
     retry: 1,
@@ -139,6 +172,57 @@ export default function TableDownload({
       }),
     ...data.formats
       .filter((v) => v.hasVideo && v.hasAudio)
+=======
+  const [DownloadData, setDownloadData] = useState<VideoYoutubeLink>();
+
+  useEffect(() => {
+    setDownloadData(undefined);
+  }, [modelState]);
+  data.formats = data.formats.reduce((acc, v) => {
+    const state = !acc.some(
+      (g) =>
+        g.codecs == v.codecs &&
+        g.quality == v.quality &&
+        g.container == v.container &&
+        g.loudnessDb == v.loudnessDb
+    );
+    if (state) acc.push(v);
+    return acc;
+  }, [] as videoFormat[]);
+  const audioMerge =
+    data.formats.reduce((acc, cur) => {
+      if (!(cur.hasAudio && !cur.hasVideo)) return acc;
+      if (cur.container.toLowerCase() != "mp4") return acc;
+      if (!acc) return cur;
+      if (parseInt(acc.contentLength) > parseInt(cur.contentLength)) return acc;
+      if (cur.loudnessDb! < acc.loudnessDb!) return acc;
+      return cur;
+    }, null as null | videoFormat) ||
+    data.formats.reduce((acc, cur) => {
+      if (!(cur.hasAudio && !cur.hasVideo)) return acc;
+      if (!acc) return cur;
+      if (cur.loudnessDb! < acc.loudnessDb!) return acc;
+      return cur;
+    }, null as null | videoFormat);
+
+  const videos: TabsData = [
+    ...data.formats
+      .filter(
+        (v) =>
+          v.hasVideo &&
+          !v.hasAudio &&
+          window.Environment == "desktop" &&
+          audioMerge != undefined
+      )
+      .reduce((acc, v) => {
+        if (
+          v.container.toLowerCase() != "mp4" ||
+          acc.some((g) => v.qualityLabel == g.qualityLabel)
+        )
+          return acc;
+        return [...acc, v];
+      }, [] as videoFormat[])
+>>>>>>> master
       .map((video) => {
         return {
           sizeText: parseInt(video.contentLength)
@@ -147,11 +231,15 @@ export default function TableDownload({
           fileTypeText: (
             <>
               {video.qualityLabel} (.{video.container})
+<<<<<<< HEAD
               <Label mode="blue">Original</Label>
+=======
+>>>>>>> master
             </>
           ),
           q: video.qualityLabel,
           download() {
+<<<<<<< HEAD
             if (window.Environment == "web") {
               const a = document.createElement("a");
               a.href = video.url;
@@ -235,6 +323,139 @@ export default function TableDownload({
                 fquality: audio.qualityLabel,
                 ftype: audio.container!,
                 clipped: false,
+=======
+            if (ClippedState) {
+              MergeVideo({
+                vid: id,
+                title: data.videoDetails.title,
+                dlink: video.url,
+                fquality: video.qualityLabel,
+                ftype: video.container!,
+                start,
+                end,
+                clipped: true,
+                mergeData: {
+                  audioLink: audioMerge!.url,
+                  videoLink: video.url,
+                },
+              });
+            } else {
+              MergeVideo({
+                vid: id,
+                title: data.videoDetails.title,
+                dlink: video.url,
+                fquality: video.qualityLabel,
+                ftype: video.container!,
+                clipped: false,
+                mergeData: {
+                  audioLink: audioMerge!.url,
+                  videoLink: video.url,
+                },
+              });
+            }
+          },
+        };
+      }),
+    ...data.formats
+      .filter((v) => v.hasVideo && v.hasAudio)
+
+      .map((video) => {
+        return {
+          sizeText: parseInt(video.contentLength)
+            ? formatBytes(parseInt(video.contentLength), 0)
+            : "MB",
+          fileTypeText: (
+            <>
+              {video.qualityLabel} (.{video.container})
+              <Label mode="blue">Faster</Label>
+            </>
+          ),
+          q: video.qualityLabel,
+          download() {
+            if (window.Environment == "web") {
+              const a = document.createElement("a");
+              a.href = video.url;
+              a.click();
+            } else {
+              if (ClippedState) {
+                downloadYoutube({
+                  vid: id,
+                  title: data.videoDetails.title,
+                  dlink: video.url,
+                  fquality: video.qualityLabel,
+                  ftype: video.container!,
+                  start,
+                  end,
+                  clipped: true,
+                });
+              } else {
+                downloadYoutube({
+                  vid: id,
+                  title: data.videoDetails.title,
+                  dlink: video.url,
+                  fquality: video.qualityLabel,
+                  ftype: video.container!,
+                  clipped: false,
+                });
+              }
+            }
+          },
+        };
+      }),
+  ].sort((a, b) => {
+    return parseInt(b.q) - parseInt(a.q);
+  });
+
+  const audios: TabsData = data.formats
+    .filter((v) => v.hasAudio && !v.hasVideo)
+    .map((audio) => {
+      const loudnessType = AudioLoudnessType(
+        audio.loudnessDb!,
+        data.info.loudness
+      );
+      return {
+        sizeText: `${formatBytes(parseInt(audio.contentLength), 0)}`,
+        fileTypeText: (
+          <p>
+            {`${audio.container.toUpperCase()} - (${audio.audioCodec?.toUpperCase()}) ${
+              audio.audioBitrate
+            }kbps`}
+            {loudnessType != "Same" && (
+              <>
+                <Label mode="blue">
+                  {loudnessType == "Low" && "Quiet"}
+                  {loudnessType == "High" && "Loud"}
+                </Label>
+              </>
+            )}
+          </p>
+        ),
+        download() {
+          if (window.Environment == "web") {
+            const a = document.createElement("a");
+            a.href = audio.url;
+            a.click();
+          } else {
+            if (ClippedState) {
+              downloadYoutube({
+                vid: id,
+                title: data.videoDetails.title,
+                dlink: audio.url,
+                fquality: audio.qualityLabel,
+                ftype: audio.container!,
+                start,
+                end,
+                clipped: true,
+              });
+            } else {
+              downloadYoutube({
+                vid: id,
+                title: data.videoDetails.title,
+                dlink: audio.url,
+                fquality: audio.qualityLabel,
+                ftype: audio.container!,
+                clipped: false,
+>>>>>>> master
               });
             }
           }
@@ -261,7 +482,11 @@ export default function TableDownload({
             a.click();
           } else {
             if (ClippedState) {
+<<<<<<< HEAD
               window.api.send("downloadY2mate", {
+=======
+              downloadYoutube({
+>>>>>>> master
                 vid: id,
                 title: data.videoDetails.title,
                 dlink: video.url,
@@ -272,7 +497,11 @@ export default function TableDownload({
                 clipped: true,
               });
             } else {
+<<<<<<< HEAD
               window.api.send("downloadY2mate", {
+=======
+              downloadYoutube({
+>>>>>>> master
                 vid: id,
                 title: data.videoDetails.title,
                 dlink: video.url,
@@ -297,7 +526,11 @@ export default function TableDownload({
         onDownload={() => {
           if (!DownloadData) throw new Error("undefined Download State");
           if (window.Environment == "desktop") {
+<<<<<<< HEAD
             window.api.send("downloadY2mate", DownloadData);
+=======
+            downloadYoutube(DownloadData);
+>>>>>>> master
             setModelState(null);
           } else {
             const baseURL = instance.defaults.baseURL || location.origin;

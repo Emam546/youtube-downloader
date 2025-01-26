@@ -1,34 +1,33 @@
 import "./ipc";
 import { BrowserWindowConstructorOptions, shell } from "electron";
 import path from "path";
-import { ProgressBarState, Context } from "@shared/renderer/progress";
-import { StateType } from "@app/main/lib/main/downloader";
-
+import { Context } from "@shared/renderer/progress";
 import { convertFunc } from "@utils/app";
-import {
-  defaultPageData,
-  DownloadingStatus,
-} from "@app/main/lib/progressBar/window";
-import { FileDownloaderWindow } from "./window";
+import { FfmpegWindow } from "./window";
+import { defaultPageData } from "@app/main/lib/progressBar/window";
+import { Props as NonClippedProps } from "../linkDownload";
 import { isDev } from "@app/main/utils";
-export interface Props {
-  preloadData: Omit<ProgressBarState, "status">;
-  stateData: StateType;
-  downloadingStatus?: DownloadingStatus;
+
+export interface ClippedData {
+  start: number;
+  end: number;
 }
-export const createProgressBarWindow = async (
+export interface Props extends NonClippedProps {
+  clippedData: ClippedData;
+}
+export const createClippedProgressBarWindow = async (
   vars: Props,
   options?: BrowserWindowConstructorOptions
-): Promise<FileDownloaderWindow> => {
+): Promise<FfmpegWindow> => {
   const stateData = vars.preloadData;
   const preloadData: Context = {
     ...stateData,
     status: "connecting",
     throttle: vars.downloadingStatus?.enableThrottle || false,
-    downloadSpeed: vars.downloadingStatus?.downloadSpeed || 1024 * 50,
+    downloadSpeed: vars.downloadingStatus?.downloadSpeed || 50 * 1024,
     pageData: defaultPageData,
   };
-  const win = new FileDownloaderWindow(
+  const win = new FfmpegWindow(
     {
       icon: "build/icon.ico",
       useContentSize: true,
@@ -56,6 +55,10 @@ export const createProgressBarWindow = async (
         enableThrottle: preloadData.throttle,
       },
       videoData: { link: preloadData.link, video: preloadData.video },
+      ffmpegData: {
+        duration: vars.clippedData.end - vars.clippedData.start,
+        start: vars.clippedData.start,
+      },
       pageData: preloadData.pageData,
     }
   );
@@ -63,16 +66,13 @@ export const createProgressBarWindow = async (
     shell.openExternal(details.url);
     return { action: "deny" };
   });
-
-  if (!isDev) {
-    await win.loadFile(path.join(__dirname, "../windows/progress.html"));
-  } else {
+  if (isDev) {
     await win.loadURL(
       `${process.env["ELECTRON_RENDERER_URL"] as string}/progress`
     );
     win.webContents.openDevTools();
-  }
+  } else await win.loadFile(path.join(__dirname, "../windows/progress.html"));
   win.show();
-  win.download();
+  await win.download();
   return win;
 };

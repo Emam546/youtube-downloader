@@ -11,7 +11,7 @@ export interface VideoData {
   link: string;
   video: {
     title: string;
-    vid: string;
+    previewLink: string;
   };
 }
 export interface PipeListener extends NodeJS.EventEmitter {

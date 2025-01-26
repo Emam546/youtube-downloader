@@ -1,7 +1,13 @@
 import "../main/pre-start";
+<<<<<<< HEAD
 import {
   convertY2mateData,
   getY2mateData,
+=======
+import { DownloadTheFile } from "@app/main/lib/progressBar/linkDownload/downloader";
+import {
+  getYoutubeData,
+>>>>>>> master
   ServerVideoInfo,
 } from "@serv/routes/videoDownloader/api";
 import { ObjectEntries } from "@utils/index";
@@ -147,17 +153,24 @@ describe("Test Download function", () => {
   jest.setTimeout(50000);
   let val: ServerVideoInfo;
   beforeAll(async () => {
+<<<<<<< HEAD
     val = await getY2mateData(id);
+=======
+    val = await getYoutubeData(id);
+>>>>>>> master
   });
   test("Test Is it Download from youtube", async () => {
     const format = val.formats[0];
     const response = await DownloadTheFile(format!.url);
     testDownloadResponse(response);
   });
+<<<<<<< HEAD
   test("Test is it Download from y2mate", async () => {
     const format = ObjectEntries(val.links.mp4);
     const res = await convertY2mateData(id, format[0][1].k as string);
     const response = await DownloadTheFile(res.dlink);
     testDownloadResponse(response);
   });
+=======
+>>>>>>> master
 });

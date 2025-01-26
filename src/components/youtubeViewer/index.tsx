@@ -13,6 +13,7 @@ import Controls, { AspectsType, ControlButton } from "./controls";
 import classNames from "classnames";
 import { ProgressBar } from "./progressBar";
 export interface Props {
+<<<<<<< HEAD
   id?: string;
   link?: string;
   duration: number;
@@ -22,6 +23,12 @@ export interface Props {
     | string
     | boolean
     | ReactElement<any, string | JSXElementConstructor<any>>;
+=======
+  id: string;
+  duration: number;
+  start: number;
+  end: number;
+>>>>>>> master
   setDuration(start: number, end: number): any;
 }
 export default function VideoViewer({
@@ -30,8 +37,11 @@ export default function VideoViewer({
   start,
   end,
   setDuration,
+<<<<<<< HEAD
   link,
   light,
+=======
+>>>>>>> master
 }: Props) {
   const [playing, setPlaying] = useState(false);
   const [curDuration, setCurDuration] = useState(start);
@@ -43,7 +53,11 @@ export default function VideoViewer({
   useEffect(() => {
     setCurDuration(start);
     setHasPlayed(false);
+<<<<<<< HEAD
   }, [id, link]);
+=======
+  }, [id]);
+>>>>>>> master
   return (
     <div>
       <div className="tw-px-2">
@@ -61,13 +75,23 @@ export default function VideoViewer({
               left: 0,
             }}
             width="100%"
+<<<<<<< HEAD
             light
+=======
+>>>>>>> master
             height="100%"
             playing={playing}
             onPlay={() => {
               if (!hasPlayed) {
                 if (seekedOut) setPlaying(false);
+<<<<<<< HEAD
                 else if (start > 0) ref.current?.seekTo(start);
+=======
+                else {
+                  setPlaying(true);
+                  if (start > 0) ref.current?.seekTo(start);
+                }
+>>>>>>> master
                 setSeekedOut(true);
                 setHasPlayed(true);
               } else {
@@ -96,9 +120,16 @@ export default function VideoViewer({
             }}
             onSeek={(second) => {
               setCurDuration(second);
+<<<<<<< HEAD
             }}
             ref={ref}
             url={id ? `https://www.youtube.com/watch?v=${id}` : link}
+=======
+              setSeekedOut(true);
+            }}
+            ref={ref}
+            url={`https://www.youtube.com/watch?v=${id}`}
+>>>>>>> master
           />
           <div className="tw-absolute tw-bottom-0 tw-left-0 tw-w-full">
             <ProgressBar

@@ -1,6 +1,6 @@
 import "./pre-start";
 import "./helpers/ipcMain";
-import "./updater";
+import autoUpdater from "./updater";
 import { createMainWindow } from "./lib/main";
 import { app } from "electron";
 import { electronApp } from "@electron-toolkit/utils";
@@ -46,7 +46,7 @@ else
         if (data)
           MainWindow.Window.webContents.send("getYoutubeUrl", data.youtubeLink);
       }
-    } else createWindow(argv);
+    } else if (!autoUpdater.hasUpdate) createWindow(argv);
   });
 
 app.on("window-all-closed", () => {

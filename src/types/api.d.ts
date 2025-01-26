@@ -1,11 +1,16 @@
+<<<<<<< HEAD
 import {
   getY2mateData,
   convertY2mateData,
 } from "@serv/routes/videoDownloader/api";
 
+=======
+import { getYoutubeData } from "@serv/routes/videoDownloader/api";
+>>>>>>> master
 import { getSearchData as getSearchData } from "@serv/routes/search/api";
 import { getPlayListData } from "@serv/routes/playlist/api";
-import type { DownloadY2mate } from "@app/main/lib/main/downloadY2mate";
+import { DownloadVideoLink } from "@app/main/lib/main/downloadVideoLink";
+import { MergeVideoData } from "@app/main/lib/main/mergeVideo";
 import type { DownloadFileToDesktop } from "@app/main/lib/main/DownloadFile";
 import type { downloadVideoAndExtractMetadata } from "@app/main/lib/main/getVideoData";
 import { ConvertFromIpCMainFunc } from "@shared/api";
@@ -28,6 +33,7 @@ export namespace ApiRender {
 }
 export namespace ApiMain {
   interface OnMethods {
+<<<<<<< HEAD
     downloadY2mate: ConvertFromIpCMainFunc<DownloadY2mate>;
   }
   interface OnceMethods {}
@@ -37,6 +43,16 @@ export namespace ApiMain {
     getSearchData: typeof getSearchData;
     getPlaylistData: typeof getPlayListData;
     startConvertingVideo: typeof convertY2mateData;
+=======
+    downloadVideoLink: ConvertFromIpCMainFunc<typeof DownloadVideoLink>;
+    mergeVideo: ConvertFromIpCMainFunc<typeof MergeVideoData>;
+  }
+  interface OnceMethods {}
+  interface HandleMethods {
+    getVideoData: typeof getYoutubeData;
+    getSearchData: typeof getSearchData;
+    getPlaylistData: typeof getPlayListData;
+>>>>>>> master
     Download: typeof DownloadFileToDesktop;
   }
   interface HandleOnceMethods {}

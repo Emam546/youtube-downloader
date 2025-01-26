@@ -1,10 +1,14 @@
 import axios from "axios";
 import { ResultData } from "@serv/routes/search/api";
+<<<<<<< HEAD
 import type {
   ServerVideoInfo,
   ServerConvertResults,
 } from "@serv/routes/videoDownloader/api";
 import type { VideoInfoData } from "@app/main/lib/main/getVideoData";
+=======
+import type { ServerVideoInfo } from "@serv/routes/videoDownloader/api";
+>>>>>>> master
 import { ReturnedData as PlayListData } from "youtube-playlists-js";
 export const instance = axios.create({});
 export async function getSearchData(search: string): Promise<ResultData> {
@@ -62,6 +66,7 @@ export interface ModelStateType {
   key: string;
   vid: string;
 }
+<<<<<<< HEAD
 export async function convertVideoY2mate(
   state: ModelStateType,
   signal?: AbortSignal
@@ -84,3 +89,6 @@ export async function convertVideoY2mate(
     return data.data.data;
   }
 }
+=======
+
+>>>>>>> master

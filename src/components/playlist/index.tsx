@@ -16,7 +16,11 @@ export default function PlayList() {
 
   const paramQuery = useQuery({
     queryKey: ["list", listId],
+<<<<<<< HEAD
     queryFn: ({ signal }) => getYoutubeListData(listId, signal),
+=======
+    queryFn: ({ signal }) => getListData(listId, signal),
+>>>>>>> master
     enabled: listId != undefined,
     cacheTime: 1 * 1000 * 60,
     staleTime: 1 * 1000 * 60,
@@ -52,7 +56,11 @@ export default function PlayList() {
     <section className="tw-my-10">
       <SectionHeader>PlayList</SectionHeader>
       {!paramQuery.data && (
+<<<<<<< HEAD
         <p className="tw-mx-3">The playlist dosen't exist</p>
+=======
+        <p className="tw-mx-3">The playlist doesn't exist</p>
+>>>>>>> master
       )}
       <div
         className="tw-max-h-[30rem] tw-overflow-auto tw-mb-10 pr-2"
@@ -62,7 +70,11 @@ export default function PlayList() {
           return (
             <div key={`${listId}-${i}`}>
               <div
+<<<<<<< HEAD
                 className="list tw-flex tw-items-stretch px-3 py-3 tw-rounded-xl hover:tw-bg-blue-100 aria-selected:tw-bg-blue-50"
+=======
+                className="px-3 py-3 list tw-flex tw-items-stretch tw-rounded-xl hover:tw-bg-blue-100 aria-selected:tw-bg-blue-50"
+>>>>>>> master
                 aria-selected={id == video.videoId}
               >
                 <div className="tw-flex tw-items-center">
@@ -82,7 +94,11 @@ export default function PlayList() {
                         />
                       </div>
                       <div className="tw-flex-1">
+<<<<<<< HEAD
                         <p className="tw-leading-5 pt-2 text-black tw-text-ellipsis hover:tw-text-primary tw-cursor-pointer ">
+=======
+                        <p className="pt-2 text-black tw-leading-5 tw-text-ellipsis hover:tw-text-primary tw-cursor-pointer ">
+>>>>>>> master
                           {video.title}
                         </p>
                       </div>
