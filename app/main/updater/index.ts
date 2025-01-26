@@ -16,6 +16,7 @@ app.whenReady().then(async () => {
 });
 autoUpdater.once("update-available", (update) => {
   console.log("update available");
+  app.quit();
   autoUpdater.once("progress", async (info) => {
     console.log("start downloading");
     await createUpdateWindow({

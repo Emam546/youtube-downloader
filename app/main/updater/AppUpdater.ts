@@ -117,6 +117,7 @@ export default interface AppUpdater {
 export default class AppUpdater extends EventEmitter {
   data: Data;
   update?: Release;
+  public hasUpdate: boolean = false;
   constructor(data: Data) {
     super();
     this.data = data;
@@ -131,9 +132,14 @@ export default class AppUpdater extends EventEmitter {
     const update = response.data.find((release) => {
       return !semver.gte(app.getVersion(), release.tag_name);
     });
-    if (!update) return this.emit("update-not-available");
-    this.emit("update-available", update);
-    return update;
+    if (!update) {
+      this.hasUpdate = false;
+      return this.emit("update-not-available");
+    } else {
+      this.emit("update-available", update);
+      this.hasUpdate = true;
+      return update;
+    }
   }
   getWindowsName(update: Release) {
     return update.assets.find((asset) => asset.name.includes("win"));
