@@ -1,23 +1,27 @@
-import "./ipc"
+import "./ipc";
 import { BrowserWindowConstructorOptions, shell } from "electron";
 import path from "path";
 import { Context } from "@shared/renderer/progress";
 import { convertFunc } from "@utils/app";
-import { FfmpegCutterWindow } from "./window";
+import { FfmpegMergeWindow, MergeDataType } from "./window";
+export type { MergeDataType } from "./window";
 import { defaultPageData } from "@app/main/lib/progressBar/window";
 import { Props as NonClippedProps } from "../linkDownload";
 import { isDev } from "@app/main/utils";
+
 export interface ClippedData {
   start: number;
   end: number;
 }
 export interface Props extends NonClippedProps {
-  clippedData: ClippedData;
+  clippedData?: ClippedData;
+  mergeData: MergeDataType;
 }
-export const createClippedProgressBarWindow = async (
+
+export const createMergeProgressBarWindow = async (
   vars: Props,
   options?: BrowserWindowConstructorOptions
-): Promise<FfmpegCutterWindow> => {
+): Promise<FfmpegMergeWindow> => {
   const stateData = vars.preloadData;
   const preloadData: Context = {
     ...stateData,
@@ -26,7 +30,7 @@ export const createClippedProgressBarWindow = async (
     downloadSpeed: vars.downloadingStatus?.downloadSpeed || 50 * 1024,
     pageData: defaultPageData,
   };
-  const win = new FfmpegCutterWindow(
+  const win = new FfmpegMergeWindow(
     {
       icon: "build/icon.ico",
       useContentSize: true,
@@ -54,12 +58,15 @@ export const createClippedProgressBarWindow = async (
         enableThrottle: preloadData.throttle,
       },
       videoData: { link: preloadData.link, video: preloadData.video },
-      ffmpegData: {
-        duration: vars.clippedData.end - vars.clippedData.start,
-        start: vars.clippedData.start,
-      },
+      ffmpegData: vars.clippedData
+        ? {
+            duration: vars.clippedData.end - vars.clippedData.start,
+            start: vars.clippedData.start,
+          }
+        : undefined,
       pageData: preloadData.pageData,
-    }
+    },
+    vars.mergeData
   );
   win.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url);
@@ -75,4 +82,3 @@ export const createClippedProgressBarWindow = async (
   await win.download();
   return win;
 };
-

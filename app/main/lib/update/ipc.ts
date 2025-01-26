@@ -16,7 +16,7 @@ type HandelOnceMethodsType = {
     Api.HandleOnceMethods[K]
   >;
 };
-export type FlagType = "w" | "a";
+
 export const OnMethods: OnMethodsType = {};
 export const OnceMethods: OnceMethodsType = {};
 export const HandleMethods: HandelMethodsType = {};

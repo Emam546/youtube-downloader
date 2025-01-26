@@ -1,18 +1,18 @@
 import { BrowserWindowConstructorOptions } from "electron";
-import { getVideoInfo } from "./utils";
+import { getVideoInfo } from "../utils/ffmpeg";
 import { BaseDownloaderWindow, DownloaderData } from "../window";
 import ffmpeg from "fluent-ffmpeg";
 import fs from "fs";
-import { continueDownloading, getTempName } from "./continueDownloading";
+import { getTempName } from "../ffmpgeCutter/continueDownloading";
 import path from "path";
 import { ProgressBarState } from "@app/renderer/shared/progress";
-export type FlagType = "w" | "a";
+
 export interface FfmpegVideoData {
   start: number;
   duration: number;
 }
 export interface FFmpegDownloaderData extends DownloaderData {
-  ffmpegData: FfmpegVideoData;
+  ffmpegData?: FfmpegVideoData;
 }
 function timeStringToSeconds(timeString: string) {
   // Split the time string into hours, minutes, and seconds
@@ -24,8 +24,8 @@ function timeStringToSeconds(timeString: string) {
   // Convert everything to seconds
   return hours * 3600 + minutes * 60 + seconds;
 }
-export class FfmpegCutterWindow extends BaseDownloaderWindow {
-  readonly ffmpegData: FfmpegVideoData;
+export class FfmpegWindowOrg extends BaseDownloaderWindow {
+  readonly ffmpegData?: FfmpegVideoData;
   rebuildingState = false;
   constructor(
     options: BrowserWindowConstructorOptions,
@@ -34,74 +34,65 @@ export class FfmpegCutterWindow extends BaseDownloaderWindow {
     super(options, data);
     this.ffmpegData = data.ffmpegData;
   }
-  async download(num = 0, err?: unknown) {
-    if (num > FfmpegCutterWindow.MAX_TRIES) return this.error(err);
+
+  async continuoDownloading(
+    command: ffmpeg.FfmpegCommand,
+    num = 0,
+    err?: unknown
+  ) {
+    if (num > FfmpegWindowOrg.MAX_TRIES) return this.error(err);
+
     try {
-      this.setCurSize(0);
-      this.changeState("connecting");
-      const format = path.extname(this.downloadingState.path).slice(1);
-      this.setResumability(true);
-      if (
-        this.downloadingState.continued &&
-        fs.existsSync(this.downloadingState.path)
-      ) {
+      const metaData = await getVideoInfo(this.downloadingState.path);
+      const duration = metaData.format.duration;
+      if (!duration) throw new Error("Unrecognized time");
+      this.rebuildingState = true;
+      this.setThrottleState(this.enableThrottle);
+      const commando = command
+        .outputOptions("-movflags frag_keyframe+empty_moov")
+        .on("error", (err) => this.error(err))
+        .on("progress", ({ timemark, ...percent }) => {
+          if (
+            this.rebuildingState &&
+            timeStringToSeconds(timemark as string) > duration
+          ) {
+            this.setPauseButton("Pause");
+            this.rebuildingState = false;
+            this.setThrottleState(this.enableThrottle);
+          }
+          const curSize = (percent.targetSize as number) * 1024;
+          if (this.fileSize != curSize) this.setFileSize(curSize);
+        })
+        .on("start", () => {
+          this.setPauseButton("Pause");
+        });
+
+      const pipe = this.pipe();
+      commando.mergeToFile(pipe, path.dirname(this.downloadingState.path));
+      this.on("close", () => {
         try {
-          const metaData = await getVideoInfo(this.downloadingState.path);
-          const duration = metaData.format.duration;
-          if (!duration) throw new Error("Unrecognized time");
-          this.rebuildingState = true;
-          this.setThrottleState(this.enableThrottle);
-          const command = (
-            await continueDownloading(
-              this.link,
-              this.downloadingState.path,
-              this.ffmpegData.start,
-              this.ffmpegData.duration
-            )
-          )
-            .format(format)
-            .outputOptions("-movflags frag_keyframe+empty_moov")
-            .on("error", (err) => this.error(err))
-            .on("progress", ({ timemark, ...percent }) => {
-              if (
-                this.rebuildingState &&
-                timeStringToSeconds(timemark as string) > duration
-              ) {
-                this.setPauseButton("Pause");
-                this.rebuildingState = false;
-                this.setThrottleState(this.enableThrottle);
-              }
-
-              const curSize = (percent.targetSize as number) * 1024;
-              if (this.fileSize != curSize) this.setFileSize(curSize);
-            })
-            .on("start", () => {
-              this.setPauseButton("Pause");
-            });
-
-          const pipe = this.pipe();
-          command.mergeToFile(pipe, path.dirname(this.downloadingState.path));
-          this.on("close", () => {
-            try {
-              command.kill("SIGKILL");
-            } catch (err) {
-              /* empty */
-            }
-          });
-          return;
+          commando.kill("SIGKILL");
         } catch (err) {
           /* empty */
         }
-      }
+      });
+    } catch (err) {
+      this.download(command, num + 1, err);
+    }
+  }
+  async download(command: ffmpeg.FfmpegCommand, num = 0, err?: unknown) {
+    if (num > FfmpegWindowOrg.MAX_TRIES) return this.error(err);
+    try {
+      this.setCurSize(0);
+      this.changeState("connecting");
+      this.setResumability(true);
       const pipe = this.pipe();
       this.setPauseButton("Pause");
-      const command = ffmpeg()
-        .input(this.link)
-        .format(format)
+      const commando = command
         .outputOptions("-movflags frag_keyframe+empty_moov")
         .outputOptions("-c copy")
-        .setStartTime(this.ffmpegData.start)
-        .duration(this.ffmpegData.duration)
+        .setStartTime(this.ffmpegData?.start || 0)
+        .duration(this.ffmpegData?.duration || 1000000000000)
         .on("progress", (percent) => {
           const curSize = percent.targetSize * 1024;
           if (this.fileSize != curSize) this.setFileSize(curSize);
@@ -113,14 +104,14 @@ export class FfmpegCutterWindow extends BaseDownloaderWindow {
         .output(pipe);
       this.on("close", () => {
         try {
-          command.kill("SIGKILL");
+          commando.kill("SIGKILL");
         } catch (err) {
           /* empty */
         }
       });
       command.run();
     } catch (err) {
-      this.download(num + 1, err);
+      this.download(command, num + 1, err);
     }
     this.setResumability(true);
   }

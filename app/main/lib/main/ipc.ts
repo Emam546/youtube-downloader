@@ -1,15 +1,13 @@
 import { ConvertToIpCHandleMainFunc, ConvertToIpCMainFunc } from "@shared/api";
-import {
-  convertY2mateData,
-  getY2mateData,
-} from "@serv/routes/videoDownloader/api";
+import { getYoutubeData } from "@serv/routes/videoDownloader/api";
 import { getSearchData } from "@serv/routes/search/api";
 import { ApiMain } from "@src/types/api";
 import { getPlayListData } from "@serv/routes/playlist/api";
-import { DownloadY2mate } from "./downloadY2mate";
+import { DownloadVideoLink } from "./downloadVideoLink";
 import { DownloadFileToDesktop } from "./DownloadFile";
 import { ObjectEntries } from "@utils/index";
 import { ipcMain } from "electron";
+import { MergeVideoData } from "./mergeVideo";
 type OnMethodsType = {
   [K in keyof ApiMain.OnMethods]: ConvertToIpCMainFunc<ApiMain.OnMethods[K]>;
 };
@@ -29,18 +27,16 @@ type HandelOnceMethodsType = {
   >;
 };
 export const OnMethods: OnMethodsType = {
-  downloadY2mate: DownloadY2mate,
+  downloadVideoLink: DownloadVideoLink,
+  mergeVideo: MergeVideoData,
 };
 export const OnceMethods: OnceMethodsType = {};
 export const HandleMethods: HandelMethodsType = {
   getVideoData(_, ...args) {
-    return getY2mateData(...args);
+    return getYoutubeData(...args);
   },
   getSearchData(_, ...args) {
     return getSearchData(...args);
-  },
-  startConvertingVideo(_, ...args) {
-    return convertY2mateData(...args);
   },
   getPlaylistData(_, id: string) {
     return getPlayListData(id);
