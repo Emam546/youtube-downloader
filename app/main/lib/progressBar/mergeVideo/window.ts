@@ -11,10 +11,7 @@ export interface MergeDataType {
 export class FfmpegMergeWindow extends FfmpegWindowOrg {
   readonly mergeData: MergeDataType;
   constructor(
-    ...a: [
-      ...ConstructorParameters<typeof FfmpegWindowOrg>,
-      mergeData: MergeDataType
-    ]
+    ...a: [...ConstructorParameters<typeof FfmpegWindowOrg>, MergeDataType]
   ) {
     const [data, ffmpegData, mergeData] = a;
     super(data, ffmpegData);
