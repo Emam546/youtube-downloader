@@ -35,12 +35,20 @@ export async function downloadVideoAndExtractMetadata(
 
   // Save video file
   const metadata = await getVideoInfo(url);
-
+  let startFileNameIndex = contentDisposition.indexOf('"') + 1;
+  let endFileNameIndex = contentDisposition.lastIndexOf('"');
+  let reqFilename = contentDisposition.substring(
+    startFileNameIndex,
+    endFileNameIndex
+  );
   // Extract useful metadata
   const videoFormat = metadata.format.format_name?.split(",")[0] || "mp4";
-  const fileName = contentDisposition
-    ? contentDisposition.match(/filename="(.+)"/)?.[1] || `video.${videoFormat}`
-    : `video.${videoFormat}`;
+  const urlFileName = decodeURI(url.split("/").pop()?.split("?")[0] || "");
+  const fileName =
+    (metadata.format.tags?.title as string) ||
+    reqFilename ||
+    (urlFileName?.includes(".") ? urlFileName : undefined) ||
+    `video.${videoFormat}`;
   const videoSize = metadata.format.size; // in bytes
   const videoDuration = metadata.format.duration; // in seconds
   const videoBitrate = metadata.format.bit_rate;
@@ -96,6 +104,6 @@ export async function downloadVideoAndExtractMetadata(
     duration: videoDuration!,
     fileName,
     format: videoFormat,
-    title: fileName.split(".")[0],
+    title: fileName.split(".").slice(0,-1).join("."),
   };
 }
