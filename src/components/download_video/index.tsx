@@ -1,12 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
-import { useDispatch } from "react-redux";
-import { ComponentProps, ReactNode, useEffect, useState } from "react";
-import Loading from "../Loading";
-import { getVideoData, getYoutubeVideoData } from "@src/API";
+import { ReactNode, useEffect, useState } from "react";
+import Loading from "../common/Loading";
+import { getVideoLinkData } from "@src/API";
 import { useRouter } from "next/router";
 import { isValidUrl } from "@src/utils";
-import VideoViewer from "../youtubeViewer";
-import { DownloadButton } from "../downloadButton";
+import VideoViewer from "../Youtube/youtubeViewer";
+import Thumbnail from "../common/thumbnail";
+import TableDownload, { TabsData } from "../common/table";
+import { Label } from "../common/label";
 
 export function ErrorMessage({ children }: { children: ReactNode }) {
   return (
@@ -21,21 +22,7 @@ declare module "@distube/ytdl-core" {
     loudnessDb?: number;
   }
 }
-function Thumbnail({
-  title,
-  ...props
-}: ComponentProps<"img"> & { title: string }) {
-  return (
-    <div>
-      <div className="tw-mx-auto tw-rounded">
-        <img className="tw-block tw-w-full" alt={title} {...props} />
-      </div>
-      <div className="tw-py-3">
-        <b>{title}</b>
-      </div>
-    </div>
-  );
-}
+
 export default function DownloadResult() {
   const router = useRouter();
   const { link } = router.query as {
@@ -43,7 +30,7 @@ export default function DownloadResult() {
   };
   const paramQuery = useQuery({
     queryKey: ["video_link", link],
-    queryFn: ({ signal }) => getVideoData(link!, signal),
+    queryFn: ({ signal }) => getVideoLinkData(link!, signal),
     enabled: link != undefined && isValidUrl(link),
     cacheTime: 1 * 1000 * 60,
     staleTime: 1 * 1000 * 60,
@@ -62,10 +49,45 @@ export default function DownloadResult() {
       </ErrorMessage>
     );
   }
-
   const data = paramQuery.data;
   const duration = Math.ceil(data.duration);
-  // const duration = parseInt(paramQuery.data.videoDetails.lengthSeconds);
+  const ClippedState = start != 0 || end != duration;
+  const videos: TabsData = [
+    {
+      size: data.size,
+      fileTypeText: (
+        <>
+          {`${data.height}q`} (.{data.format})
+          <Label mode="blue">Original</Label>
+        </>
+      ),
+      q: `${data.height}q`,
+      download() {
+        if (ClippedState) {
+          window.api.send("downloadVideoLink", {
+            previewLink: link,
+            title: data.title,
+            ftype: data.format,
+            clipped: true,
+            dlink: link,
+            end,
+            start,
+            fquality: `${data.height}q`,
+          });
+        } else
+          window.api.send("downloadVideoLink", {
+            previewLink: link,
+            title: data.fileName,
+            ftype: data.format,
+            clipped: false,
+            dlink: link,
+            fquality: `${data.height}q`,
+          });
+      },
+    },
+  ].sort((a, b) => {
+    return parseInt(b.q) - parseInt(a.q);
+  });
   return (
     <>
       <section className="tw-my-2.5">
@@ -77,26 +99,25 @@ export default function DownloadResult() {
             setTimeData([start, end]);
           }}
           light={
-            <img
-              className="tw-w-full"
-              alt={data.fileName}
+            <>
+              <img
+                className="tw-w-full"
+                alt={data.fileName}
+                src={`data:image/jpeg;base64,${data.thumbnail}`}
+              />
+            </>
+          }
+          url={link}
+        />
+        <div className="tw-grid tw-grid-cols-12 tw-flex-1 tw-gap-6">
+          <div className="tw-col-span-12 md:tw-col-span-4">
+            <Thumbnail
+              title={data.title}
               src={`data:image/jpeg;base64,${data.thumbnail}`}
             />
-          }
-          link={link}
-        />
-        <div>
-          <DownloadButton text={"Download"} onClick={() => {}} />
-        </div>
-        <div className="tw-grid tw-grid-cols-12 tw-flex-1 tw-gap-6">
+          </div>
           <div className="tw-col-span-12 md:tw-col-span-8">
-            {/* <TableDownload
-              id={id}
-              start={start}
-              end={end}
-              duration={duration}
-              data={data}
-            /> */}
+            <TableDownload id={data.fileName} data={{ VIDEO: videos }} />
           </div>
         </div>
       </section>

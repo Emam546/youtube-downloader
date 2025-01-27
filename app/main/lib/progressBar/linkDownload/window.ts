@@ -1,7 +1,7 @@
-import axios from "axios";
 import { BrowserWindowConstructorOptions } from "electron";
 import { DownloadTheFile } from "./downloader";
 import { BaseDownloaderWindow, DownloaderData } from "../window";
+import { DownloadInstance } from "@serv/util/axios";
 
 export class FileDownloaderWindow extends BaseDownloaderWindow {
   constructor(options: BrowserWindowConstructorOptions, data: DownloaderData) {
@@ -10,7 +10,7 @@ export class FileDownloaderWindow extends BaseDownloaderWindow {
   async download(num = 0, err?: any) {
     if (num > BaseDownloaderWindow.MAX_TRIES) return this.error(err);
     try {
-      const res = await axios.head(this.link, {
+      const res = await DownloadInstance.head(this.link, {
         validateStatus(status) {
           return status < 400;
         },

@@ -3,14 +3,14 @@ import { validateID } from "@utils/youtube";
 import { useDispatch } from "react-redux";
 import { videoActions } from "@src/store/res-slice";
 import { ReactNode, useEffect } from "react";
-import Loading from "../Loading";
+import Loading from "../../common/Loading";
 import { getYoutubeVideoData } from "@src/API";
 import { useRouter } from "next/router";
 import VideoViewer from "../youtubeViewer";
-import TypeApplication from "../TypeApllication";
-import TableDownload from "./table";
-import Thumbnail from "./thumbnail";
+import TypeApplication from "../../common/TypeApllication";
+import Thumbnail from "../../common/thumbnail";
 import { getTime } from "@src/utils/time";
+import YoutubeTableDownload from "./table";
 
 export function ErrorMessage({ children }: { children: ReactNode }) {
   return (
@@ -80,7 +80,7 @@ export default function YoutubeResult() {
           start={start}
           end={end}
           duration={duration}
-          id={id}
+          url={`https://www.youtube.com/watch?v=${id}`}
           setDuration={(start, end) => {
             router.replace(
               {
@@ -96,19 +96,26 @@ export default function YoutubeResult() {
       <section className="tw-my-2.5">
         <div className="tw-grid tw-grid-cols-12 tw-flex-1 tw-gap-6">
           <div className="tw-col-span-12 md:tw-col-span-4">
-            <Thumbnail videoDetails={data.videoDetails} />
+            <Thumbnail
+              title={data.videoDetails.title}
+              src={
+                data.videoDetails.thumbnails.reduce(
+                  (cur, acc) => (cur.height > acc.height ? cur : acc),
+                  data.videoDetails.thumbnails[0]
+                ).url
+              }
+            />
           </div>
           <div className="tw-col-span-12 md:tw-col-span-8">
-            <TableDownload
+            <YoutubeTableDownload
               id={id}
+              data={data}
               start={start}
               end={end}
               duration={duration}
-              data={data}
             />
           </div>
         </div>
-
       </section>
     </>
   );

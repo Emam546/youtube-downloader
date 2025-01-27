@@ -1,4 +1,3 @@
-import axios from "axios";
 import { app } from "electron";
 import { EventEmitter } from "stream";
 import semver from "semver";
@@ -6,6 +5,7 @@ import fs from "fs";
 import { Downloader, DownloaderReport } from "nodejs-file-downloader";
 import cproc from "child_process";
 import path from "path";
+import { DownloadInstance } from "@serv/util/axios";
 export interface Data {
   owner: string;
   releaseType: "release" | "draft" | "both";
@@ -126,7 +126,7 @@ export default class AppUpdater extends EventEmitter {
     });
   }
   async checkForUpdates() {
-    const response = await axios.get<Releases>(
+    const response = await DownloadInstance.get<Releases>(
       `https://api.github.com/repos/${this.data.owner}/${this.data.repo}/releases`
     );
     const update = response.data.find((release) => {

@@ -1,5 +1,5 @@
 import "../main/pre-start";
-import { downloadVideoAndExtractMetadata } from "@app/main/lib/main/getVideoData";
+import { downloadVideoAndExtractMetadata } from "@app/main/lib/main/getVideoLinkData";
 
 jest.setTimeout(10000);
 const link = "https://www.w3schools.com/html/mov_bbb.mp4";
@@ -22,4 +22,7 @@ describe("Test getDownloadData ", () => {
     expect(data.has_video).toBe(true);
     expect(data.thumbnail).not.toBeUndefined();
   });
+  test("video link with certificate", () => {
+    
+  })
 });

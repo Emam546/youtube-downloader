@@ -1,13 +1,8 @@
 import { StoreData } from "@src/store";
 import { useSelector } from "react-redux";
-import { useQuery } from "@tanstack/react-query";
 import { ReturnedSearch } from "youtube-searches";
-import Loading from "@src/components/Loading";
-import { getSearchData } from "@src/API";
 import Link from "next/link";
-import { useRouter } from "next/router";
-import { ErrorMessage } from "../youtubeResult";
-import { SectionHeader } from "../common/header";
+import { SectionHeader } from "../../common/header";
 type RelatedVideos = { title: string; id: string } & ReturnedSearch;
 export default function RelatedVideos() {
   let data = useSelector<StoreData, RelatedVideos[] | undefined>(

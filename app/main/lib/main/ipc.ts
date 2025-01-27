@@ -7,11 +7,8 @@ import { DownloadVideoLink } from "./downloadVideoLink";
 import { DownloadFileToDesktop } from "./DownloadFile";
 import { ObjectEntries } from "@utils/index";
 import { ipcMain } from "electron";
-<<<<<<< HEAD
-import { downloadVideoAndExtractMetadata } from "./getVideoData";
-=======
 import { MergeVideoData } from "./mergeVideo";
->>>>>>> master
+import { downloadVideoAndExtractMetadata } from "./getVideoLinkData";
 type OnMethodsType = {
   [K in keyof ApiMain.OnMethods]: ConvertToIpCMainFunc<ApiMain.OnMethods[K]>;
 };
@@ -37,23 +34,20 @@ export const OnMethods: OnMethodsType = {
 export const OnceMethods: OnceMethodsType = {};
 export const HandleMethods: HandelMethodsType = {
   getVideoData(_, ...args) {
-<<<<<<< HEAD
-    return downloadVideoAndExtractMetadata(...args);
-  },
-  getYoutubeVideoData(_, ...args) {
-    return getY2mateData(...args);
-=======
     return getYoutubeData(...args);
->>>>>>> master
   },
+
   getSearchData(_, ...args) {
     return getSearchData(...args);
   },
   getPlaylistData(_, id: string) {
     return getPlayListData(id);
   },
-  Download(_, props) {
-    return DownloadFileToDesktop(props);
+  Download(_, ...args) {
+    return DownloadFileToDesktop(...args);
+  },
+  getVideoLinkData(_, ...args) {
+    return downloadVideoAndExtractMetadata(...args);
   },
 };
 export const HandleOnceMethods: HandelOnceMethodsType = {};

@@ -1,2 +1,18 @@
-import Main from "./[id]";
-export default Main;
+import PlayList from "@src/components/playlist";
+import { TextFun } from "..";
+import { NextPageWithSpecialComponent } from "../_app";
+const Page: NextPageWithSpecialComponent = function Main() {
+  return (
+    <>
+      <TextFun />
+    </>
+  );
+};
+Page.getLayout = function () {
+  return (
+    <>
+      <PlayList />
+    </>
+  );
+};
+export default Page;

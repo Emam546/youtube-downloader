@@ -41,7 +41,6 @@ export const createMainWindow = async (
     if (!win.isMinimized() && !win.isMaximized()) {
       Object.assign(state, getCurrentPosition());
     }
-    // store.set(key, state);
   };
 
   const win = new MainWindow({

@@ -1,47 +1,26 @@
-/* eslint-disable react/display-name */
-import {
-  JSXElementConstructor,
-  ReactElement,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import { Range } from "react-range";
-import ReactPlayer from "react-player/youtube";
-import { RangeTracker, MIN_TIME, Tracker } from "./range";
-import Controls, { AspectsType, ControlButton } from "./controls";
+import { useEffect, useRef, useState } from "react";
+import ReactPlayer from "react-player";
+import { RangeTracker, MIN_TIME } from "./range";
+import Controls, { AspectsType } from "./controls";
 import classNames from "classnames";
 import { ProgressBar } from "./progressBar";
+import { ReactPlayerProps } from "react-player";
 export interface Props {
-<<<<<<< HEAD
-  id?: string;
-  link?: string;
   duration: number;
   start: number;
   end: number;
-  light?:
-    | string
-    | boolean
-    | ReactElement<any, string | JSXElementConstructor<any>>;
-=======
-  id: string;
-  duration: number;
-  start: number;
-  end: number;
->>>>>>> master
   setDuration(start: number, end: number): any;
+  light?: ReactPlayerProps["light"];
+  url: string;
 }
+
 export default function VideoViewer({
-  id,
+  url,
   duration,
   start,
   end,
   setDuration,
-<<<<<<< HEAD
-  link,
   light,
-=======
->>>>>>> master
 }: Props) {
   const [playing, setPlaying] = useState(false);
   const [curDuration, setCurDuration] = useState(start);
@@ -53,16 +32,12 @@ export default function VideoViewer({
   useEffect(() => {
     setCurDuration(start);
     setHasPlayed(false);
-<<<<<<< HEAD
-  }, [id, link]);
-=======
-  }, [id]);
->>>>>>> master
+  }, [url]);
   return (
     <div>
       <div className="tw-px-2">
         <div
-          className={classNames("tw-relative", {
+          className={classNames("tw-relative tw-bg-black/90", {
             "tw-aspect-video": aspect == "16:9",
             "tw-aspect-[4/3]": aspect == "4:3",
           })}
@@ -74,24 +49,16 @@ export default function VideoViewer({
               top: 0,
               left: 0,
             }}
-            width="100%"
-<<<<<<< HEAD
-            light
-=======
->>>>>>> master
-            height="100%"
             playing={playing}
+            width="100%"
+            height="100%"
             onPlay={() => {
               if (!hasPlayed) {
                 if (seekedOut) setPlaying(false);
-<<<<<<< HEAD
-                else if (start > 0) ref.current?.seekTo(start);
-=======
                 else {
                   setPlaying(true);
                   if (start > 0) ref.current?.seekTo(start);
                 }
->>>>>>> master
                 setSeekedOut(true);
                 setHasPlayed(true);
               } else {
@@ -120,16 +87,11 @@ export default function VideoViewer({
             }}
             onSeek={(second) => {
               setCurDuration(second);
-<<<<<<< HEAD
-            }}
-            ref={ref}
-            url={id ? `https://www.youtube.com/watch?v=${id}` : link}
-=======
               setSeekedOut(true);
             }}
+            light={light}
             ref={ref}
-            url={`https://www.youtube.com/watch?v=${id}`}
->>>>>>> master
+            url={url}
           />
           <div className="tw-absolute tw-bottom-0 tw-left-0 tw-w-full">
             <ProgressBar
