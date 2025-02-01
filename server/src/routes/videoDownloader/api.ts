@@ -3,7 +3,7 @@ import https from "https";
 import http from "http";
 import { IncomingMessage } from "http";
 import { HttpDownloadAgent, HttpsDownloadAgent } from "@serv/util/axios";
-import { getVideoData } from "@scripts/youtube/data";
+export { getVideoData } from "@scripts/youtube/data";
 export interface VideoLink {
   size: string;
   f: string;

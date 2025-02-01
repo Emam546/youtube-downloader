@@ -1,29 +1,15 @@
 {
-    "extends": "./tsconfig.server.json",
-    "compilerOptions": {
-        "paths": {
-            "@serv/*": [
-                "./server/src/*"
-            ],
-            "@src/*": [
-                "./src/*"
-            ],
-            "@app/*": [
-                "./app/*"
-            ],
-            "@utils/*": [
-                "./utils/*"
-            ],
-            "@shared/renderer/*": [
-                "./app/renderer/shared/*"
-            ],
-        }
-    },
-    "include": [
-        "src",
-        "server/spec",
-        "app",
-        "shared",
-        "utils"
-    ]
+  "extends": "./tsconfig.server.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@serv/*": ["./server/src/*"],
+      "@src/*": ["./src/*"],
+      "@app/*": ["./app/*"],
+      "@utils/*": ["./utils/*"],
+      "@shared/renderer/*": ["./app/renderer/shared/*"],
+      "@scripts/*": ["./scripts/*"]
+    }
+  },
+  "include": ["src", "scripts", "server/spec", "app", "shared", "utils"]
 }

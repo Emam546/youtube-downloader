@@ -5,27 +5,28 @@
 import type { Config } from "jest";
 import { pathsToModuleNameMapper } from "ts-jest";
 const config: Config = {
-    transform: {
-        "^.+\\.(ts|tsx)$": ["ts-jest", { tsconfig: "./tsconfig.test.json" }],
-    },
-    roots: ["<rootDir>/"],
-    testMatch: ["**/spec/**/?(*.)+(spec|test).+(ts|js)"],
-    testEnvironment: "node",
-    preset: "ts-jest",
-    moduleFileExtensions: ["ts", "tsx", "js", "json", "css"],
-    moduleNameMapper: {
-        ...pathsToModuleNameMapper(
-            {
-                "@serv/*": ["./server/src/*"],
-                "@src/*": ["./src/*"],
-                "@app/*": ["./app/*"],
-                "@shared/*": ["./shared/*"],
-                "@utils/*": ["./utils/*"],
-            },
-            {
-                prefix: "<rootDir>/",
-            }
-        ),
-    },
+  transform: {
+    "^.+\\.(ts|tsx)$": ["ts-jest", { tsconfig: "./tsconfig.test.json" }],
+  },
+  roots: ["<rootDir>/"],
+  testMatch: ["**/spec/**/?(*.)+(spec|test).+(ts|js)"],
+  testEnvironment: "node",
+  preset: "ts-jest",
+  moduleFileExtensions: ["ts", "tsx", "js", "json", "css"],
+  moduleNameMapper: {
+    ...pathsToModuleNameMapper(
+      {
+        "@serv/*": ["./server/src/*"],
+        "@src/*": ["./src/*"],
+        "@app/*": ["./app/*"],
+        "@shared/*": ["./shared/*"],
+        "@utils/*": ["./utils/*"],
+        "@scripts/*": ["./scripts/*"],
+      },
+      {
+        prefix: "<rootDir>/",
+      }
+    ),
+  },
 };
 export default config;
