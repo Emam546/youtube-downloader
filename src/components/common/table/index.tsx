@@ -6,9 +6,8 @@ import {
   faMusic,
   faVideo,
 } from "@fortawesome/free-solid-svg-icons";
-import MapData, { VideoData } from "./column";
-
-type TabsType = "VIDEO" | "AUDIO" | "OTHERS";
+import MapData, { Props as ColumnProps } from "./column";
+import { Media, ResponseData, TabsType } from "../../../../scripts/types/types";
 
 const tabs: Array<{ type: TabsType; children: React.ReactNode }> = [
   {
@@ -40,12 +39,13 @@ const tabs: Array<{ type: TabsType; children: React.ReactNode }> = [
   },
 ];
 
-export type TabsData = VideoData[];
+export type TabsData = Media[];
 export interface Props {
-  id: string;
-  data: Partial<Record<TabsType, TabsData>>;
+  data: Required<ResponseData>["video"]["medias"];
+  title: string;
+  clippedData: ColumnProps["clippedData"];
 }
-export default function TableDownload({ id, data }: Props) {
+export default function TableDownload({ data, clippedData, title }: Props) {
   const [state, setState] = useState<TabsType>("VIDEO");
   const { VIDEO, AUDIO, OTHERS } = data;
   return (
@@ -77,24 +77,30 @@ export default function TableDownload({ id, data }: Props) {
                 VIDEO &&
                 VIDEO.map((video, i) => (
                   <MapData
-                    key={`${id}-${i}-${video.fileTypeText}`}
+                    key={video.id}
                     video={video}
+                    title={title}
+                    clippedData={clippedData}
                   />
                 ))}
               {state == "AUDIO" &&
                 AUDIO &&
                 AUDIO.map((video, i) => (
                   <MapData
-                    key={`${id}-${i}-${video.fileTypeText}`}
+                    key={video.id}
                     video={video}
+                    title={title}
+                    clippedData={clippedData}
                   />
                 ))}
               {state == "OTHERS" &&
                 OTHERS &&
                 OTHERS.map((video, i) => (
                   <MapData
-                    key={`${id}-${i}-${video.fileTypeText}`}
+                    key={video.id}
                     video={video}
+                    title={title}
+                    clippedData={clippedData}
                   />
                 ))}
             </tbody>

@@ -2,7 +2,7 @@ import "./ipc";
 import { BrowserWindowConstructorOptions, shell } from "electron";
 import path from "path";
 import { ProgressBarState, Context } from "@shared/renderer/progress";
-import { StateType } from "@app/main/lib/main/downloader";
+import { StateType } from "@app/main/lib/main/utils/downloader";
 
 import { convertFunc } from "@utils/app";
 import {

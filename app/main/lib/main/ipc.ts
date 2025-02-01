@@ -1,14 +1,16 @@
 import { ConvertToIpCHandleMainFunc, ConvertToIpCMainFunc } from "@shared/api";
-import { getYoutubeData } from "@serv/routes/videoDownloader/api";
 import { getSearchData } from "@serv/routes/search/api";
 import { ApiMain } from "@src/types/api";
 import { getPlayListData } from "@serv/routes/playlist/api";
-import { DownloadVideoLink } from "./downloadVideoLink";
-import { DownloadFileToDesktop } from "./DownloadFile";
+import { DownloadVideoLink } from "./utils/downloadVideoLink";
+import { DownloadFileToDesktop } from "./utils/DownloadFile";
 import { ObjectEntries } from "@utils/index";
 import { ipcMain } from "electron";
-import { MergeVideoData } from "./mergeVideo";
-import { downloadVideoAndExtractMetadata } from "./getVideoLinkData";
+import { MergeVideoData } from "./utils/mergeVideo";
+import { navigate } from "./lib/navigate";
+import { getVideoData } from "./lib/getVideoData";
+import { searchData } from "./lib/search";
+
 type OnMethodsType = {
   [K in keyof ApiMain.OnMethods]: ConvertToIpCMainFunc<ApiMain.OnMethods[K]>;
 };
@@ -34,11 +36,10 @@ export const OnMethods: OnMethodsType = {
 export const OnceMethods: OnceMethodsType = {};
 export const HandleMethods: HandelMethodsType = {
   getVideoData(_, ...args) {
-    return getYoutubeData(...args);
+    return getVideoData(...args);
   },
-
   getSearchData(_, ...args) {
-    return getSearchData(...args);
+    return searchData(...args);
   },
   getPlaylistData(_, id: string) {
     return getPlayListData(id);
@@ -46,8 +47,8 @@ export const HandleMethods: HandelMethodsType = {
   Download(_, ...args) {
     return DownloadFileToDesktop(...args);
   },
-  getVideoLinkData(_, ...args) {
-    return downloadVideoAndExtractMetadata(...args);
+  navigate(_, ...args) {
+    return navigate(...args);
   },
 };
 export const HandleOnceMethods: HandelOnceMethodsType = {};

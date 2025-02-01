@@ -4,6 +4,15 @@ appImage:
   artifactName: ${name}-${version}.${ext}
 asarUnpack:
   - resources/**
+extraFiles:
+  - from: "out/scripts"
+    to: "./scripts"
+    filter:
+      - "**/*"
+  - from: "./screenshots"
+    to: "./screenshots"
+    filter:
+      - "**/*"
 directories:
   buildResources: build
   output: dist

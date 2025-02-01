@@ -2,7 +2,7 @@ import { getInfo, videoInfo } from "@distube/ytdl-core";
 import https from "https";
 import http from "http";
 import { IncomingMessage } from "http";
-import { DownloadAgent } from "@serv/util/axios";
+import { HttpDownloadAgent, HttpsDownloadAgent } from "@serv/util/axios";
 
 export interface VideoLink {
   size: string;
@@ -89,7 +89,7 @@ export function getHttpMethod(dlink: string, range?: string) {
         {
           headers,
           rejectUnauthorized: true,
-          agent: DownloadAgent,
+          agent: HttpsDownloadAgent,
         },
         (response) => {
           res(response);
@@ -100,7 +100,7 @@ export function getHttpMethod(dlink: string, range?: string) {
         dlink,
         {
           headers,
-          agent: DownloadAgent,
+          agent: HttpDownloadAgent,
         },
         (response) => {
           res(response);

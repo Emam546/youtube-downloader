@@ -1,36 +1,23 @@
 import axios from "axios";
-import { ResultData } from "@serv/routes/search/api";
-import type { ServerVideoInfo } from "@serv/routes/videoDownloader/api";
 import { ReturnedData as PlayListData } from "youtube-playlists-js";
 export const instance = axios.create({});
-export async function getSearchData(search: string): Promise<ResultData> {
+export async function getSearchData(search: string) {
   if (window.Environment == "desktop") {
     return await window.api.invoke("getSearchData", search);
   } else {
-    const res = await instance.get(`/api/search?search_query=${search}`);
-    return res.data.data;
+    throw new Error("unimplemented");
   }
 }
-export async function getYoutubeVideoData(
-  id: string,
+export async function getVideoData(
+  path: string,
+  query: any,
   signal?: AbortSignal
-): Promise<ServerVideoInfo> {
+) {
   if (window.Environment == "desktop") {
-    return await window.api.invoke("getVideoData", id);
+    return await window.api.invoke("getVideoData", path, query);
   } else {
-    const res = await instance.get("/api/watch", {
-      signal,
-      params: {
-        v: id,
-      },
-    });
-    return res.data.data;
+    throw new Error("unimplemented");
   }
-}
-
-export async function getVideoLinkData(link: string, signal?: AbortSignal) {
-  if (window.Environment != "desktop") throw new Error("unimplemented feature");
-  return await window.api.invoke("getVideoLinkData", link);
 }
 export async function getYoutubeListData(
   id: string,
@@ -47,8 +34,4 @@ export async function getYoutubeListData(
     });
     return res.data.data;
   }
-}
-export interface ModelStateType {
-  key: string;
-  vid: string;
 }

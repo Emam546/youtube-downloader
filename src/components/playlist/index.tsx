@@ -3,7 +3,7 @@ import { getYoutubeListData } from "@src/API";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import Loading from "../common/Loading";
-import { ErrorMessage } from "../Youtube/youtubeResult";
+import { ErrorMessage } from "../MainComponents/DownloadResults";
 import Link from "next/link";
 import { SectionHeader } from "../common/header";
 import { Component, ComponentRef, useEffect, useRef } from "react";

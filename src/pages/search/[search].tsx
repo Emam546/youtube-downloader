@@ -1,4 +1,4 @@
-import SearchVideoResult from "@src/components/Youtube/searchData";
+import SearchVideoResult from "@src/components/MainComponents/searchData";
 import { TextFun } from "..";
 import { NextPageWithSpecialComponent } from "../_app";
 const Page: NextPageWithSpecialComponent = function Main() {

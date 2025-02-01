@@ -1,5 +1,5 @@
 import { ProgressBarState, ProgressData } from "@shared/renderer/progress";
-import { StateType } from "@app/main/lib/main/downloader";
+import { StateType } from "@app/main/lib/main/utils/downloader";
 import fs, { WriteStream } from "fs-extra";
 import { BrowserWindowConstructorOptions } from "electron";
 import { DownloaderWindow } from "../donwloading";

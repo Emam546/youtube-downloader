@@ -90,9 +90,3 @@ export const createMainWindow = async (
   return win;
 };
 
-// ObjectEntries(OnceMethods).forEach(([key, val]) => {
-//     ipcMain.once(key, val);
-// });
-// ObjectEntries(HandleOnceMethods).forEach(([key, val]) => {
-//     ipcMain.handleOnce(key, val);
-// });

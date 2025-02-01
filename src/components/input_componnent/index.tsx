@@ -6,8 +6,6 @@ import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { useForm } from "react-hook-form";
 import { ChangeEvent, useEffect } from "react";
 import { NavigateVideo } from "@src/types/api";
-import { validateURL as ValidateUrlYoutube } from "../../../utils/youtube";
-import { isValidUrl } from "@src/utils";
 interface DataFrom {
   search: string;
 }
@@ -28,19 +26,7 @@ function constructUrl(...[id, listId, time]: YoutubeParams) {
   }
   return url;
 }
-function appendPathToBaseUrl(...paths: string[]) {
-  // Ensure there is exactly one slash between base URL and path
-  let baseUrl = "/";
-  for (let i = 0; i < paths.length; i++) {
-    const path = paths[i];
-    if (!baseUrl.endsWith("/")) baseUrl += "/";
-    if (path.startsWith("/")) baseUrl += path.slice(1);
-    else baseUrl += path;
-  }
 
-  return baseUrl;
-}
-const baseUrl = "/youtube/";
 function extractParams(youtubeUrl: URL): YoutubeParams {
   const id = youtube_parser(youtubeUrl.href);
   const list = youtubeUrl.searchParams.get("list");
@@ -53,28 +39,7 @@ function extractParams(youtubeUrl: URL): YoutubeParams {
     [start ? parseInt(start) : null, end ? parseInt(end) : null],
   ];
 }
-function getPathYoutubeUrl(youtubeUrl: URL) {
-  const [id, list, time] = extractParams(youtubeUrl);
-  const url = id ? appendPathToBaseUrl(baseUrl, id) : baseUrl;
-  const searchParams = new URLSearchParams();
-  if (list) searchParams.set("list", list);
-  if (time) {
-    if (time[0]) searchParams.set("start", time[0].toString());
-    if (time[1]) searchParams.set("end", time[1].toString());
-  }
-  return `${url}?${searchParams.toString()}`;
-}
 
-export function isYoutubeUrl(val: string): boolean {
-  if (!isValidUrl(val)) return false;
-  if (!ValidateUrlYoutube(val)) return false;
-  return extractParams(new URL(val))
-    .slice(0, 2)
-    .some((val) => val != null);
-}
-export function isUrl(val: string): boolean {
-  return isValidUrl(val);
-}
 function getTime(val: unknown): number | null {
   if (typeof val == "string" && !isNaN(parseInt(val))) return parseInt(val);
   return null;
@@ -129,14 +94,12 @@ export default function InputHolder() {
         action=""
         method="POST"
         autoComplete="off"
-        onSubmit={handleSubmit((data) => {
-          const value = data.search;
-          if (isYoutubeUrl(value))
-            return navigate(getPathYoutubeUrl(new URL(data.search)));
-          if (isUrl(value) && window.Environment == "desktop") {
-            return navigate(`/download?link=${encodeURI(value)}`);
+        onSubmit={handleSubmit(async (data) => {
+          if (window.Environment == "desktop") {
+            const dest = await window.api.invoke("navigate", data.search);
+            if (dest) navigate(dest);
           }
-          return navigate(`/search/${encodeURIComponent(value)}`);
+          return navigate(`/search/${encodeURIComponent(data.search)}`);
         })}
       >
         <h2 className="tw-text-3xl tw-font-normal tw-text-center tw-mb-7">
@@ -148,12 +111,11 @@ export default function InputHolder() {
               type="text"
               placeholder="Search or paste link here..."
               {...register("search", {
-                onChange(e: ChangeEvent<HTMLInputElement>) {
+                async onChange(e: ChangeEvent<HTMLInputElement>) {
                   const value = e.currentTarget.value;
-                  if (isYoutubeUrl(value))
-                    return navigate(getPathYoutubeUrl(new URL(value)));
-                  if (isUrl(value) && window.Environment == "desktop") {
-                    return navigate(`/download?link=${encodeURI(value)}`);
+                  if (window.Environment == "desktop") {
+                    const dest = await window.api.invoke("navigate", value);
+                    if (dest) navigate(dest);
                   }
                 },
               })}

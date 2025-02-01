@@ -14,6 +14,8 @@
   "scripts": {
     "build:server": "ts-node build.ts",
     "build:next": "next build",
+    "build:scripts": "node ./scripts/build.js",
+    
     "export": "npm run build:next&&next export",
     "build": "npm run build:server && npm run build:next",
     "lint": "next lint -c ./src/.eslintrc.json src",
@@ -23,8 +25,8 @@
     "dev": "nodemon",
     "test": "jest",
     "start:desk": "electron-vite preview",
-    "build:electron": "electron-vite build",
-    "dev-electron": "electron-vite dev",
+    "build:electron": "npm run build:scripts && electron-vite build",
+    "dev-electron": "npm run build:scripts&&electron-vite dev",
     "dev:desk": "concurrently -n \"NEXT,ELECTRON\" -c \"yellow,blue\" --kill-others \"next dev\" \"npm run dev-electron\"",
     "build:desk": "npm run build:next&&next export -o ./out/renderer && npm run build:electron",
     "build:win": "electron-builder --win -p never",
@@ -122,6 +124,7 @@
     "electron": "^31.1.0",
     "electron-builder": "^24.13.3",
     "electron-vite": "^2.3.0",
+    "esbuild": "^0.24.2",
     "eslint": "^8.32.0",
     "eslint-config-next": "13.4.4",
     "eslint-plugin-node": "^11.1.0",
@@ -137,7 +140,8 @@
     "ts-jest": "^29.0.5",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.1.2",
-    "typescript": "^4.9.4"
+    "typescript": "^4.9.4",
+    "uuid": "^11.0.5"
   },
   "engines": {
     "node": ">=11.0.0"
