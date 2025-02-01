@@ -1,22 +1,25 @@
 import axios from "axios";
+import { ResponseData, RelatedData } from "@scripts/types/types";
 import { ReturnedData as PlayListData } from "youtube-playlists-js";
 export const instance = axios.create({});
-export async function getSearchData(search: string) {
+export async function getSearchData(search: string): Promise<RelatedData[]> {
   if (window.Environment == "desktop") {
     return await window.api.invoke("getSearchData", search);
   } else {
-    throw new Error("unimplemented");
+    const data = await axios.get(`/api/search`, { params: { s: search } });
+    return data.data.data;
   }
 }
 export async function getVideoData(
   path: string,
   query: any,
   signal?: AbortSignal
-) {
+): Promise<ResponseData | null> {
   if (window.Environment == "desktop") {
     return await window.api.invoke("getVideoData", path, query);
   } else {
-    throw new Error("unimplemented");
+    const data = await axios.get(`/api/${path}`, { params: { ...query } });
+    return data.data.data;
   }
 }
 export async function getYoutubeListData(

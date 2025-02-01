@@ -1,17 +1,17 @@
 import { Router } from "express";
 import HttpStatusCodes from "@serv/declarations/major/HttpStatusCodes";
 import { validateID } from "@distube/ytdl-core";
-import { getYoutubeData } from "./api";
+import { getData } from "@scripts/youtube";
 
 const router = Router();
 
 router.get("/", async function (req, res) {
-  if (typeof req.query.v !== "string" || !validateID(req.query.v))
+  if (typeof req.query.id !== "string" || !validateID(req.query.id))
     return res
       .status(HttpStatusCodes.BAD_REQUEST)
       .json({ status: false, msg: "the video id must be exist" });
   try {
-    const data = await getYoutubeData(req.query.v);
+    const data = await getData(req.query);
     res.status(200).json({ msg: "Success", status: true, data });
   } catch (err) {
     return res.status(404).json({

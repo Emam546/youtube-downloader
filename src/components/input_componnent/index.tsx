@@ -6,6 +6,7 @@ import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { useForm } from "react-hook-form";
 import { ChangeEvent, useEffect } from "react";
 import { NavigateVideo } from "@src/types/api";
+import { navigate } from "@src/API/navigate";
 interface DataFrom {
   search: string;
 }
@@ -46,7 +47,7 @@ function getTime(val: unknown): number | null {
 }
 export default function InputHolder() {
   const router = useRouter();
-  const navigate = router.push;
+  const routeNavigate = router.push;
   const { register, handleSubmit, setValue, formState } = useForm<DataFrom>();
   useEffect(() => {
     if (router.asPath.startsWith("/youtube")) {
@@ -97,9 +98,13 @@ export default function InputHolder() {
         onSubmit={handleSubmit(async (data) => {
           if (window.Environment == "desktop") {
             const dest = await window.api.invoke("navigate", data.search);
-            if (dest) navigate(dest);
+            if (dest) return routeNavigate(dest);
           }
-          return navigate(`/search/${encodeURIComponent(data.search)}`);
+          if (window.Environment == "web") {
+            const dest = navigate(data.search);
+            if (dest) return routeNavigate(dest);
+          }
+          return routeNavigate(`/search/${encodeURIComponent(data.search)}`);
         })}
       >
         <h2 className="tw-text-3xl tw-font-normal tw-text-center tw-mb-7">
@@ -115,7 +120,11 @@ export default function InputHolder() {
                   const value = e.currentTarget.value;
                   if (window.Environment == "desktop") {
                     const dest = await window.api.invoke("navigate", value);
-                    if (dest) navigate(dest);
+                    if (dest) routeNavigate(dest);
+                  }
+                  if (window.Environment == "web") {
+                    const dest = navigate(value);
+                    if (dest) routeNavigate(dest);
                   }
                 },
               })}

@@ -3,7 +3,7 @@ import https from "https";
 import http from "http";
 import { IncomingMessage } from "http";
 import { HttpDownloadAgent, HttpsDownloadAgent } from "@serv/util/axios";
-
+import { getVideoData } from "@scripts/youtube/data";
 export interface VideoLink {
   size: string;
   f: string;
@@ -34,19 +34,6 @@ export async function WrapResponse<T>(
   if (res.status >= 300)
     throw new Error(`${res.statusText} With Code Status ${res.status}`);
   return (await res.json()) as T;
-}
-
-export async function getYoutubeData(id: string): Promise<ServerVideoInfo> {
-  const googleData = await getInfo(id, { requestOptions: {} });
-  return {
-    vid: googleData.vid,
-    related_videos: googleData.related_videos,
-    videoDetails: googleData.videoDetails,
-    formats: googleData.formats,
-    info: {
-      loudness: googleData.player_response.playerConfig.audioConfig.loudnessDb,
-    },
-  };
 }
 
 export type VideoDataInfoType = {

@@ -37,7 +37,6 @@ export default function VideoResults() {
     queryKey: ["video", router.query.path, router.query.id],
     queryFn: ({ signal }) =>
       getVideoData(router.query.path as string, router.query, signal),
-
     cacheTime: 1 * 1000 * 60,
     staleTime: 1 * 1000 * 60,
   });
@@ -66,7 +65,8 @@ export default function VideoResults() {
     getTime(query.start ?? data?.video?.start, 0, duration),
     getTime(query.end ?? data?.video?.end, duration, duration),
   ];
-  const ClippedState = start != 0 || duration - end > 5;
+  const ClippedState =
+    (start != 0 || duration - end > 5) && window.Environment == "desktop";
   return (
     <>
       <TypeApplication defaultState={false} env="desktop">

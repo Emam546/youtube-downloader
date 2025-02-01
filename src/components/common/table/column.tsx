@@ -25,6 +25,8 @@ function formatBytes(bytes: number, decimals = 2) {
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 }
 export default function MapData({ video, title, clippedData }: Props) {
+  if (typeof video.dlink != "string" && window.Environment == "web")
+    return null;
   return (
     <tr>
       <td className="tw-w tw-px-4 tw-py-2.5 tw-border tw-border-[#ddd] tw-w-full">
@@ -95,7 +97,16 @@ export default function MapData({ video, title, clippedData }: Props) {
                   title,
                 });
               }
-            else throw new Error("unimplemented");
+            else {
+              if (typeof video.dlink != "string")
+                throw new Error("unimplemented");
+              const link = document.createElement("a");
+              link.href = video.dlink;
+              link.target == "_blank";
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }
           }}
         />
       </td>

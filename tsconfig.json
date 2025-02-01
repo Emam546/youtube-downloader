@@ -20,7 +20,8 @@
       "@shared/*": ["./shared/*"],
       "@utils/*": ["./utils/*"],
       "@app/*": ["./app/*"],
-      "@shared/renderer/*": ["./app/renderer/shared/*"]
+      "@shared/renderer/*": ["./app/renderer/shared/*"],
+      "@scripts/*": ["./scripts/*"]
     },
     "plugins": [
       {
@@ -29,12 +30,6 @@
     ],
     "skipLibCheck": true
   },
-  "include": [
-    "src",
-    "shared",
-    "utils",
-    "./scripts/types",
-    ".next/types/**/*.ts"
-  ],
+  "include": ["src", "shared", "utils", "./scripts", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
 }

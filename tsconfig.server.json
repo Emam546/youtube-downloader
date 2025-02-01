@@ -1,22 +1,16 @@
 {
-    "extends": "./tsconfig.json",
-    "compilerOptions": {
-        "target": "ES2015",
-        "module": "commonjs",
-        "outDir": "dist",
-        "noEmit": false,
-        "baseUrl": "./",
-        "paths": {
-            "@serv/*": [
-                "./server/src/*"
-            ],
-            "@utils/*": [
-                "./utils/*"
-            ],
-        }
-    },
-    "include": [
-        "server/src",
-        "./build.ts"
-    ],
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2015",
+    "module": "commonjs",
+    "outDir": "dist",
+    "noEmit": false,
+    "baseUrl": "./",
+    "paths": {
+      "@serv/*": ["./server/src/*"],
+      "@utils/*": ["./utils/*"],
+      "@scripts/*": ["./scripts/*"]
+    }
+  },
+  "include": ["server/src", "scripts", "./build.ts"]
 }
