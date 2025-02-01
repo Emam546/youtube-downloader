@@ -15,13 +15,12 @@
     "build:server": "ts-node build.ts",
     "build:next": "next build",
     "build:scripts": "node ./scripts/build.js",
-    
     "export": "npm run build:next&&next export",
     "build": "npm run build:server && npm run build:next",
     "lint": "next lint -c ./src/.eslintrc.json src",
     "lint:server": "eslint -c ./server/.eslintrc.json --ext  .ts server/src/ ",
     "lint:electron": "eslint -c app/.eslintrc.json --ext .ts app/main/",
-    "start": "node -r module-alias/register ./dist --env=production",
+    "start": "node -r module-alias/register ./dist/server/src --env=production",
     "dev": "nodemon",
     "test": "jest",
     "start:desk": "electron-vite preview",
@@ -42,7 +41,8 @@
     "exec": "./node_modules/.bin/ts-node --project tsconfig.server.json --files -r tsconfig-paths/register ./server/src"
   },
   "_moduleAliases": {
-    "@serv": "dist/"
+    "@serv": "dist/server/src",
+    "@scripts": "dist/scripts"
   },
   "dependencies": {
     "@distube/ytdl-core": "^4.15.9",
