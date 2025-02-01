@@ -15,8 +15,8 @@ export class UpdaterWindow extends DownloaderWindow {
     autoUpdater.on("updater-downloaded", () => {
       this.end();
     });
-    autoUpdater.on("progress", (info) => {
-      this.onGetChunk(info.chunk.length);
+    autoUpdater.on("size", (size: number) => {
+      this.setCurSize(size);
     });
   }
 }

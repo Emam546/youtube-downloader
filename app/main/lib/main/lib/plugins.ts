@@ -6,7 +6,6 @@ import { app } from "electron";
 const pluginDir = app.isPackaged
   ? path.join(path.dirname(app.getPath("exe")), "./scripts")
   : path.join(__dirname, "../scripts");
-console.log(pluginDir);
 const Order: string[] = JSON.parse(
   fs.readFileSync(path.join(pluginDir, "order.json")).toString()
 );

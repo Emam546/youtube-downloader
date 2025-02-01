@@ -20,6 +20,7 @@ export default defineConfig({
         "@app": resolve("./app"),
         "@serv": resolve("./server/src"),
         "@utils": resolve("./utils"),
+        "@scripts": resolve("./scripts"),
       },
     },
   },

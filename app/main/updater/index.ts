@@ -4,6 +4,7 @@ import { createUpdateWindow } from "@app/main/lib/update";
 import AppUpdater from "./AppUpdater";
 import PackageJson from "../../../package.json";
 import { isProd } from "../utils";
+import { MainWindow } from "../lib/main/window";
 console.log("Version", PackageJson.version);
 const autoUpdater = new AppUpdater({
   owner: PackageJson.publish.owner,
@@ -16,31 +17,24 @@ app.whenReady().then(async () => {
 });
 autoUpdater.once("update-available", (update) => {
   console.log("update available");
-  app.quit();
-  autoUpdater.once("progress", async (info) => {
+  console.log("Download the update");
+  autoUpdater.downloadUpdate(update).then((asset) => {
+    console.log(asset?.name);
+    autoUpdater.once("updater-downloaded", (savedFilePath) => {
+      console.log("update finished");
+      autoUpdater.quitAndInstall(savedFilePath);
+    });
+  });
+  autoUpdater.once("metadata", async (metadata) => {
     console.log("start downloading");
     await createUpdateWindow({
       preloadData: {
-        curSize: info.chunk.length,
-        fileSize: info.remainingSize + info.chunk.length,
+        curSize: 0,
+        fileSize: metadata.size,
       },
       autoUpdater: autoUpdater,
     });
   });
-  app.once("before-quit", () => {
-    console.log("Download the update");
-    autoUpdater.downloadUpdate(update).then((asset) => {
-      console.log(asset?.name);
-      autoUpdater.once("updater-downloaded", (report) => {
-        console.log("update finished");
-        app.removeAllListeners("before-quit");
-        if (!report.filePath) return;
-        autoUpdater.quitAndInstall(report.filePath);
-      });
-    });
-  });
-  app.on("before-quit", (e) => {
-    e.preventDefault();
-  });
+  MainWindow.Window?.hide();
 });
 export default autoUpdater;
