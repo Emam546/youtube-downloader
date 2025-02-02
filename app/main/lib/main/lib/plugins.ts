@@ -6,7 +6,7 @@ import { app } from "electron";
 const pluginDir = app.isPackaged
   ? path.join(path.dirname(app.getPath("exe")), "./scripts")
   : path.join(__dirname, "../scripts");
-const Order: string[] = JSON.parse(
+const Data: { apps: string[]; version: string } = JSON.parse(
   fs.readFileSync(path.join(pluginDir, "order.json")).toString()
 );
 const plugins = fs.readdirSync(pluginDir).filter((dir) => {
@@ -26,7 +26,8 @@ const Plugins = plugins
   })
   .sort((a, b) => {
     return (
-      Order.findIndex((v) => v == a.PATH) - Order.findIndex((v) => v == b.PATH)
+      Data.apps.findIndex((v) => v == a.PATH) -
+      Data.apps.findIndex((v) => v == b.PATH)
     );
   });
 console.log(Plugins.map((v) => v.PATH));

@@ -15,6 +15,6 @@ folders.forEach((val) => {
     })
     .catch(() => process.exit(1));
 });
-const order = ["youtube", "link"];
+const order = { apps: ["youtube", "link"], version: "v0.0.0" };
 
 fs.writeFileSync("./out/scripts/order.json", JSON.stringify(order));
