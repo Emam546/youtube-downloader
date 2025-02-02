@@ -7,7 +7,7 @@ if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath, { recursive: true });
 folders.forEach((val) => {
   esbuild
     .build({
-      entryPoints: [`/scripts/${val}/index.ts`],
+      entryPoints: [path.join(__dirname, `../scripts/${val}/index.ts`)],
       outdir: path.join(folderPath, val),
       bundle: true,
       minify: true,
