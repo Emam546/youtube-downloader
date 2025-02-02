@@ -1,13 +1,13 @@
 const esbuild = require("esbuild");
 const fs = require("fs");
 const path = require("path");
-const folderPath = "./out/scripts";
+const folderPath = "/out/scripts";
 const folders = ["youtube", "link"];
 if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath, { recursive: true });
 folders.forEach((val) => {
   esbuild
     .build({
-      entryPoints: [`./scripts/${val}/index.ts`],
+      entryPoints: [`/scripts/${val}/index.ts`],
       outdir: `/out/scripts/${val}`,
       bundle: true,
       minify: true,
