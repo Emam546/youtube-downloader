@@ -49,10 +49,12 @@ export default class AppUpdater extends EventEmitter {
     if (!update) {
       this.hasUpdate = false;
       this.emit("update-not-available");
+
       return response.data.find((release) => {
-        return semver.gt(release.tag_name, app.getVersion());
+        return semver.eq(release.tag_name, app.getVersion());
       })!;
     } else {
+
       this.emit("update-available", update);
       this.hasUpdate = true;
       return update;
