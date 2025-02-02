@@ -27,7 +27,7 @@ jobs:
       - name: Deploy dist to target branch
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GH_TOKEN }}
           publish_branch: scripts # Change this to your target branch
           publish_dir: ./out/scripts # Path to the dist folder
           force_orphan: true # This removes old commits in the branch
