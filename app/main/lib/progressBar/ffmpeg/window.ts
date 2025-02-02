@@ -89,10 +89,11 @@ export class FfmpegWindowOrg extends BaseDownloaderWindow {
       const pipe = this.pipe();
       this.setPauseButton("Pause");
       const commando = command
+        .outputOptions([
+          `-t ${this.ffmpegData?.duration || 1000000000000000}`, // Set duration for both video and audio
+        ])
         .outputOptions("-movflags frag_keyframe+empty_moov")
         .outputOptions("-c copy")
-        .setStartTime(this.ffmpegData?.start || 0)
-        .duration(this.ffmpegData?.duration || 1000000000000)
         .on("progress", (percent) => {
           const curSize = percent.targetSize * 1024;
           if (this.fileSize != curSize) this.setFileSize(curSize);

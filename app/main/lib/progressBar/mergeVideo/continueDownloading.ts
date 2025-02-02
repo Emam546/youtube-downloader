@@ -32,6 +32,8 @@ export async function continueDownloading(
     .input(tempPath)
     .inputOptions(`-t ${resumePoint}`)
     .input(org.video)
+    .setStartTime(start + resumePoint)
+    .inputOptions(`-t ${duration - resumePoint}`)
     .input(org.audio)
     .setStartTime(start + resumePoint)
     .inputOptions(`-t ${duration - resumePoint}`)

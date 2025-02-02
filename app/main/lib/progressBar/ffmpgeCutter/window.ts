@@ -31,7 +31,12 @@ export class FfmpegWindow extends FfmpegWindowOrg {
         ).format(format)
       );
     } else {
-      super.download(ffmpeg().input(this.link).format(format));
+      super.download(
+        ffmpeg()
+          .input(this.link)
+          .setStartTime(this.ffmpegData?.start || 0)
+          .format(format)
+      );
     }
   }
 }

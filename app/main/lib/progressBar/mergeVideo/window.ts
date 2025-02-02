@@ -40,7 +40,9 @@ export class FfmpegMergeWindow extends FfmpegWindowOrg {
       super.download(
         ffmpeg()
           .input(this.mergeData.videoLink)
+          .setStartTime(this.ffmpegData?.start || 0)
           .input(this.mergeData.audioLink)
+          .setStartTime(this.ffmpegData?.start || 0)
           .format(format)
       );
     }

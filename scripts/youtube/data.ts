@@ -34,7 +34,6 @@ export async function getVideoData(
   if (id == undefined || !validateID(id)) return null;
   const data = await getInfo(id, { requestOptions: {} });
   const duration = parseInt(data.videoDetails.lengthSeconds);
-
   data.formats = data.formats.reduce((acc, v) => {
     const state = !acc.some(
       (g) =>
@@ -51,17 +50,17 @@ export async function getVideoData(
       if (!(cur.hasAudio && !cur.hasVideo)) return acc;
       if (cur.container.toLowerCase() != "mp4") return acc;
       if (!acc) return cur;
-      if (parseInt(acc.contentLength) > parseInt(cur.contentLength)) return acc;
-      if (cur.loudnessDb! < acc.loudnessDb!) return acc;
+      if (acc.bitrate! > cur.bitrate!) return acc;
+      if (acc.loudnessDb! > cur.loudnessDb!) return acc;
       return cur;
     }, null as null | videoFormat) ||
     data.formats.reduce((acc, cur) => {
       if (!(cur.hasAudio && !cur.hasVideo)) return acc;
       if (!acc) return cur;
-      if (cur.loudnessDb! < acc.loudnessDb!) return acc;
+      if (acc.bitrate! > cur.bitrate!) return acc;
+      if (acc.loudnessDb! > cur.loudnessDb!) return acc;
       return cur;
     }, null as null | videoFormat);
-
   const videos: Media[] = [
     ...data.formats
       .filter((v) => v.hasVideo && !v.hasAudio && audioMerge != undefined)

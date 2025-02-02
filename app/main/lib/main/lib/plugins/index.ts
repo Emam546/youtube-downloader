@@ -18,26 +18,26 @@ const orderFilePath = path.join(pluginDir, "order.json");
 const Data: DataType = JSON.parse(fs.readFileSync(orderFilePath).toString());
 console.log("Scripts version", Data.version.slice(1));
 
-if (app.isPackaged || isDev) {
-  (async function () {
-    const res = await axios.get<DataType>(
-      `https://raw.githubusercontent.com/${publish.owner}/${publish.repo}/scripts/order.json`
-    );
-    if (semver.lte(res.data.version, Data.version)) return;
-    console.log("Scripts update available");
-    const DOWNLOAD_URL = `https://github.com/${publish.owner}/${publish.repo}/archive/refs/heads/scripts.zip`;
-    await updateScripts(DOWNLOAD_URL, pluginDir);
-    fs.writeFileSync(
-      orderFilePath,
-      JSON.stringify({
-        ...res.data,
-        apps: { ...Data.apps, ...res.data.apps },
-      } as DataType)
-    );
-    app.quit();
-    app.relaunch();
-  })();
-}
+(async function () {
+  const res = await axios.get<DataType>(
+    `https://raw.githubusercontent.com/${publish.owner}/${publish.repo}/scripts/order.json`
+  );
+  console.log("Remote scripts version", res.data.version);
+  if (semver.lte(res.data.version, Data.version)) return;
+  console.log("Scripts update available");
+  const DOWNLOAD_URL = `https://github.com/${publish.owner}/${publish.repo}/archive/refs/heads/scripts.zip`;
+  await updateScripts(DOWNLOAD_URL, pluginDir);
+  fs.writeFileSync(
+    orderFilePath,
+    JSON.stringify({
+      ...res.data,
+      apps: { ...Data.apps, ...res.data.apps },
+    } as DataType)
+  );
+  app.quit();
+  app.relaunch();
+})();
+
 const plugins = fs.readdirSync(pluginDir).filter((dir) => {
   const g = path.join(pluginDir, dir);
   if (!fs.statSync(g).isDirectory()) return false;
