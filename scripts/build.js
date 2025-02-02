@@ -18,6 +18,12 @@ folders.forEach((val) => {
     })
     .catch(() => process.exit(1));
 });
-const order = { apps: ["youtube", "link"], version: "v0.0.0" };
+const order = {
+  apps: {
+    youtube: 0,
+    link: -1000,
+  },
+  version: "v0.0.0",
+};
 
 fs.writeFileSync(path.join(folderPath, "order.json"), JSON.stringify(order));

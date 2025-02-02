@@ -44,13 +44,13 @@ export default class AppUpdater extends EventEmitter {
       `https://api.github.com/repos/${this.data.owner}/${this.data.repo}/releases`
     );
     const update = response.data.find((release) => {
-      return !semver.gte(app.getVersion(), release.tag_name);
+      return semver.gt(release.tag_name, app.getVersion());
     });
     if (!update) {
       this.hasUpdate = false;
       this.emit("update-not-available");
       return response.data.find((release) => {
-        return semver.eq(app.getVersion(), release.tag_name);
+        return semver.gt(release.tag_name, app.getVersion());
       })!;
     } else {
       this.emit("update-available", update);

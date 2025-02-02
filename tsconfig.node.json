@@ -12,7 +12,8 @@
       "@shared/renderer/*": ["./app/renderer/shared/*"],
       "@serv/*": ["./server/src/*"],
       "@utils/*": ["./utils/*"],
-      "@src/*": ["./src/*"]
+      "@src/*": ["./src/*"],
+      "@scripts/*": ["./scripts/*"]
     }
   },
   "include": [
