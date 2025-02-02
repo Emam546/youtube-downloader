@@ -148,12 +148,9 @@ export async function getVideoData(
         previewLink: `https://www.youtube.com/watch?v=${data.vid}`,
         container: video.container,
         size: parseInt(video.contentLength),
-        text: {
-          str: `${video.qualityLabel} (.${video.container})`,
-        },
         quality: parseInt(video.quality),
         id: `${id}_other_${i}`,
-        test: {
+        text: {
           str: `Video Only ${
             video.qualityLabel
           } (${video.videoCodec?.toUpperCase()}) (.${video.container})`,

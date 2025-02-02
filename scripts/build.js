@@ -23,7 +23,7 @@ const order = {
     youtube: 0,
     link: -1000,
   },
-  version: "v0.0.0",
+  version: "v0.0.1",
 };
 
 fs.writeFileSync(path.join(folderPath, "order.json"), JSON.stringify(order));
