@@ -1,9 +1,10 @@
-name: Deploy dist to branch
+name: Deploy scripts to branch
 
 on:
   push:
     branches:
-      - main # Change this to your source branch
+      - master # Change this to your source branch
+  workflow_dispatch: # Allows manual trigger
 
 jobs:
   deploy:
