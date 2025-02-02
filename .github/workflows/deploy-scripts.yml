@@ -1,0 +1,32 @@
+name: Deploy dist to branch
+
+on:
+  push:
+    branches:
+      - main # Change this to your source branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies and build
+        run: |
+          npm i  # Change this if you're using yarn or pnpm
+          npm run build:scripts  # Make sure this generates the dist folder
+
+      - name: Deploy dist to target branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: scripts # Change this to your target branch
+          publish_dir: ./out/scripts # Path to the dist folder
+          force_orphan: true # This removes old commits in the branch
