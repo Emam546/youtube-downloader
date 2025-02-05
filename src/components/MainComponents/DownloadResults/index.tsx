@@ -82,7 +82,7 @@ export default function VideoResults() {
                   pathname: router.pathname, // Keep the current path
                   query: { ...router.query, start, end }, // Add or update the query parameters
                 },
-                {},
+                undefined,
                 { scroll: false }
               );
             }}
