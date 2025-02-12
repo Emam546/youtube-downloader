@@ -60,7 +60,7 @@ export default function VideoResults() {
   if (!paramQuery.data)
     return <ErrorMessage>The video is not exist</ErrorMessage>;
   const data = paramQuery.data!;
-  const duration = data!.video!.duration;
+  const duration = Math.floor(data!.video!.duration);
   const [start, end] = [
     getTime(query.start ?? data?.video?.start, 0, duration),
     getTime(query.end ?? data?.video?.end, duration, duration),
@@ -74,7 +74,7 @@ export default function VideoResults() {
           <VideoViewer
             start={start}
             end={end}
-            duration={Math.floor(duration)}
+            duration={duration}
             url={data.video?.viewerUrl}
             setDuration={(start, end) => {
               router.replace(
