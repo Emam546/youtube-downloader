@@ -74,7 +74,7 @@ export default function VideoResults() {
           <VideoViewer
             start={start}
             end={end}
-            duration={duration}
+            duration={Math.floor(duration)}
             url={data.video?.viewerUrl}
             setDuration={(start, end) => {
               router.replace(
