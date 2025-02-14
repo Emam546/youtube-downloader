@@ -105,8 +105,10 @@ export class DownloaderWindow extends DownloadingWindow {
     }
   }
   error(err: any) {
-    dialog.showErrorBox("Error Happened", err.toString());
-    if (!this.isDestroyed()) this.close();
+    if (!this.isDestroyed()) {
+      dialog.showErrorBox("Error Happened", err.toString());
+      this.close();
+    }
   }
 
   private onEnd() {
