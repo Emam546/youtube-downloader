@@ -21,15 +21,20 @@ export async function downloadVideoAndExtractMetadata(
   const url = decodeURI(query.link);
   const response = await DownloadInstance.head(url);
   // Extract filename from headers or fallback to a default name
-  const contentDisposition = response.headers["content-disposition"] as string;
+  const contentDisposition = response.headers["content-disposition"] as
+    | string
+    | undefined;
   // Save video file
   const metadata = await getVideoInfo(url);
-  let startFileNameIndex = contentDisposition.indexOf('"') + 1;
-  let endFileNameIndex = contentDisposition.lastIndexOf('"');
-  let reqFilename = contentDisposition.substring(
-    startFileNameIndex,
-    endFileNameIndex
-  );
+  let reqFilename;
+  if (contentDisposition) {
+    let startFileNameIndex = contentDisposition.indexOf('"') + 1;
+    let endFileNameIndex = contentDisposition.lastIndexOf('"');
+    reqFilename = contentDisposition.substring(
+      startFileNameIndex,
+      endFileNameIndex
+    );
+  }
   // Extract useful metadata
   const videoFormat = metadata.format.format_name?.split(",")[0] || "mp4";
   const urlFileName = decodeURI(url.split("/").pop()?.split("?")[0] || "");
@@ -39,8 +44,7 @@ export async function downloadVideoAndExtractMetadata(
     (urlFileName?.includes(".") ? urlFileName : undefined) ||
     `video.${videoFormat}`;
   const videoSize = metadata.format.size; // in bytes
-  const videoDuration = metadata.format.duration; // in seconds
-  const videoBitrate = metadata.format.bit_rate;
+  const videoDuration = metadata.format.duration;
   const videoStreams = metadata.streams;
 
   // Additional info: codec and resolution
