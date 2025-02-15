@@ -35,6 +35,7 @@ export function ControlButton({
 }: ComponentProps<"button">) {
   return (
     <button
+      type="button"
       className={classNames(
         "flex tw-items-center tw-justify-center tw-w-12 tw-h-12 tw-bg-blue-500 hover:tw-bg-blue-600",
         className
