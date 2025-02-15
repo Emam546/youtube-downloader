@@ -26,7 +26,7 @@ export class FfmpegWindow extends FfmpegWindowOrg {
             this.link,
             this.downloadingState.path,
             this.ffmpegData?.start || 0,
-            this.ffmpegData?.duration || 100000000000000
+            this.ffmpegData?.duration
           )
         ).format(format)
       );

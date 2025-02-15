@@ -45,6 +45,10 @@ export class FfmpegWindowOrg extends BaseDownloaderWindow {
     try {
       const metaData = await getVideoInfo(this.downloadingState.path);
       const duration = metaData.format.duration;
+      const numberOfFrames = parseInt(
+        metaData.streams.find((formate) => formate.codec_type == "video")
+          ?.nb_frames || ""
+      );
       if (!duration) throw new Error("Unrecognized time");
       this.rebuildingState = true;
       this.setThrottleState(this.enableThrottle);
@@ -98,9 +102,17 @@ export class FfmpegWindowOrg extends BaseDownloaderWindow {
         )
         .outputOptions("-movflags frag_keyframe+empty_moov")
         .outputOptions("-c copy")
-        .on("progress", (percent) => {
-          const curSize = percent.targetSize * 1024;
+        .on("progress", (progress) => {
+          const curSize = progress.targetSize * 1024;
           if (this.fileSize != curSize) this.setFileSize(curSize);
+          const targetSize = progress.targetSize * 1024;
+          this.onGetChunk(targetSize - this.curSize);
+          if (progress.percent) {
+            const totalFileSize = Math.round(
+              (targetSize / progress.percent) * 100
+            );
+            this.setFileSize(totalFileSize);
+          }
         })
         .on("error", (err) => this.error(err))
         .on("start", () => {

@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import React, { ComponentProps, useEffect, useState } from "react";
+import { ComponentProps } from "react";
 import { useAppSelector } from "../../store";
 import { humanFileSize, millisecondsToStr } from "@renderer/utils/calc";
 export interface StatusLiProps extends ComponentProps<"li"> {

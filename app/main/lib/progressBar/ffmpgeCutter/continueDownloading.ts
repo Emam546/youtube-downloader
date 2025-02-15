@@ -20,7 +20,7 @@ export async function continueDownloading(
   org: string | internal.Readable,
   continued: string,
   start: number,
-  duration: number
+  duration?: number
 ): Promise<Ffmpeg.FfmpegCommand> {
   const tempPath = getTempName(continued);
   fs.renameSync(continued, path.basename(tempPath));
@@ -32,7 +32,7 @@ export async function continueDownloading(
     .inputOptions(`-t ${resumePoint}`)
     .input(org)
     .setStartTime(start + resumePoint)
-    .inputOptions(`-t ${duration - resumePoint}`)
+    .inputOptions(duration ? [`-t ${duration - resumePoint}`] : [])
     .on("end", () => {
       fs.unlinkSync(tempPath);
     });
