@@ -45,7 +45,7 @@
     "@scripts": "dist/scripts"
   },
   "dependencies": {
-    "@distube/ytdl-core": "^4.15.9",
+    "@distube/ytdl-core": "^4.16.4",
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/utils": "^3.0.0",
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
