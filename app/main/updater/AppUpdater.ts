@@ -6,6 +6,7 @@ import EasyDl from "easydl";
 import cproc from "child_process";
 import path from "path";
 import { DownloadInstance } from "@serv/util/axios";
+
 export interface Data {
   owner: string;
   releaseType: "release" | "draft" | "both";
@@ -54,7 +55,6 @@ export default class AppUpdater extends EventEmitter {
         return semver.eq(release.tag_name, app.getVersion());
       })!;
     } else {
-
       this.emit("update-available", update);
       this.hasUpdate = true;
       return update;
@@ -100,15 +100,8 @@ export default class AppUpdater extends EventEmitter {
     if (!fs.existsSync(setupPath))
       return console.warn("file doesn't exist", setupPath);
     if (process.platform == "win32") {
-      await new Promise<void>((res, rej) => {
-        cproc.exec(`${setupPath} /SILENT`, (err, stdout, stderr) => {
-          if (!!stdout) console.log(stdout);
-          if (!!stderr) console.error(stderr);
-          return !!err ? rej(err) : res();
-        });
-      });
+      cproc.spawn(`${setupPath}`, ["/SILENT"]).unref();
+      app.quit();
     }
-    app.quit();
-    app.relaunch();
   }
 }
