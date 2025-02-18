@@ -1,4 +1,4 @@
-import { ServerVideoInfo } from "@serv/routes/videoDownloader/api";
+import { ServerVideoInfo } from "@utils/server";
 import agent from "../index";
 const id = "WhWc3b3KhnY";
 

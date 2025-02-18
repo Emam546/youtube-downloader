@@ -2,7 +2,7 @@ import { createClippedProgressBarWindow } from "@app/main/lib/progressBar/ffmpge
 import { createProgressBarWindow } from "@app/main/lib/progressBar/linkDownload";
 import { BrowserWindow } from "electron";
 import { Downloader } from "./downloader";
-import { VideoDataClippedType } from "@serv/routes/videoDownloader/api";
+import { VideoDataClippedType } from "@utils/server";
 
 export async function DownloadVideoLink(
   e: Electron.IpcMainEvent,

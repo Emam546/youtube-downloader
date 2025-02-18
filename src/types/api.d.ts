@@ -1,4 +1,4 @@
-import { getYoutubeData } from "@serv/routes/videoDownloader/api";
+import { getYoutubeData } from "@utils/server";
 import { getSearchData as getSearchData } from "@serv/routes/search/api";
 import { getPlayListData } from "@serv/routes/playlist/api";
 import { DownloadVideoLink } from "@app/main/lib/main/utils/downloadVideoLink";

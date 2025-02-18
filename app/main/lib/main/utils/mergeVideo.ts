@@ -5,10 +5,7 @@ import {
 export type { MergeDataType } from "@app/main/lib/progressBar/mergeVideo";
 import { BrowserWindow } from "electron";
 import { Downloader } from "./downloader";
-import {
-  VideoDataInfoType,
-  ClippingDataType,
-} from "@serv/routes/videoDownloader/api";
+import { VideoDataInfoType, ClippingDataType } from "@utils/server";
 export interface VideoData extends VideoDataInfoType {
   mergeData: MergeDataType;
 }

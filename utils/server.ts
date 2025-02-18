@@ -1,31 +1,7 @@
-import { getInfo, videoInfo } from "@distube/ytdl-core";
 import https from "https";
 import http from "http";
 import { IncomingMessage } from "http";
 import { HttpDownloadAgent, HttpsDownloadAgent } from "@serv/util/axios";
-export { getVideoData } from "@scripts/youtube/data";
-export interface VideoLink {
-  size: string;
-  f: string;
-  q: string;
-  q_text: string;
-  k: string;
-}
-
-export interface VideoLinks {
-  [key: string]: VideoLink;
-}
-
-export interface AdditionInfo {
-  loudness: number;
-}
-export interface ServerVideoInfo {
-  vid?: string;
-  videoDetails: videoInfo["videoDetails"];
-  related_videos: videoInfo["related_videos"];
-  formats: videoInfo["formats"];
-  info: AdditionInfo;
-}
 
 export async function WrapResponse<T>(
   fetchData: Promise<Response>

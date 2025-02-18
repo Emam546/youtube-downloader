@@ -1,7 +1,4 @@
-import {
-  VideoDataClippedType,
-  getFileName,
-} from "@serv/routes/videoDownloader/api";
+import { VideoDataClippedType, getFileName } from "@utils/server";
 import { BrowserWindow, dialog } from "electron";
 import fs from "fs-extra";
 export interface Options {

@@ -1,9 +1,6 @@
 import "../main/pre-start";
 import { DownloadTheFile } from "@app/main/lib/progressBar/linkDownload/downloader";
-import {
-  getVideoData,
-  ServerVideoInfo,
-} from "@serv/routes/videoDownloader/api";
+import { getVideoData, ServerVideoInfo } from "@utils/server";
 import { IncomingMessage } from "http";
 import fs from "fs";
 import ffmpeg from "fluent-ffmpeg";
