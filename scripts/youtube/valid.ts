@@ -23,7 +23,7 @@ export const PATH = "youtube";
 const baseUrl = `/${PATH}/`;
 function getPathYoutubeUrl(youtubeUrl: URL) {
   const [id, list, time] = extractParams(youtubeUrl);
-  const url = id ? appendPathToBaseUrl(baseUrl, id) : baseUrl;
+  const url = id ? appendPathToBaseUrl(baseUrl, encodeURI(id)) : baseUrl;
   const searchParams = new URLSearchParams();
   if (list) searchParams.set("list", list);
   if (time) {
