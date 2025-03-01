@@ -78,7 +78,7 @@ export async function getVideoData(
             video: video.url,
             audio: audioMerge?.url,
           },
-          previewLink: `https://www.youtube.com/watch?v=${data.vid}`,
+          previewLink: `https://www.youtube.com/watch?v=${id}`,
           container: video.container,
           size: parseInt(video.contentLength),
           text: {
@@ -93,7 +93,7 @@ export async function getVideoData(
       .map((video, i) => {
         return {
           dlink: video.url,
-          previewLink: `https://www.youtube.com/watch?v=${data.vid}`,
+          previewLink: `https://www.youtube.com/watch?v=${id}`,
           container: video.container,
           size: parseInt(video.contentLength),
           text: {
@@ -118,7 +118,7 @@ export async function getVideoData(
       return {
         dlink: audio.url,
         size: parseInt(audio.contentLength),
-        previewLink: `https://www.youtube.com/watch?v=${data.vid}`,
+        previewLink: `https://www.youtube.com/watch?v=${id}`,
 
         text: {
           str: `${audio.container.toUpperCase()} - (${audio.audioCodec?.toUpperCase()}) ${
@@ -144,7 +144,7 @@ export async function getVideoData(
     .map((video, i) => {
       return {
         dlink: video.url,
-        previewLink: `https://www.youtube.com/watch?v=${data.vid}`,
+        previewLink: `https://www.youtube.com/watch?v=${id}`,
         container: video.container,
         size: parseInt(video.contentLength),
         quality: parseInt(video.quality),
