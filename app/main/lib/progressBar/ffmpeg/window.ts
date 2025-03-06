@@ -103,8 +103,6 @@ export class FfmpegWindowOrg extends BaseDownloaderWindow {
         .outputOptions("-movflags frag_keyframe+empty_moov")
         .outputOptions("-c copy")
         .on("progress", (progress) => {
-          const curSize = progress.targetSize * 1024;
-          if (this.fileSize != curSize) this.setFileSize(curSize);
           const targetSize = progress.targetSize * 1024;
           this.onGetChunk(targetSize - this.curSize);
           if (progress.percent) {
