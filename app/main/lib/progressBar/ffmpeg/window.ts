@@ -108,8 +108,6 @@ export class FfmpegWindowOrg extends BaseDownloaderWindow {
         if (progress.frames) {
           const fileSize =
             (numberOfFrames / progress.frames) * progress.targetSize * 1024;
-          console.log(numberOfFrames / progress.frames);
-          console.log(fileSize / (1024 * 1024));
           if (fileSize && this.fileSize != fileSize) this.setFileSize(fileSize);
         }
       })
