@@ -1,6 +1,6 @@
 import { ConvertToIpCHandleMainFunc, ConvertToIpCMainFunc } from "@shared/api";
 import { Api } from "@shared/renderer/progress";
-import { BaseDownloaderWindow } from "../window";
+import { BaseDownloaderWindow } from "./window";
 import { createFinishWindow } from "@app/main/lib/finish";
 import { ObjectEntries } from "@utils/index";
 import { ipcMain } from "electron";

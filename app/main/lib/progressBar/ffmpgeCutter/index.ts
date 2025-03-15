@@ -1,12 +1,9 @@
-import "./ipc";
-import { BrowserWindowConstructorOptions, shell } from "electron";
-import path from "path";
+import { BrowserWindowConstructorOptions } from "electron";
 import { Context } from "@shared/renderer/progress";
-import { convertFunc } from "@utils/app";
 import { FfmpegWindow } from "./window";
 import { defaultPageData } from "@app/main/lib/progressBar/window";
 import { Props as NonClippedProps } from "../linkDownload";
-import { isDev } from "@app/main/utils";
+import { createWindow } from "../createWindow";
 
 export interface ClippedData {
   start: number;
@@ -18,7 +15,7 @@ export interface Props extends NonClippedProps {
 export const createClippedProgressBarWindow = async (
   vars: Props,
   options?: BrowserWindowConstructorOptions
-): Promise<FfmpegWindow> => {
+) => {
   const stateData = vars.preloadData;
   const preloadData: Context = {
     ...stateData,
@@ -27,26 +24,11 @@ export const createClippedProgressBarWindow = async (
     downloadSpeed: vars.downloadingStatus?.downloadSpeed || 50 * 1024,
     pageData: defaultPageData,
   };
-  const win = new FfmpegWindow(
+  return createWindow(
+    FfmpegWindow,
     {
-      icon: "build/icon.ico",
-      useContentSize: true,
-      show: false,
-      autoHideMenuBar: true,
-      height: 270,
-      width: 550,
-      frame: false,
-      resizable: true,
-      fullscreenable: false,
+      preloadData: preloadData,
       ...options,
-      webPreferences: {
-        ...options?.webPreferences,
-        sandbox: false,
-        preload: path.join(__dirname, "../preload/index.js"),
-        additionalArguments: [
-          convertFunc(encodeURIComponent(JSON.stringify(preloadData)), "data"),
-        ],
-      },
     },
     {
       fileStatus: vars.stateData,
@@ -62,17 +44,4 @@ export const createClippedProgressBarWindow = async (
       pageData: preloadData.pageData,
     }
   );
-  win.webContents.setWindowOpenHandler((details) => {
-    shell.openExternal(details.url);
-    return { action: "deny" };
-  });
-  if (isDev) {
-    await win.loadURL(
-      `${process.env["ELECTRON_RENDERER_URL"] as string}/progress`
-    );
-    win.webContents.openDevTools();
-  } else await win.loadFile(path.join(__dirname, "../windows/progress.html"));
-  win.show();
-  await win.download();
-  return win;
 };

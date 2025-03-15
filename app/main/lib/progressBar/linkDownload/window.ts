@@ -1,15 +1,14 @@
 import { BrowserWindowConstructorOptions } from "electron";
 import { DownloadTheFile } from "./downloader";
-import { BaseDownloaderWindow, DownloaderData } from "../window";
+import { BaseDownloaderWindow, BrowserProps, DownloaderData } from "../window";
 import { DownloadInstance } from "@serv/util/axios";
 
 export class FileDownloaderWindow extends BaseDownloaderWindow {
-  constructor(options: BrowserWindowConstructorOptions, data: DownloaderData) {
+  constructor(options: BrowserProps, data: DownloaderData) {
     super(options, data);
   }
-  async download(num = 0, err?: any) {
-    if (num > BaseDownloaderWindow.MAX_TRIES) return this.error(err);
-    try {
+  async download() {
+    await super.download(async () => {
       const res = await DownloadInstance.head(this.link, {
         validateStatus(status) {
           return status < 400;
@@ -34,6 +33,7 @@ export class FileDownloaderWindow extends BaseDownloaderWindow {
       );
       const length = response.headers["content-length"];
       if (length) this.setFileSize(parseInt(length));
+
       response.on("error", (err) => this.error(err));
       response.once("data", () => {
         this.setPauseButton("Pause");
@@ -41,9 +41,7 @@ export class FileDownloaderWindow extends BaseDownloaderWindow {
       this.on("close", () => {
         if (!response.closed) response.destroy();
       });
-      response.pipe(this.pipe());
-    } catch (err) {
-      this.download(num + 1, err);
-    }
+      response.pipe(this.pipe(this.downloadingState.path));
+    });
   }
 }

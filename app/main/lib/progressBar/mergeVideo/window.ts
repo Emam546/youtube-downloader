@@ -18,33 +18,35 @@ export class FfmpegMergeWindow extends FfmpegWindowOrg {
     this.mergeData = mergeData;
   }
   async download() {
-    const format = path.extname(this.downloadingState.path).slice(1);
-    if (
-      this.downloadingState.continued &&
-      fs.existsSync(this.downloadingState.path)
-    ) {
-      super.continuoDownloading(
-        (
-          await continueDownloading(
-            {
-              video: this.mergeData.videoLink,
-              audio: this.mergeData.audioLink,
-            },
-            this.downloadingState.path,
-            this.ffmpegData?.start || 0,
-            this.ffmpegData?.duration || 1000000000000
-          )
-        ).format(format)
-      );
-    } else {
-      super.download(
-        ffmpeg()
-          .input(this.mergeData.videoLink)
-          .setStartTime(this.ffmpegData?.start || 0)
-          .input(this.mergeData.audioLink)
-          .setStartTime(this.ffmpegData?.start || 0)
-          .format(format)
-      );
-    }
+    await super.download(async () => {
+      const format = path.extname(this.downloadingState.path).slice(1);
+      if (
+        this.downloadingState.continued &&
+        fs.existsSync(this.downloadingState.path)
+      ) {
+        await super.continuoDownloading(
+          (
+            await continueDownloading(
+              {
+                video: this.mergeData.videoLink,
+                audio: this.mergeData.audioLink,
+              },
+              this.downloadingState.path,
+              this.ffmpegData?.start || 0,
+              this.ffmpegData?.duration || 1000000000000
+            )
+          ).format(format)
+        );
+      } else {
+        await super.prepareDownloading(
+          ffmpeg()
+            .input(this.mergeData.videoLink)
+            .setStartTime(this.ffmpegData?.start || 0)
+            .input(this.mergeData.audioLink)
+            .setStartTime(this.ffmpegData?.start || 0)
+            .format(format)
+        );
+      }
+    });
   }
 }

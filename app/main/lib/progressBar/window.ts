@@ -1,4 +1,8 @@
-import { ProgressBarState, ProgressData } from "@shared/renderer/progress";
+import {
+  Context,
+  ProgressBarState,
+  ProgressData,
+} from "@shared/renderer/progress";
 import { StateType } from "@app/main/lib/main/utils/downloader";
 import fs, { WriteStream } from "fs-extra";
 import { BrowserWindowConstructorOptions } from "electron";
@@ -6,6 +10,8 @@ import { DownloaderWindow } from "../donwloading";
 import { ModifiedThrottle } from "./utils";
 import internal from "stream";
 import { DownloadTray } from "./tray";
+import path from "path";
+import { convertFunc } from "@utils/app";
 export type FlagType = "w" | "a";
 export interface VideoData {
   link: string;
@@ -67,6 +73,10 @@ export interface BaseDownloaderWindow {
     webContents: Electron.WebContents
   ): BaseDownloaderWindow | null;
 }
+export interface BrowserProps extends BrowserWindowConstructorOptions {
+  preloadData: Context;
+}
+
 export class BaseDownloaderWindow extends DownloaderWindow {
   public static readonly MAX_TRIES = 3;
   pageData: ProgressData;
@@ -81,8 +91,30 @@ export class BaseDownloaderWindow extends DownloaderWindow {
   downloadingState: StateType;
   state: ProgressBarState["status"] = "connecting";
   readonly curSize: number;
-  constructor(options: BrowserWindowConstructorOptions, data: DownloaderData) {
-    super(options);
+  constructor(options: BrowserProps, data: DownloaderData) {
+    super({
+      icon: "build/icon.ico",
+      useContentSize: true,
+      show: false,
+      autoHideMenuBar: true,
+      height: 270,
+      width: 550,
+      frame: false,
+      resizable: true,
+      fullscreenable: false,
+      ...options,
+      webPreferences: {
+        ...options?.webPreferences,
+        sandbox: false,
+        preload: path.join(__dirname, "../preload/index.js"),
+        additionalArguments: [
+          convertFunc(
+            encodeURIComponent(JSON.stringify(options.preloadData)),
+            "data"
+          ),
+        ],
+      },
+    });
     this.enableThrottle = data.downloadingStatus.enableThrottle;
     this.downloadSpeed = data.downloadingStatus.downloadSpeed;
     this.curStream = new ModifiedThrottle({
@@ -123,6 +155,21 @@ export class BaseDownloaderWindow extends DownloaderWindow {
       webContents
     ) as BaseDownloaderWindow;
   }
+  async download(f?: () => Promise<any>) {
+    let i = 0;
+    while (true) {
+      try {
+        await f?.();
+        break;
+      } catch (error) {
+        if (i > BaseDownloaderWindow.MAX_TRIES) {
+          this.error(error);
+          break;
+        }
+        i++;
+      }
+    }
+  }
   getRealSize() {
     if (fs.existsSync(this.downloadingState.path)) {
       const state = fs.statSync(this.downloadingState.path);
@@ -131,10 +178,10 @@ export class BaseDownloaderWindow extends DownloaderWindow {
     return 0;
   }
 
-  pipe(): internal.Writable {
+  pipe(path: string): internal.Writable {
     if (this.stream && !this.stream.destroyed)
       throw new Error("there is unclosed stream file");
-    this.stream = fs.createWriteStream(this.downloadingState.path, {
+    this.stream = fs.createWriteStream(path, {
       flags: this.flag,
     });
     this.stream.on("error", (err) => this.error(err));

@@ -15,28 +15,30 @@ export interface FFmpegDownloaderData extends DownloaderData {
 
 export class FfmpegWindow extends FfmpegWindowOrg {
   async download() {
-    const format = path.extname(this.downloadingState.path).slice(1);
-    if (
-      this.downloadingState.continued &&
-      fs.existsSync(this.downloadingState.path)
-    ) {
-      super.continuoDownloading(
-        (
-          await continueDownloading(
-            this.link,
-            this.downloadingState.path,
-            this.ffmpegData?.start || 0,
-            this.ffmpegData?.duration
-          )
-        ).format(format)
-      );
-    } else {
-      super.download(
-        ffmpeg()
-          .input(this.link)
-          .setStartTime(this.ffmpegData?.start || 0)
-          .format(format)
-      );
-    }
+    await super.download(async () => {
+      const format = path.extname(this.downloadingState.path).slice(1);
+      if (
+        this.downloadingState.continued &&
+        fs.existsSync(this.downloadingState.path)
+      ) {
+        await this.continuoDownloading(
+          (
+            await continueDownloading(
+              this.link,
+              this.downloadingState.path,
+              this.ffmpegData?.start || 0,
+              this.ffmpegData?.duration
+            )
+          ).format(format)
+        );
+      } else {
+        await this.prepareDownloading(
+          ffmpeg()
+            .input(this.link)
+            .setStartTime(this.ffmpegData?.start || 0)
+            .format(format)
+        );
+      }
+    });
   }
 }
