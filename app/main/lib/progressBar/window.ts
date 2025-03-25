@@ -100,7 +100,7 @@ export class BaseDownloaderWindow extends DownloaderWindow {
       height: 270,
       width: 550,
       frame: false,
-      resizable: true,
+      resizable: false,
       fullscreenable: false,
       ...options,
       webPreferences: {
