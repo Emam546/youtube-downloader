@@ -39,6 +39,7 @@ export default function VideoResults() {
       getVideoData(router.query.path as string, router.query, signal),
     cacheTime: 1 * 1000 * 60,
     staleTime: 1 * 1000 * 60,
+    retry: 2,
   });
 
   useEffect(() => {
@@ -51,11 +52,7 @@ export default function VideoResults() {
 
   if (paramQuery.isLoading) return <Loading />;
   if (paramQuery.isError) {
-    return (
-      <ErrorMessage>
-        There is a problem that occurred on the server.
-      </ErrorMessage>
-    );
+    return <ErrorMessage>{new String(paramQuery.error)}</ErrorMessage>;
   }
   if (!paramQuery.data)
     return <ErrorMessage>The video is not exist</ErrorMessage>;

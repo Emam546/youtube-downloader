@@ -16,7 +16,16 @@ export async function getVideoData(
   signal?: AbortSignal
 ): Promise<ResponseData | null> {
   if (window.Environment == "desktop") {
-    return await window.api.invoke("getVideoData", path, query);
+    try {
+      return await window.api.invoke("getVideoData", path, query);
+    } catch (error) {
+      throw new Error(
+        new String(error).replace(
+          "Error: Error invoking remote method 'getVideoData': Error:",
+          ""
+        )
+      );
+    }
   } else {
     const data = await axios.get(`/api/${path}`, { params: { ...query } });
     return data.data.data;
