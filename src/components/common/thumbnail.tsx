@@ -39,10 +39,14 @@ export default function Thumbnail({ src, title }: Props) {
   });
   return (
     <div>
-      <div className="tw-mx-auto tw-rounded">
-        <img className="tw-block tw-w-full" src={src} alt={title} />
+      <div className="tw-mx-auto tw-rounded tw-bg-black">
+        <img
+          className="tw-mx-auto tw-max-h-[20rem]"
+          src={src}
+          alt={title}
+        />
       </div>
-      <div className="tw-py-3">
+      <div className="tw-py-3 tw-break-words">
         <b>{title}</b>
       </div>
       <DownloadButton

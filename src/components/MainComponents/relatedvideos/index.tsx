@@ -22,14 +22,14 @@ export default function RelatedVideos() {
                     key={video.id}
                     className="d-block text-decoration-none link-primary hover:tw-text-primary tw-cursor-pointer"
                   >
-                    <div>
+                    <div className="tw-aspect-video tw-bg-black">
                       <img
                         src={video.thumbnail}
                         alt={video.title[0]}
-                        className="tw-w-full tw-aspect-video tw-block"
+                        className="tw-h-full tw-mx-auto tw-block"
                       />
                     </div>
-                    <p className="pt-2 text-black tw-leading-5 tw-text-ellipsis hover:tw-text-primary tw-cursor-pointer ">
+                    <p className="pt-2 text-black tw-leading-5 tw-text-ellipsis hover:tw-text-primary tw-cursor-pointer tw-break-words">
                       {video.title[0]}
                     </p>
                   </Link>
