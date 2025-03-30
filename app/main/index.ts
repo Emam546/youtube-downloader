@@ -7,6 +7,7 @@ import { electronApp } from "@electron-toolkit/utils";
 import { lunchArgs } from "./helpers/launchHelpers";
 import path from "path";
 import { MainWindow } from "./lib/main/window";
+import { fileHandler } from "./lib/FileHandeler";
 
 if (process.defaultApp) {
   if (process.argv.length >= 2) {
@@ -27,6 +28,7 @@ async function createWindow(args: string[]) {
   );
 }
 app.whenReady().then(async () => {
+  fileHandler();
   await createWindow(process.argv);
 });
 electronApp.setAppUserModelId("com.youtube-downloader");

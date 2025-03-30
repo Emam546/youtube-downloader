@@ -2,6 +2,7 @@ import https from "https";
 import http from "http";
 import { IncomingMessage } from "http";
 import { HttpDownloadAgent, HttpsDownloadAgent } from "@serv/util/axios";
+import path from "path";
 
 export async function WrapResponse<T>(
   fetchData: Promise<Response>
@@ -30,15 +31,24 @@ export type VideoDataClippedType = ClippingDataType<VideoDataInfoType>;
 export function removeUnwantedChars(val: string) {
   return val.replace(/[/\\?%*:|"<>]/g, "-").replace(/#[^\s#]+/g, "");
 }
+const AppPrefix = "YoutubeDownloader";
 export function getFileName<T extends VideoDataClippedType>(data: T) {
   if (data.clipped) {
     return removeUnwantedChars(
-      `YoutubeDownloader - ${data.title} v${data.fquality} ${data.start}:${data.end}.${data.ftype}`
+      `${AppPrefix} - ${data.title} v${data.fquality} ${data.start}-${data.end}.${data.ftype}`
     );
   } else
     return removeUnwantedChars(
-      `YoutubeDownloader - ${data.title} v${data.fquality}.${data.ftype}`
+      `${AppPrefix} - ${data.title} v${data.fquality}.${data.ftype}`
     );
+}
+export function getOriginalFileName(filename: string) {
+  const regex = new RegExp(
+    `^${AppPrefix} - (.+?) v[\\w]+(?: \\d+-\\d+)?\\.\\w+$`
+  );
+  const match = filename.match(regex);
+
+  return match ? `${match[1]}${path.extname(filename)}` : filename;
 }
 export function getHttpMethod(dlink: string, range?: string) {
   return new Promise<IncomingMessage>((res) => {

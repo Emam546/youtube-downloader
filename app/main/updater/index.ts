@@ -13,7 +13,7 @@ const autoUpdater = new AppUpdater({
 });
 app.whenReady().then(async () => {
   autoUpdater.on("error", (e) => console.error(e));
-  console.log("checking fro update");
+  console.log("checking for update");
   autoUpdater.checkForUpdates();
 });
 autoUpdater.once("update-available", (update) => {

@@ -32,7 +32,7 @@ export async function getVideoData(
     end?: string;
   };
   if (id == undefined || !validateID(id)) return null;
-  const data = await getInfo(id, { requestOptions: {} });
+  const data = await getInfo(id);
   const duration = parseInt(data.videoDetails.lengthSeconds);
   data.formats = data.formats.reduce((acc, v) => {
     const state = !acc.some(
@@ -180,7 +180,7 @@ export async function getVideoData(
         data: data.related_videos.map<ReturnedSearch>((v) => {
           return {
             id: v.id!,
-            link: `/${PATH}/${id}`,
+            link: `/${PATH}/${v.id}`,
             thumbnail: v.thumbnails.sort((a, b) => a.height - b.height).at(-1)!
               .url,
             title: [v.title!],

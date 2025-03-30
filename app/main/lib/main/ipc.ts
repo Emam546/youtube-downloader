@@ -1,5 +1,4 @@
 import { ConvertToIpCHandleMainFunc, ConvertToIpCMainFunc } from "@shared/api";
-import { getSearchData } from "@serv/routes/search/api";
 import { ApiMain } from "@src/types/api";
 import { getPlayListData } from "@serv/routes/playlist/api";
 import { DownloadVideoLink } from "./utils/downloadVideoLink";
