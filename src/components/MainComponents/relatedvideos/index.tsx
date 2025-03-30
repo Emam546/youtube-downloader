@@ -18,7 +18,7 @@ export default function RelatedVideos() {
               {section.data.map((video) => {
                 return (
                   <Link
-                    href={`/youtube/${video.id}`}
+                    href={`${video.link}`}
                     key={video.id}
                     className="d-block text-decoration-none link-primary hover:tw-text-primary tw-cursor-pointer"
                   >
