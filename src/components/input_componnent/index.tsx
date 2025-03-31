@@ -7,38 +7,12 @@ import { useForm } from "react-hook-form";
 import { ChangeEvent, useEffect } from "react";
 import { NavigateVideo } from "@src/types/api";
 import { navigate } from "@src/API/navigate";
+import { predictInputStr } from "@src/API";
 interface DataFrom {
   search: string;
 }
 function isVideo(val: unknown): val is NavigateVideo {
   return window.context != null && window.context.video != undefined;
-}
-export type YoutubeParams = [
-  string | null,
-  string | null,
-  [number | null, number | null] | null
-];
-function constructUrl(...[id, listId, time]: YoutubeParams) {
-  const url = new URL("https://www.youtube.com/watch");
-  if (id) url.searchParams.set("v", id);
-  if (listId && listId.startsWith("PL")) url.searchParams.set("list", listId);
-  if (time && time[0]) {
-    url.searchParams.set("t", `${time[0]}s`);
-  }
-  return url;
-}
-
-function extractParams(youtubeUrl: URL): YoutubeParams {
-  const id = youtube_parser(youtubeUrl.href);
-  const list = youtubeUrl.searchParams.get("list");
-  let start =
-    youtubeUrl.searchParams.get("start") || youtubeUrl.searchParams.get("t");
-  const end = youtubeUrl.searchParams.get("end");
-  return [
-    id || null,
-    list,
-    [start ? parseInt(start) : null, end ? parseInt(end) : null],
-  ];
 }
 
 function getTime(val: unknown): number | null {
@@ -49,41 +23,30 @@ export default function InputHolder() {
   const router = useRouter();
   const routeNavigate = router.push;
   const { register, handleSubmit, setValue, formState } = useForm<DataFrom>();
+
   useEffect(() => {
-    if (router.asPath.startsWith("/youtube")) {
-      const regex = /\/youtube\/([a-zA-Z0-9]+)/;
-      const match = window.location.pathname.match(regex);
-      const urlParams = new URLSearchParams(window.location.search);
-      const list = urlParams.get("list");
-      const start = urlParams.get("start");
-      const end = urlParams.get("end");
-      setValue(
-        "search",
-        constructUrl(match ? match[1] : null, list, [
-          getTime(start),
-          getTime(end),
-        ]).href
-      );
-    }
     if (router.asPath.startsWith("/search")) {
       const regex = /\/search\/(.+)/;
       const match = window.location.pathname.match(regex);
       if (!match) return;
       setValue("search", decodeURIComponent(match[1]));
-    }
-    if (router.asPath.startsWith("/download")) {
-      const urlParams = new URLSearchParams(window.location.search);
-      const link = urlParams.get("link");
-      if (!link) return;
-      setValue("search", decodeURIComponent(link));
+    } else {
+      const [, path, id] = window.location.pathname.split("/");
+      if (path)
+        predictInputStr(path, {
+          id,
+          ...(window.location.search as unknown as Record<string, string>),
+        }).then((str) => {
+          if (str) setValue("search", str);
+        });
     }
   }, []);
   useEffect(() => {
-    function analyzeUrl(href: string) {
-      setValue("search", constructUrl(...extractParams(new URL(href))).href);
+    function analyzeUrl(val: string) {
+      setValue("search", val);
     }
     if (window.Environment == "desktop") {
-      window.api.on("getYoutubeUrl", (_, url) => {
+      window.api.on("getInputUrl", (_, url) => {
         analyzeUrl(url);
       });
       if (isVideo(window.context)) analyzeUrl(window.context.video.link);

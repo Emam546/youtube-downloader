@@ -1,4 +1,4 @@
-export function getTime(data: unknown, defaultN: number, maxTime: number) {
+export function getTime<T>(data: unknown, defaultN: T, maxTime: number) {
   if (typeof data == "string") return minMax(parseInt(data), maxTime);
   return defaultN;
 }

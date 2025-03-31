@@ -24,7 +24,7 @@ async function createWindow(args: string[]) {
   const data = lunchArgs(args);
   return await createMainWindow(
     {},
-    data ? { video: { link: data.youtubeLink } } : undefined
+    data ? { video: { link: data } } : undefined
   );
 }
 app.whenReady().then(async () => {
@@ -45,8 +45,7 @@ else
       MainWindow.Window.focus();
       if (argv.length >= 2) {
         const data = lunchArgs(argv);
-        if (data)
-          MainWindow.Window.webContents.send("getYoutubeUrl", data.youtubeLink);
+        if (data) MainWindow.Window.webContents.send("getYoutubeUrl", data);
       }
     } else if (!autoUpdater.hasUpdate) createWindow(argv);
   });

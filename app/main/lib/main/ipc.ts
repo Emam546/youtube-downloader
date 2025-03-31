@@ -9,6 +9,7 @@ import { MergeVideoData } from "./utils/mergeVideo";
 import { navigate } from "./lib/navigate";
 import { getVideoData } from "./lib/getVideoData";
 import { searchData } from "./lib/search";
+import { predictInputString } from "./lib/predictInputString";
 
 type OnMethodsType = {
   [K in keyof ApiMain.OnMethods]: ConvertToIpCMainFunc<ApiMain.OnMethods[K]>;
@@ -48,6 +49,9 @@ export const HandleMethods: HandelMethodsType = {
   },
   navigate(_, ...args) {
     return navigate(...args);
+  },
+  predictInputString(_, ...args) {
+    return predictInputString(...args);
   },
 };
 export const HandleOnceMethods: HandelOnceMethodsType = {};

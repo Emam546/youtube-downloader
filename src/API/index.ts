@@ -31,6 +31,21 @@ export async function getVideoData(
     return data.data.data;
   }
 }
+export async function predictInputStr(
+  path: string,
+  query: any,
+  signal?: AbortSignal
+): Promise<string | null> {
+  if (window.Environment == "desktop") {
+    return await window.api.invoke("predictInputString", path, query);
+  } else {
+    const data = await axios.get(`/api/${path}/predict`, {
+      params: { ...query },
+      signal,
+    });
+    return data.data.data;
+  }
+}
 export async function getYoutubeListData(
   id: string,
   signal?: AbortSignal

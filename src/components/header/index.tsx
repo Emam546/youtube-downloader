@@ -1,7 +1,6 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { UserContext } from "@src/context/info";
 import Link, { LinkProps } from "next/link";
-import classNames from "classnames";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 interface LiProps extends LinkProps {

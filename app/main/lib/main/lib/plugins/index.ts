@@ -48,6 +48,7 @@ export interface PluginType {
   getData: (query: Record<string, any>) => Promise<ResponseData | null>;
   navigate: (val: string) => string | null;
   search?: (val: string) => RelatedData[];
+  predictInputString: (val: Record<string, any>) => string;
 }
 const Plugins = plugins
   .map<PluginType>((folder) => {

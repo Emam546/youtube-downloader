@@ -1,4 +1,4 @@
-import { isValidUrl } from "../utils";
+import { getTime, isValidUrl } from "../utils";
 import { validateURL as ValidateUrlYoutube } from "./utils";
 import { youtube_parser } from "./utils";
 
@@ -54,4 +54,25 @@ function isYoutubeUrl(val: string): boolean {
 export function navigate(str: string): string | null {
   if (isYoutubeUrl(str)) return getPathYoutubeUrl(new URL(str));
   return null;
+}
+
+function constructUrl(...[id, listId, time]: YoutubeParams) {
+  const url = new URL("https://www.youtube.com/watch");
+  if (id) url.searchParams.set("v", id);
+  if (listId && listId.startsWith("PL")) url.searchParams.set("list", listId);
+  if (time && time[0]) {
+    url.searchParams.set("t", `${time[0]}s`);
+  }
+  return url;
+}
+export function predictInputString(query: any): string {
+  const { id, start, end } = query as {
+    id: string;
+    start?: string;
+    end?: string;
+  };
+  return constructUrl(id, null, [
+    getTime(start, null, Infinity),
+    getTime(end, null, Infinity),
+  ]).href;
 }
