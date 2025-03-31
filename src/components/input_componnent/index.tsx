@@ -42,11 +42,19 @@ export default function InputHolder() {
     }
   }, []);
   useEffect(() => {
-    function analyzeUrl(val: string) {
-      setValue("search", val);
+    async function analyzeUrl(value: string) {
+      setValue("search", value);
+      if (window.Environment == "desktop") {
+        const dest = await window.api.invoke("navigate", value);
+        if (dest) routeNavigate(dest);
+      }
+      if (window.Environment == "web") {
+        const dest = navigate(value);
+        if (dest) routeNavigate(dest);
+      }
     }
     if (window.Environment == "desktop") {
-      window.api.on("getInputUrl", (_, url) => {
+      window.api.on("getInputUrl", async (_, url) => {
         analyzeUrl(url);
       });
       if (isVideo(window.context)) analyzeUrl(window.context.video.link);

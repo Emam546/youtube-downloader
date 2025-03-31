@@ -45,7 +45,7 @@ else
       MainWindow.Window.focus();
       if (argv.length >= 2) {
         const data = lunchArgs(argv);
-        if (data) MainWindow.Window.webContents.send("getYoutubeUrl", data);
+        if (data) MainWindow.Window.webContents.send("getInputUrl", data);
       }
     } else if (!autoUpdater.hasUpdate) createWindow(argv);
   });

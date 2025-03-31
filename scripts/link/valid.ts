@@ -9,5 +9,5 @@ export function predictInputString(query: any): string {
   const { link } = query as {
     link: string;
   };
-  return link;
+  return decodeURI(link);
 }
