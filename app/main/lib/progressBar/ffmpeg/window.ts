@@ -30,7 +30,22 @@ export class FfmpegWindowOrg extends BaseDownloaderWindow {
     super(options, data);
     this.ffmpegData = data.ffmpegData;
   }
+  async getEstimatedFileSize(): Promise<number | null> {
+    const metadata = await getVideoInfo(this.link);
+    const bitrate = metadata.format.bit_rate;
+    const duration = this.ffmpegData?.duration
+      ? this.ffmpegData?.duration
+      : metadata.format.duration
+      ? parseFloat(metadata.format.duration.toString())
+      : 0;
 
+    if (bitrate && duration) {
+      const estimatedSize = (bitrate * duration) / 8; // Convert bits to bytes
+      return estimatedSize;
+    } else {
+      return await super.getEstimatedFileSize();
+    }
+  }
   async continuoDownloading(command: ffmpeg.FfmpegCommand) {
     const metaData = await getVideoInfo(this.downloadingState.path);
     const duration = metaData.format.duration;
@@ -42,6 +57,7 @@ export class FfmpegWindowOrg extends BaseDownloaderWindow {
       ) *
       ((this.ffmpegData?.duration || duration) / duration);
     this.rebuildingState = true;
+
     this.setThrottleState(this.enableThrottle);
     const commando = command
       .outputOptions("-movflags frag_keyframe+empty_moov")

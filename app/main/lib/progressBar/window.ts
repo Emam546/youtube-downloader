@@ -177,7 +177,9 @@ export class BaseDownloaderWindow extends DownloaderWindow {
     }
     return 0;
   }
-
+  async getEstimatedFileSize(): Promise<number | null> {
+    return null;
+  }
   pipe(path: string): internal.Writable {
     if (this.stream && !this.stream.destroyed)
       throw new Error("there is unclosed stream file");

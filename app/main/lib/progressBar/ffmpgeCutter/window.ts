@@ -17,6 +17,7 @@ export class FfmpegWindow extends FfmpegWindowOrg {
   async download() {
     await super.download(async () => {
       const format = path.extname(this.downloadingState.path).slice(1);
+      this.setFileSize((await this.getEstimatedFileSize()) || undefined);
       if (
         this.downloadingState.continued &&
         fs.existsSync(this.downloadingState.path)
