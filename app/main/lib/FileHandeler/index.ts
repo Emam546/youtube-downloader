@@ -15,7 +15,7 @@ export function fileHandler() {
   protocol.registerFileProtocol(protocolName, (req, callback) => {
     let requestedPath = req.url.slice(`${protocolName}://`.length);
     callback({
-      path: requestedPath,
+      path: decodeURI(requestedPath),
     });
   });
 }

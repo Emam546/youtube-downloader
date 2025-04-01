@@ -46,7 +46,7 @@ async function getVideoData(filePath: string) {
         },
       ],
     },
-    viewerUrl: `video:///${filePath}`,
+    viewerUrl: `video:///${encodeURI(filePath)}`,
     title: path.basename(fileName),
     filePath,
   };
