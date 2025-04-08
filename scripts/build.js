@@ -24,7 +24,7 @@ const order = {
     local: 0,
     link: -1000,
   },
-  version: "v0.0.6",
+  version: "v0.0.7",
 };
 
 fs.writeFileSync(path.join(folderPath, "order.json"), JSON.stringify(order));
