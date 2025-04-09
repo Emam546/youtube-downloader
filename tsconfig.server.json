@@ -8,7 +8,8 @@
     "baseUrl": "./",
     "paths": {
       "@serv/*": ["./server/src/*"],
-      "@scripts/*": ["./scripts/*"]
+      "@scripts/*": ["./scripts/*"],
+      "@utils/*": ["./utils/*"]
     }
   },
   "include": ["server/src", "scripts", "./build.ts"]
