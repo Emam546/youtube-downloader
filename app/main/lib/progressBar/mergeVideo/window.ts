@@ -38,8 +38,8 @@ export class FfmpegMergeWindow extends FfmpegWindowOrg {
     }
   }
   async download() {
-    this.setFileSize((await this.getEstimatedFileSize()) || undefined);
     await super.download(async () => {
+      this.setFileSize((await this.getEstimatedFileSize()) || undefined);
       const format = path.extname(this.downloadingState.path).slice(1);
       if (
         this.downloadingState.continued &&
