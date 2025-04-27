@@ -2,7 +2,7 @@ const esbuild = require("esbuild");
 const fs = require("fs");
 const path = require("path");
 const folderPath = path.join(__dirname, "../out/scripts");
-const folders = ["youtube", "link","Local"];
+const folders = ["youtube", "link", "Local"];
 if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath, { recursive: true });
 folders.forEach((val) => {
   esbuild
@@ -24,7 +24,7 @@ const order = {
     local: 0,
     link: -1000,
   },
-  version: "v0.0.8",
+  version: "v0.0.9",
 };
 
 fs.writeFileSync(path.join(folderPath, "order.json"), JSON.stringify(order));
