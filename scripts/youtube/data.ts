@@ -8,6 +8,7 @@ import { getTime } from "../utils";
 import { validateID } from "./utils";
 import { getInfo, videoFormat, videoInfo } from "@distube/ytdl-core";
 import { PATH } from "./valid";
+import axios from "axios";
 declare module "@distube/ytdl-core" {
   interface videoFormat {
     loudnessDb?: number;
@@ -19,6 +20,14 @@ function AudioLoudnessType(a: number, b: number): "High" | "Low" | "Same" {
   if (a < b) return "Low";
   return "High";
 }
+const asyncFilter = async <T>(
+  arr: T[],
+  predicate: Parameters<Array<T>["filter"]>[0]
+): Promise<T[]> => {
+  const results = await Promise.all(arr.map(predicate));
+
+  return arr.filter((_v, index) => results[index]);
+};
 export async function getVideoData(
   query: Record<string, any>
 ): Promise<ResponseData | null> {
@@ -45,22 +54,22 @@ export async function getVideoData(
     if (state) acc.push(v);
     return acc;
   }, [] as videoFormat[]);
-  const audioMerge =
-    data.formats.reduce((acc, cur) => {
-      if (!(cur.hasAudio && !cur.hasVideo)) return acc;
-      if (cur.container.toLowerCase() != "mp4") return acc;
-      if (!acc) return cur;
-      if (acc.bitrate! > cur.bitrate!) return acc;
-      if (acc.loudnessDb! > cur.loudnessDb!) return acc;
-      return cur;
-    }, null as null | videoFormat) ||
-    data.formats.reduce((acc, cur) => {
-      if (!(cur.hasAudio && !cur.hasVideo)) return acc;
-      if (!acc) return cur;
-      if (acc.bitrate! > cur.bitrate!) return acc;
-      if (acc.loudnessDb! > cur.loudnessDb!) return acc;
-      return cur;
-    }, null as null | videoFormat);
+  const audioFormats = await asyncFilter(data.formats, async (cur) => {
+    if (!(cur.hasAudio && !cur.hasVideo)) return false;
+    if (cur.container.toLowerCase() != "mp4") return false;
+    try {
+      await axios.head(cur.url);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  });
+  const audioMerge = audioFormats.reduce((acc, cur) => {
+    if (!acc) return cur;
+    if (acc.bitrate! > cur.bitrate!) return acc;
+    if (acc.loudnessDb! > cur.loudnessDb!) return acc;
+    return cur;
+  }, null as null | videoFormat);
   const videos: Media[] = [
     ...data.formats
       .filter((v) => v.hasVideo && !v.hasAudio && audioMerge != undefined)
@@ -111,7 +120,7 @@ export async function getVideoData(
     return b.quality - a.quality;
   });
   const loudness = data.player_response.playerConfig.audioConfig.loudnessDb;
-  const audios: Media[] = data.formats
+  const audios: Media[] = audioFormats
     .filter((v) => v.hasAudio && !v.hasVideo)
     .map((audio, i) => {
       const loudnessType = AudioLoudnessType(audio.loudnessDb!, loudness);
