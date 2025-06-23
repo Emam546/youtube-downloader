@@ -5,10 +5,6 @@ appImage:
 asarUnpack:
   - resources/**
 extraFiles:
-  - from: "out/scripts"
-    to: "./scripts"
-    filter:
-      - "**/*"
   - from: "./screenshots"
     to: "./screenshots"
     filter:

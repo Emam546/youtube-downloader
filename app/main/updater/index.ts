@@ -3,7 +3,6 @@ import { app } from "electron";
 import { createUpdateWindow } from "@app/main/lib/update";
 import AppUpdater from "./AppUpdater";
 import PackageJson from "../../../package.json";
-import { isProd } from "../utils";
 import { MainWindow } from "../lib/main/window";
 console.log("Version", PackageJson.version);
 const autoUpdater = new AppUpdater({

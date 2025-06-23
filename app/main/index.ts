@@ -8,6 +8,7 @@ import { lunchArgs } from "./helpers/launchHelpers";
 import path from "path";
 import { MainWindow } from "./lib/main/window";
 import { fileHandler } from "./lib/FileHandeler";
+import { AfterLunch, PrePare } from "./lib/prepare";
 
 if (process.defaultApp) {
   if (process.argv.length >= 2) {
@@ -29,7 +30,9 @@ async function createWindow(args: string[]) {
 }
 app.whenReady().then(async () => {
   fileHandler();
+  await PrePare();
   await createWindow(process.argv);
+  await AfterLunch();
 });
 electronApp.setAppUserModelId("com.youtube-downloader");
 
