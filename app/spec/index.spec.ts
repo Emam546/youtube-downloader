@@ -1,6 +1,5 @@
 import "../main/pre-start";
 import { DownloadTheFile } from "@app/main/lib/progressBar/linkDownload/downloader";
-import { getVideoData, ServerVideoInfo } from "@utils/server";
 import { IncomingMessage } from "http";
 import fs from "fs";
 import ffmpeg from "fluent-ffmpeg";
@@ -137,18 +136,4 @@ describe("Test ffmbeg ", () => {
     });
   });
 });
-describe("Test Download function", () => {
-  const id = "TOOIRGhsFD4";
-  jest.setTimeout(50000);
-  let val: Awaited<ReturnType<typeof getVideoData>>;
-  beforeAll(async () => {
-    val = await getVideoData({ id });
-  });
-  test("Test Is it Download from youtube", async () => {
-    const format = val!.video!.medias.VIDEO!.find(
-      (val) => typeof val.dlink == "string"
-    )?.dlink as string;
-    const response = await DownloadTheFile(format);
-    testDownloadResponse(response);
-  });
-});
+

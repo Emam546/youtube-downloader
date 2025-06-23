@@ -1,4 +1,4 @@
-import { ServerVideoInfo } from "@utils/server";
+import {  } from "@utils/server";
 import agent from "../index";
 const id = "WhWc3b3KhnY";
 
@@ -17,7 +17,7 @@ describe("Test Video Downloading System", () => {
   jest.setTimeout(50000);
   test("get basic data", async () => {
     const res = await agent.get(`/api/youtube?id=${id}`);
-    const data = res.body.data as ServerVideoInfo;
+    const data = res.body.data ;
     expect(res.statusCode).toBe(200);
   });
 });
