@@ -3,7 +3,7 @@ import path from "path";
 import { RelatedData, ResponseData } from "@scripts/types/types";
 import { app } from "electron";
 
-export const pluginDir = true
+export const pluginDir = app.isPackaged
   ? path.join(app.getPath("userData"), "scripts")
   : path.join(__dirname, "../scripts");
 
