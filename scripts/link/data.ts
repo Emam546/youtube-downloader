@@ -1,19 +1,19 @@
 import { getVideoInfo } from "./utils";
-import ffmpeg from "fluent-ffmpeg";
-import fs from "fs";
-import os from "os";
 import path from "path";
 import axios from "axios";
 import https from "https";
 import { ResponseData } from "../types/types";
 import { getFrameScreenShot } from "../utils/ffmpeg";
 import { getVideoQualityLabel } from "../utils";
+import mime from "mime-types";
 const DownloadAgent = new https.Agent({
   rejectUnauthorized: false, // (NOTE: this will disable client verification)
 });
 
 const DownloadInstance = axios.create({ httpsAgent: DownloadAgent });
-
+function isVideo(v: string) {
+  return mime.contentType(v).toString().includes("video") || false;
+}
 export async function downloadVideoAndExtractMetadata(
   query: any
 ): Promise<ResponseData | null> {
@@ -38,13 +38,15 @@ export async function downloadVideoAndExtractMetadata(
       );
     }
     // Extract useful metadata
-    const videoFormat = metadata.format.format_name?.split(",")[0] || "mp4";
+    const expectedVideoFormat =
+      metadata.format.format_name?.split(",")[0] || "mp4";
     const urlFileName = decodeURI(url.split("/").pop()?.split("?")[0] || "");
     const fileName =
       (metadata.format.tags?.title as string) ||
       reqFilename ||
-      (urlFileName?.includes(".") ? urlFileName : undefined) ||
-      `video.${videoFormat}`;
+      (isVideo(urlFileName) ? urlFileName : undefined) ||
+      `video.${expectedVideoFormat}`;
+    const videoFormat = path.extname(fileName).slice(1);
     const videoSize = metadata.format.size; // in bytes
     const videoDuration = metadata.format.duration;
     const videoStreams = metadata.streams;
