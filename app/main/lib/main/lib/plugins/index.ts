@@ -40,10 +40,11 @@ const Plugins = plugins
     try {
       return require(`${pluginDir}/${folder}/index`);
     } catch (error) {
+      console.error(error);
       return;
     }
   })
-  .filter((p) => Data.apps[p.PATH])
+  .filter((p) => Data.apps[p.PATH] != undefined)
   .sort((a, b) => {
     return Data.apps[b.PATH] - Data.apps[a.PATH];
   });
