@@ -11,6 +11,7 @@ export default function RelatedVideos() {
   return (
     <section>
       {data.map((section, i) => {
+        if (section.data.length == 0) return;
         return (
           <div key={`${section.id}-${i}`}>
             <SectionHeader>{section.title}</SectionHeader>
