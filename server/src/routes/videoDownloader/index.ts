@@ -15,7 +15,7 @@ router.get("/", async function (req, res) {
     res.status(200).json({ msg: "Success", status: true, data });
   } catch (err) {
     return res.status(404).json({
-      msg: "The video is not exist",
+      msg: "The video is not existed",
       status: false,
       err: (err as Error).toString(),
     });
@@ -27,7 +27,7 @@ router.get("/predict", function (req, res) {
     res.status(200).json({ msg: "Success", status: true, data });
   } catch (err) {
     return res.status(404).json({
-      msg: "The video is not exist",
+      msg: "The video is not existed",
       status: false,
       err: (err as Error).toString(),
     });
