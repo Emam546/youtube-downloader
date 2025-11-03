@@ -1,7 +1,7 @@
 import { getYoutubeData } from "@utils/server";
 import { getSearchData as getSearchData } from "@serv/routes/search/api";
 import { getPlayListData } from "@serv/routes/playlist/api";
-import { DownloadVideoLink } from "@app/main/lib/main/utils/downloadVideoLink";
+import { DownloadVideo } from "@app/main/lib/main/utils/downloadVideoLink";
 import { MergeVideoData } from "@app/main/lib/main/utils/mergeVideo";
 import type { DownloadFileToDesktop } from "@app/main/lib/main/utils/DownloadFile";
 import type { downloadVideoAndExtractMetadata } from "@app/main/lib/main/getVideoLinkData";
@@ -30,8 +30,7 @@ export namespace ApiRender {
 }
 export namespace ApiMain {
   interface OnMethods {
-    downloadVideoLink: ConvertFromIpCMainFunc<typeof DownloadVideoLink>;
-    mergeVideo: ConvertFromIpCMainFunc<typeof MergeVideoData>;
+    downloadVideoLink: ConvertFromIpCMainFunc<typeof DownloadVideo>;
   }
   interface OnceMethods {}
   interface HandleMethods {

@@ -1,5 +1,5 @@
 import internal from "node:stream";
-import { getVideoInfo } from "../utils/ffmpeg";
+import { getVideoInfo } from "../../ffmpeg";
 import Ffmpeg from "fluent-ffmpeg";
 import fs from "fs";
 import path from "path";

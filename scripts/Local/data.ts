@@ -1,55 +1,32 @@
-import { getVideoInfo } from "../link/utils";
+import { getVideoInfo } from "../utils/ffmpeg";
 import fs from "fs";
 import path from "path";
-import https from "https";
 import { ResponseData, ReturnedSearch } from "../types/types";
 import { getOriginalFileName } from "@utils/server";
 import { PATH } from "./valid";
-import { getFrameScreenShot } from "../utils/ffmpeg";
-import { getVideoQualityLabel } from "../utils";
+import { LocalData } from "./download";
+import { getData } from "../link/data";
 
-async function getVideoData(filePath: string) {
-  const metadata = await getVideoInfo(filePath);
+async function getVideoData(
+  filePath: string
+): Promise<(ResponseData<LocalData>["video"] & { filePath: string }) | null> {
+  try {
+    const metadata = await getVideoInfo(filePath);
 
-  // Extract useful metadata
-  const videoFormat = metadata.format.format_name?.split(",")[0] || "mp4";
-  const fileName = getOriginalFileName(path.basename(filePath));
-  const videoSize = metadata.format.size; // in bytes
-  const videoDuration = metadata.format.duration;
-  const videoStreams = metadata.streams;
+    // Extract useful metadata
+    const fileName = getOriginalFileName(path.basename(filePath));
 
-  // Additional info: codec and resolution
-  const videoStream = videoStreams.find(
-    (stream) => stream.codec_type === "video"
-  );
-  let thumbnail = await getFrameScreenShot(filePath);
+    // Additional info: codec and resolution
 
-  return {
-    duration: videoDuration!,
-    thumbnail: `data:image/jpeg;base64,${thumbnail}`!,
-    medias: {
-      VIDEO: [
-        {
-          container: videoFormat,
-          dlink: filePath,
-          id: `${filePath}-org`,
-          previewLink: filePath,
-          quality:
-            getVideoQualityLabel(
-              videoStream?.width || 0,
-              videoStream?.height || 240
-            )?.height || 240,
-          text: {
-            str: `${videoStream?.height || 240} (.${videoFormat})`,
-          },
-          size: videoSize,
-        },
-      ],
-    },
-    viewerUrl: `video:///${encodeURI(filePath)}`,
-    title: path.basename(fileName),
-    filePath,
-  };
+    return {
+      ...(await getData(metadata, filePath, fileName)),
+
+      viewerUrl: `video:///${encodeURI(filePath)}`,
+      filePath,
+    };
+  } catch (err) {
+    return null;
+  }
 }
 function sliceArray<T>(arr: T[], startIndex: number, length = 20) {
   if (arr.length <= length) return arr;
@@ -66,7 +43,7 @@ function isVideoFile(filename: string) {
 }
 export async function downloadVideoAndExtractMetadata(
   query: any
-): Promise<ResponseData | null> {
+): Promise<ResponseData<LocalData> | null> {
   if (!query.id) return null;
 
   const filePath = decodeURI(query.id);
@@ -79,15 +56,17 @@ export async function downloadVideoAndExtractMetadata(
           id: path.join(filePath, videos[i]),
         });
       } catch (error) {
-        console.error(error);
+        console.log(error);
       }
     }
     return null;
   }
 
   const folderDist = path.dirname(filePath);
+  const video = await getVideoData(filePath);
+  if (!video) throw new Error("unrecognized video");
   return {
-    video: await getVideoData(filePath),
+    video: video,
     relatedData: [
       {
         id: "LocalVideos",
@@ -119,13 +98,14 @@ export async function getAllVideosData(
   for (let i = 0; i < arr.length; i++) {
     try {
       const g = await getVideoData(path.join(folderDist, arr[i]));
-      data.push({
-        id: g.filePath,
-        link: `/${PATH}/${encodeURI(g.filePath)}`,
-        thumbnail: g.thumbnail,
-        title: [g.title],
-        duration: g.duration,
-      });
+      if (g)
+        data.push({
+          id: g.filePath,
+          link: `/${PATH}/${encodeURI(g.filePath)}`,
+          thumbnail: g.thumbnail!,
+          title: [g.title],
+          duration: g.duration,
+        });
     } catch (error) {}
   }
   return data;

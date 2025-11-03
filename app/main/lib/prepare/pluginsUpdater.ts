@@ -56,7 +56,11 @@ async function updateScripts() {
     `https://raw.githubusercontent.com/${publish.owner}/${publish.repo}/scripts/order.json`
   );
   console.log("Remote scripts version", res.data.version);
-  if (semver.lte(res.data.version, Data.version)) return;
+  if (
+    semver.lte(res.data.version, Data.version) ||
+    semver.lt(app.getVersion(), res.data.appVersion)
+  )
+    return;
   console.log("Scripts update available");
   const DOWNLOAD_URL = `https://github.com/${publish.owner}/${publish.repo}/archive/refs/heads/scripts.zip`;
   await downloadFile(DOWNLOAD_URL, pluginDir);

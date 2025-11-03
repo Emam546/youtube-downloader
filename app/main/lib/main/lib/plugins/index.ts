@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import { RelatedData, ResponseData } from "@scripts/types/types";
 import { app } from "electron";
+import { DownloadBase, DownloadParams } from "@scripts/utils/Bases";
 
 export const pluginDir = app.isPackaged
   ? path.join(app.getPath("userData"), "scripts")
@@ -10,6 +11,7 @@ export const pluginDir = app.isPackaged
 export interface DataType {
   apps: Record<string, number>;
   version: string;
+  appVersion: string;
 }
 export const orderFilePath = path.join(pluginDir, "order.json");
 
@@ -30,10 +32,11 @@ const plugins = fs.existsSync(pluginDir)
   : [];
 export interface PluginType {
   PATH: string;
-  getData: (query: Record<string, any>) => Promise<ResponseData | null>;
-  navigate: (val: string) => string | null;
+  getData: <T>(query: Record<string, any>) => Promise<ResponseData<T> | null>;
+  navigate: (val: string) => Promise<string | null> | string | null;
   search?: (val: string) => RelatedData[];
   predictInputString: (val: Record<string, any>) => string;
+  download: <T>(data: DownloadParams<T>) => DownloadBase;
 }
 const Plugins = plugins
   .map<PluginType>((folder) => {
@@ -44,7 +47,7 @@ const Plugins = plugins
       return;
     }
   })
-  .filter((p) => Data.apps[p.PATH] != undefined)
+  .filter((p) => p && Data.apps[p.PATH] != undefined)
   .sort((a, b) => {
     return Data.apps[b.PATH] - Data.apps[a.PATH];
   });

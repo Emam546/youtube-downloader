@@ -39,21 +39,32 @@ const tabs: Array<{ type: TabsType; children: React.ReactNode }> = [
   },
 ];
 
-export type TabsData = Media[];
-export interface Props {
-  data: Required<ResponseData>["video"]["medias"];
+export type TabsData = Media<unknown>[];
+export interface Props<T> {
+  data: Required<ResponseData<unknown>>["video"]["medias"];
   title: string;
-  clippedData: ColumnProps["clippedData"];
+  clippedData: ColumnProps<T>["clippedData"];
 }
-export default function TableDownload({ data, clippedData, title }: Props) {
+export default function TableDownload<T>({
+  data,
+  clippedData,
+  title,
+}: Props<T>) {
   const [state, setState] = useState<TabsType>("VIDEO");
   const { VIDEO, AUDIO, OTHERS } = data;
+  const NoData = tabs.every((v) => data[v.type]?.length == 0);
   return (
     <>
       <div>
         <ul className="tw-flex tw-select-none tw-m-0 tw-p-0">
           {tabs.map(({ children, type }, i) => {
-            if (data[type] == undefined) return null;
+            if (
+              data[type] == undefined ||
+              (data[type]?.length == 0 && type != "VIDEO") ||
+              (NoData && type != "VIDEO")
+            )
+              return null;
+
             return (
               <li
                 key={i}

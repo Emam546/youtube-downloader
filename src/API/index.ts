@@ -10,14 +10,18 @@ export async function getSearchData(search: string): Promise<RelatedData[]> {
     return data.data.data;
   }
 }
-export async function getVideoData(
+export async function getVideoData<T>(
   path: string,
   query: any,
   signal?: AbortSignal
-): Promise<ResponseData | null> {
+): Promise<ResponseData<T> | null> {
   if (window.Environment == "desktop") {
     try {
-      return await window.api.invoke("getVideoData", path, query);
+      return (await window.api.invoke(
+        "getVideoData",
+        path,
+        query
+      )) as ResponseData<T>;
     } catch (error) {
       throw new Error(
         new String(error).replace(

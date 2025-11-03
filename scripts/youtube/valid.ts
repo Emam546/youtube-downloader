@@ -1,4 +1,5 @@
-import { getTime, isValidUrl } from "../utils";
+import { isValidUrl } from "@utils/index";
+import { getTime } from "../utils";
 import { validateURL as ValidateUrlYoutube } from "./utils";
 import { youtube_parser } from "./utils";
 

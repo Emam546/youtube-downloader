@@ -1,21 +1,10 @@
 import internal from "node:stream";
-import { getVideoInfo } from "../utils/ffmpeg";
 
 import Ffmpeg from "fluent-ffmpeg";
 import fs from "fs";
 import path from "path";
-
-export function getTempName(orgPath: string) {
-  // Get the directory name and the file name without extension
-  const dir = path.dirname(orgPath);
-  const baseName = path.basename(orgPath, path.extname(orgPath));
-
-  // Construct the new file name with `.temp.mov` extension
-  const newFileName = `${baseName}.temp${path.extname(orgPath)}`;
-
-  // Construct the new file path
-  return path.join(dir, newFileName);
-}
+import { getVideoInfo } from "../../../ffmpeg";
+import { getTempName } from "../continueDownloading";
 
 export async function continueDownloading(
   org: { video: string | internal.Readable; audio: string | internal.Readable },

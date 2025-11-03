@@ -13,8 +13,9 @@ export async function WrapResponse<T>(
   return (await res.json()) as T;
 }
 
-export type VideoDataInfoType = {
-  dlink: string;
+export type VideoDataInfoType<T> = {
+  PATH: string;
+  data: T;
   previewLink: string;
   fquality: string;
   ftype: string;
@@ -27,12 +28,12 @@ export type ClippingDataType<G> =
       end: number;
     })
   | (G & { clipped: false });
-export type VideoDataClippedType = ClippingDataType<VideoDataInfoType>;
+export type VideoDataClippedType<T> = ClippingDataType<VideoDataInfoType<T>>;
 export function removeUnwantedChars(val: string) {
   return val.replace(/[/\\?%*:|"<>]/g, "-").replace(/#[^\s#]+/g, "");
 }
 const AppPrefix = "YoutubeDownloader";
-export function getFileName<T extends VideoDataClippedType>(data: T) {
+export function getFileName<T>(data: VideoDataClippedType<T>) {
   if (data.clipped) {
     return removeUnwantedChars(
       `${AppPrefix} - ${data.title} v${data.fquality} ${data.start}-${data.end}.${data.ftype}`

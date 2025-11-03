@@ -1,6 +1,9 @@
-export interface Media {
-  dlink: string | { video: string; audio: string };
+import { VideoDataInfoType } from "@utils/server";
+
+export interface Media<T> {
+  environment: ("web" | "desktop")[];
   previewLink: string;
+  data: VideoDataInfoType<T>;
   container: string;
   size?: number;
   text: {
@@ -27,15 +30,16 @@ interface RelatedData {
 }
 type TabsType = "VIDEO" | "AUDIO" | "OTHERS";
 
-export interface ResponseData {
-  video?: {
-    medias: Partial<Record<TabsType, Media[]>>;
+export interface ResponseData<T> {
+  video: {
+    medias: Partial<Record<TabsType, Media<T>[]>>;
     title: string;
-    thumbnail: string;
+    thumbnail?: string;
     start?: number;
     end?: number;
-    duration: number;
+    duration?: number;
     viewerUrl: string;
   };
   relatedData?: RelatedData[];
 }
+export type SearchData = RelatedData[];

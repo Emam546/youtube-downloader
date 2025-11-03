@@ -21,8 +21,8 @@ export async function GetFilePath(fileName: string) {
   if (canceled || !newpath) return null;
   return newpath;
 }
-export async function Downloader(
-  data: VideoDataClippedType,
+export async function Downloader<T>(
+  data: VideoDataClippedType<T>,
   window: BrowserWindow
 ) {
   const Name = getFileName(data);

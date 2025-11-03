@@ -1,11 +1,10 @@
 import { ConvertToIpCHandleMainFunc, ConvertToIpCMainFunc } from "@shared/api";
 import { ApiMain } from "@src/types/api";
 import { getPlayListData } from "@serv/routes/playlist/api";
-import { DownloadVideoLink } from "./utils/downloadVideoLink";
+import { DownloadVideo } from "./utils/downloadVideoLink";
 import { DownloadFileToDesktop } from "./utils/DownloadFile";
 import { ObjectEntries } from "@utils/index";
 import { ipcMain } from "electron";
-import { MergeVideoData } from "./utils/mergeVideo";
 import { navigate } from "./lib/navigate";
 import { getVideoData } from "./lib/getVideoData";
 import { searchData } from "./lib/search";
@@ -30,8 +29,7 @@ type HandelOnceMethodsType = {
   >;
 };
 export const OnMethods: OnMethodsType = {
-  downloadVideoLink: DownloadVideoLink,
-  mergeVideo: MergeVideoData,
+  downloadVideoLink: DownloadVideo,
 };
 export const OnceMethods: OnceMethodsType = {};
 export const HandleMethods: HandelMethodsType = {

@@ -89,4 +89,3 @@ export const createMainWindow = async (
   } else throw new Error("Unrecognized environment");
   return win;
 };
-

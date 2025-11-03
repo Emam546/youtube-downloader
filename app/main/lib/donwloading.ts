@@ -76,8 +76,9 @@ export class DownloaderWindow extends DownloadingWindow {
     this.changeState("completed");
     this.onCurSize(this.curSize);
     this.sleepId.stop();
-    this.setProgressBar(-1);
     this.onEnd();
+    if (this.isDestroyed()) return;
+    this.setProgressBar(100);
   }
   setCurSize(curSize: number) {
     this.curSize = curSize;
@@ -105,6 +106,7 @@ export class DownloaderWindow extends DownloadingWindow {
     }
   }
   error(err: any) {
+    console.error(err);
     if (!this.isDestroyed()) {
       dialog.showErrorBox("Error Happened", err.toString());
       this.close();

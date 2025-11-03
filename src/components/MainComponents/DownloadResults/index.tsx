@@ -56,24 +56,32 @@ export default function VideoResults() {
     return <ErrorMessage>{new String(paramQuery.error)}</ErrorMessage>;
   }
   if (!paramQuery.data)
-    return <ErrorMessage>The video is not exist</ErrorMessage>;
+    return <ErrorMessage>The video is not existed</ErrorMessage>;
   const data = paramQuery.data!;
-  const duration = Math.floor(data!.video!.duration);
-  const [start, end] = [
-    getTime(query.start ?? data?.video?.start, 0, duration),
-    getTime(query.end ?? data?.video?.end, duration, duration),
-  ];
+  const duration = data.video.duration
+    ? Math.floor(data.video.duration)
+    : undefined;
+  const [start, end] = duration
+    ? [
+        getTime(query.start ?? data?.video?.start, 0, duration),
+        getTime(query.end ?? data?.video?.end, duration, duration),
+      ]
+    : [undefined, undefined];
   const ClippedState =
-    (start != 0 || duration - end > 5) && window.Environment == "desktop";
+    start != undefined &&
+    end != undefined &&
+    duration != undefined &&
+    (start != 0 || duration - end > 1 || end - start < duration) &&
+    window.Environment == "desktop";
   return (
     <>
       <TypeApplication defaultState={false} env="desktop">
-        {data.video && (
+        {start != undefined && end != undefined && duration != undefined && (
           <VideoViewer
             start={start}
             end={end}
             duration={duration}
-            url={data.video?.viewerUrl}
+            url={data.video.viewerUrl}
             setDuration={(start, end) => {
               router.replace(
                 {
@@ -90,11 +98,11 @@ export default function VideoResults() {
       <section className="tw-my-2.5">
         <div className="tw-grid tw-grid-cols-12 tw-flex-1 tw-gap-6">
           <div className="tw-col-span-12 md:tw-col-span-4">
-            <Thumbnail title={data.video!.title} src={data.video!.thumbnail} />
+            <Thumbnail title={data.video.title} src={data.video.thumbnail} />
           </div>
           <div className="tw-col-span-12 md:tw-col-span-8">
             <TableDownload
-              data={data.video!.medias}
+              data={data.video.medias}
               clippedData={
                 ClippedState
                   ? {
@@ -103,7 +111,7 @@ export default function VideoResults() {
                     }
                   : undefined
               }
-              title={data.video!.title}
+              title={data.video.title}
             />
           </div>
         </div>

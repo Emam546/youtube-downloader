@@ -1,5 +1,4 @@
 import { useRouter } from "next/router";
-import { youtube_parser } from "@utils/youtube";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";

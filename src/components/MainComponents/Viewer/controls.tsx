@@ -11,7 +11,7 @@ import {
   convertMMSSToSeconds,
   convertSecondsToHHMMSS,
   isValidHHMMSSFormat,
-} from "@src/utils";
+} from "@utils/time";
 import classNames from "classnames";
 import React, { ComponentProps, useEffect, useState } from "react";
 import { MIN_TIME } from "./range";

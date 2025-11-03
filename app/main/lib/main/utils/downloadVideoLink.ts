@@ -1,40 +1,31 @@
-import { createClippedProgressBarWindow } from "@app/main/lib/progressBar/ffmpgeCutter";
-import { createProgressBarWindow } from "@app/main/lib/progressBar/linkDownload";
+import { createWindow } from "@app/main/lib/progressBar/createWindow";
 import { BrowserWindow } from "electron";
 import { Downloader } from "./downloader";
 import { VideoDataClippedType } from "@utils/server";
+import Plugins from "../lib/plugins";
 
-export async function DownloadVideoLink(
+export async function DownloadVideo<T>(
   e: Electron.IpcMainEvent,
-  data: VideoDataClippedType
+  data: VideoDataClippedType<T>
 ) {
+  const progressBarData = Plugins.find((d) => d.PATH == data.PATH)?.download;
+  if (!progressBarData) throw new Error("Undefined Window");
   const window = BrowserWindow.fromWebContents(e.sender);
   if (!window) throw new Error("Undefined Window");
   const state = await Downloader(data, window);
   if (!state) return;
-  if (data.clipped) {
-    createClippedProgressBarWindow({
+  createWindow<T>(
+    {
       stateData: state,
       preloadData: {
         path: state.path,
-        link: data.dlink,
+        link: data.previewLink,
         video: {
           title: data.title,
           previewLink: data.previewLink,
         },
       },
-      clippedData: { end: data.end, start: data.start },
-    });
-  } else
-    createProgressBarWindow({
-      stateData: state,
-      preloadData: {
-        path: state.path,
-        link: data.dlink,
-        video: {
-          title: data.title,
-          previewLink: data.previewLink,
-        },
-      },
-    });
+    },
+    (args) => progressBarData({ data: data, ...args })
+  );
 }

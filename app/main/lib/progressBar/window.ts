@@ -12,6 +12,7 @@ import internal from "stream";
 import { DownloadTray } from "./tray";
 import path from "path";
 import { convertFunc } from "@utils/app";
+import { DownloadBase, WindowData } from "../../../../scripts/utils/Bases";
 export type FlagType = "w" | "a";
 export interface VideoData {
   link: string;
@@ -68,19 +69,19 @@ export const defaultPageData: ProgressData = {
     },
   ],
 };
-export interface BaseDownloaderWindow {
+export interface BaseDownloaderWindow<T> {
   fromWebContents(
     webContents: Electron.WebContents
-  ): BaseDownloaderWindow | null;
+  ): BaseDownloaderWindow<T> | null;
 }
 export interface BrowserProps extends BrowserWindowConstructorOptions {
   preloadData: Context;
 }
 
-export class BaseDownloaderWindow extends DownloaderWindow {
+export class BaseDownloaderWindow<T> extends DownloaderWindow {
+  downloader: DownloadBase<T>;
   public static readonly MAX_TRIES = 3;
   pageData: ProgressData;
-
   public flag: FlagType;
   private stream?: WriteStream;
   private readonly curStream: ModifiedThrottle;
@@ -91,7 +92,11 @@ export class BaseDownloaderWindow extends DownloaderWindow {
   downloadingState: StateType;
   state: ProgressBarState["status"] = "connecting";
   readonly curSize: number;
-  constructor(options: BrowserProps, data: DownloaderData) {
+  constructor(
+    options: BrowserProps,
+    downloader: (data: WindowData) => DownloadBase<T>,
+    data: DownloaderData
+  ) {
     super({
       icon: "build/icon.ico",
       useContentSize: true,
@@ -115,6 +120,7 @@ export class BaseDownloaderWindow extends DownloaderWindow {
         ],
       },
     });
+
     this.enableThrottle = data.downloadingStatus.enableThrottle;
     this.downloadSpeed = data.downloadingStatus.downloadSpeed;
     this.curStream = new ModifiedThrottle({
@@ -133,9 +139,11 @@ export class BaseDownloaderWindow extends DownloaderWindow {
     this.curSize = this.flag == "a" ? this.getRealSize() : 0;
     this.link = data.videoData.link;
     this.videoData = data.videoData.video;
-    this.on("close", () => {
-      if (!this.curStream.closed) this.curStream.destroy();
+    this.downloader = downloader({
+      downloadingState: this.downloadingState,
+      curSize: this.curSize,
     });
+
     this.curStream.on("reset-speed", () => {
       this.resetSpeed();
     });
@@ -146,29 +154,32 @@ export class BaseDownloaderWindow extends DownloaderWindow {
     this.curStream.on("data", (data: Buffer) =>
       this.onGetChunk(data.byteLength)
     );
+    this.downloader.on("setPauseButton", this.setPauseButton.bind(this));
+    this.downloader.on("setFileSize", this.setFileSize.bind(this));
+    this.downloader.on("changeState", this.changeState.bind(this));
+    this.downloader.on("end", this.end.bind(this));
+    this.downloader.on("setThrottleState", this.setThrottleState.bind(this));
+    this.downloader.on("onGetChunk", this.onGetChunk.bind(this));
+    this.downloader.on("resetSpeed", this.resetSpeed.bind(this));
+    this.downloader.on("error", this.error.bind(this));
+    this.on("close", () => {
+      if (!this.curStream.closed) this.curStream.destroy();
+      this.downloader.close();
+    });
     DownloadTray.addWindow(this);
   }
   public static fromWebContents(
     webContents: Electron.WebContents
-  ): BaseDownloaderWindow | null {
+  ): BaseDownloaderWindow<unknown> | null {
     return DownloaderWindow.fromWebContents(
       webContents
-    ) as BaseDownloaderWindow;
+    ) as BaseDownloaderWindow<unknown>;
   }
-  async download(f?: () => Promise<any>) {
-    let i = 0;
-    while (true) {
-      try {
-        await f?.();
-        break;
-      } catch (error) {
-        if (i > BaseDownloaderWindow.MAX_TRIES) {
-          this.error(error);
-          break;
-        }
-        i++;
-      }
-    }
+  async download() {
+    this.downloader
+      .download((p) => this.pipe(p))
+      .then(() => this.end())
+      .catch((e) => this.error(e));
   }
   getRealSize() {
     if (fs.existsSync(this.downloadingState.path)) {
@@ -177,21 +188,14 @@ export class BaseDownloaderWindow extends DownloaderWindow {
     }
     return 0;
   }
-  async getEstimatedFileSize(): Promise<number | null> {
-    return null;
-  }
+
   pipe(path: string): internal.Writable {
     if (this.stream && !this.stream.destroyed)
       throw new Error("there is unclosed stream file");
     this.stream = fs.createWriteStream(path, {
       flags: this.flag,
     });
-    this.stream.on("error", (err) => this.error(err));
-    this.curStream.on("end", () => {
-      this.stream!.once("finish", () => {
-        this.end();
-      });
-    });
+
     this.curStream.pipe(this.stream);
     return this.curStream;
   }
@@ -211,7 +215,6 @@ export class BaseDownloaderWindow extends DownloaderWindow {
     super.trigger(state);
     if (state) this.setPauseButton("Pause");
     else this.setPauseButton("Start");
-
     this.curStream.trigger(state);
   }
   cancel() {
