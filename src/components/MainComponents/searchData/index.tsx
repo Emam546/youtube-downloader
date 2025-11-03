@@ -13,6 +13,7 @@ export default function SearchVideoResult() {
       const res = await getSearchData(typeof search == "string" ? search : "");
       return res;
     },
+    retry: 0,
     enabled: search != undefined,
   });
   if (!search) return null;
@@ -29,6 +30,7 @@ export default function SearchVideoResult() {
 
   return (
     <section>
+      {paramQuery.data.length == 0 && <div>No results</div>}
       {paramQuery.data.map((val) => {
         return (
           <div key={val.id}>
