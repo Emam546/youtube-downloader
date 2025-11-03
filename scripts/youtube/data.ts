@@ -91,7 +91,7 @@ export async function getVideoData(
         }, [] as videoFormat[])
         .map(async (video, i) => {
           return {
-            environment: ["desktop"],
+            environment: ["desktop", "web"],
 
             previewLink: `https://www.youtube.com/watch?v=${id}`,
             container: video.container,
@@ -157,7 +157,7 @@ export async function getVideoData(
         size: quality.filesize || quality.filesize_approx,
         previewLink: `https://www.youtube.com/watch?v=${id}`,
         container: "mp4",
-        environment: ["desktop"],
+        environment: ["desktop", "web"],
         data: {
           data: {
             ytdlpData: {
@@ -224,7 +224,7 @@ export async function getVideoData(
       return {
         previewLink: `https://www.youtube.com/watch?v=${id}`,
         container: "mp4",
-        environment: ["desktop"],
+        environment: ["desktop", "web"],
         data: {
           data: {
             ytdlpData: {
@@ -278,7 +278,7 @@ export async function getVideoData(
       return {
         previewLink: `https://www.youtube.com/watch?v=${id}`,
         container: "mp4",
-        environment: ["desktop"],
+        environment: ["desktop", "web"],
         data: {
           data: {
             ytdlpData: {
@@ -333,6 +333,7 @@ export async function getVideoData(
               .url,
             title: [v.title!],
             duration: v.length_seconds!,
+      
           };
         }),
       },

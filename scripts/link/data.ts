@@ -124,7 +124,7 @@ export async function getData(
           >(async (quality) => ({
             previewLink: url,
             container: videoFormat,
-            environment: ["desktop"],
+            environment: ["desktop", "web"],
             id: `${url}-${quality.label}`,
             data: {
               PATH: PATH,
@@ -157,7 +157,7 @@ export async function getData(
         {
           previewLink: url,
           container: videoFormat,
-          environment: ["desktop"],
+          environment: ["desktop", "web"],
           id: `${url}-audioOnly-org`,
           data: {
             PATH: PATH,
@@ -191,7 +191,7 @@ export async function getData(
         {
           previewLink: url,
           container: videoFormat,
-          environment: ["desktop"],
+          environment: ["desktop", "web"],
           id: `${url}-videoOnly-org`,
           data: {
             PATH: PATH,
@@ -229,7 +229,7 @@ export async function getData(
           >(async (quality) => ({
             previewLink: url,
             container: videoFormat,
-            environment: ["desktop"],
+            environment: ["desktop", "web"],
             id: `${url}-videoOnly-${quality.label}`,
             data: {
               PATH: PATH,

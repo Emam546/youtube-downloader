@@ -148,7 +148,7 @@ export async function getData(
         size: quality.filesize || quality.filesize_approx,
         previewLink: link,
         container: "mp4",
-        environment: ["desktop"],
+        environment: ["desktop", "web"],
         data: {
           data: {
             ytdlpData: {
@@ -178,7 +178,7 @@ export async function getData(
       return {
         previewLink: link,
         container: "mp4",
-        environment: ["desktop"],
+        environment: ["desktop", "web"],
         data: {
           data: {
             ytdlpData: {
@@ -207,7 +207,7 @@ export async function getData(
       return {
         previewLink: link,
         container: "mp4",
-        environment: ["desktop"],
+        environment: ["desktop", "web"],
         data: {
           data: {
             ytdlpData: {

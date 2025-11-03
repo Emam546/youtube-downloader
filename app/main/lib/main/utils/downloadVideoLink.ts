@@ -2,7 +2,7 @@ import { createWindow } from "@app/main/lib/progressBar/createWindow";
 import { BrowserWindow } from "electron";
 import { Downloader } from "./downloader";
 import { VideoDataClippedType } from "@utils/server";
-import Plugins from "../lib/plugins";
+import { Plugins } from "../lib/plugins";
 
 export async function DownloadVideo<T>(
   e: Electron.IpcMainEvent,

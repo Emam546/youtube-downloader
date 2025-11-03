@@ -5,10 +5,11 @@ import { DownloadVideo } from "./utils/downloadVideoLink";
 import { DownloadFileToDesktop } from "./utils/DownloadFile";
 import { ObjectEntries } from "@utils/index";
 import { ipcMain } from "electron";
-import { navigate } from "./lib/navigate";
-import { getVideoData } from "./lib/getVideoData";
-import { searchData } from "./lib/search";
-import { predictInputString } from "./lib/predictInputString";
+import { navigate } from "../../../../scripts/plugins/navigate";
+import { getVideoData } from "../../../../scripts/plugins/getVideoData";
+import { searchData } from "../../../../scripts/plugins/search";
+import { predictInputString } from "../../../../scripts/plugins/predictInputString";
+import { Plugins } from "./lib/plugins";
 
 type OnMethodsType = {
   [K in keyof ApiMain.OnMethods]: ConvertToIpCMainFunc<ApiMain.OnMethods[K]>;
@@ -34,10 +35,10 @@ export const OnMethods: OnMethodsType = {
 export const OnceMethods: OnceMethodsType = {};
 export const HandleMethods: HandelMethodsType = {
   getVideoData(_, ...args) {
-    return getVideoData(...args);
+    return getVideoData(Plugins)(...args);
   },
   getSearchData(_, ...args) {
-    return searchData(...args);
+    return searchData(Plugins)(...args);
   },
   getPlaylistData(_, id: string) {
     return getPlayListData(id);
@@ -46,10 +47,10 @@ export const HandleMethods: HandelMethodsType = {
     return DownloadFileToDesktop(...args);
   },
   navigate(_, ...args) {
-    return navigate(...args);
+    return navigate(Plugins)(...args);
   },
   predictInputString(_, ...args) {
-    return predictInputString(...args);
+    return predictInputString(Plugins)(...args);
   },
 };
 export const HandleOnceMethods: HandelOnceMethodsType = {};

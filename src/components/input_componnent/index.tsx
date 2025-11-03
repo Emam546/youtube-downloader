@@ -5,8 +5,7 @@ import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { useForm } from "react-hook-form";
 import { ChangeEvent, useEffect } from "react";
 import { NavigateVideo } from "@src/types/api";
-import { navigate } from "@src/API/navigate";
-import { predictInputStr } from "@src/API";
+import { predictInputStr, navigate } from "@src/API";
 interface DataFrom {
   search: string;
 }
@@ -46,14 +45,8 @@ export default function InputHolder() {
   useEffect(() => {
     async function analyzeUrl(value: string) {
       setValue("search", value);
-      if (window.Environment == "desktop") {
-        const dest = await window.api.invoke("navigate", value);
-        if (dest) routeNavigate(dest);
-      }
-      if (window.Environment == "web") {
-        const dest = navigate(value);
-        if (dest) routeNavigate(dest);
-      }
+      const dest = await navigate(value);
+      if (dest) routeNavigate(dest);
     }
     if (window.Environment == "desktop") {
       window.api.on("getInputUrl", async (_, url) => {
@@ -69,14 +62,9 @@ export default function InputHolder() {
         method="POST"
         autoComplete="off"
         onSubmit={handleSubmit(async (data) => {
-          if (window.Environment == "desktop") {
-            const dest = await window.api.invoke("navigate", data.search);
-            if (dest) return routeNavigate(dest);
-          }
-          if (window.Environment == "web") {
-            const dest = navigate(data.search);
-            if (dest) return routeNavigate(dest);
-          }
+          const dest = await navigate(data.search);
+          if (dest) return routeNavigate(dest);
+
           return routeNavigate(`/search/${encodeURIComponent(data.search)}`);
         })}
       >
@@ -91,14 +79,9 @@ export default function InputHolder() {
               {...register("search", {
                 async onChange(e: ChangeEvent<HTMLInputElement>) {
                   const value = e.currentTarget.value;
-                  if (window.Environment == "desktop") {
-                    const dest = await window.api.invoke("navigate", value);
-                    if (dest) routeNavigate(dest);
-                  }
-                  if (window.Environment == "web") {
-                    const dest = navigate(value);
-                    if (dest) routeNavigate(dest);
-                  }
+
+                  const dest = await navigate(value);
+                  if (dest) routeNavigate(dest);
                 },
               })}
               className="focus:tw-outline-none tw-flex-1 tw-shrink tw-border-[6px] tw-rounded-l tw-text-[#555] tw-bg-white tw-min-w-0 tw-w-full tw-border-r-0 tw-border-primary tw-px-3 tw-py-3 tw-h-full"

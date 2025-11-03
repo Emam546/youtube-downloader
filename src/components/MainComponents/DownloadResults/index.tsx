@@ -75,7 +75,7 @@ export default function VideoResults() {
     window.Environment == "desktop";
   return (
     <>
-      <TypeApplication defaultState={false} env="desktop">
+      {/* <TypeApplication defaultState={false} env="desktop"> */}
         {start != undefined && end != undefined && duration != undefined && (
           <VideoViewer
             start={start}
@@ -94,7 +94,7 @@ export default function VideoResults() {
             }}
           />
         )}
-      </TypeApplication>
+      {/* </TypeApplication> */}
       <section className="tw-my-2.5">
         <div className="tw-grid tw-grid-cols-12 tw-flex-1 tw-gap-6">
           <div className="tw-col-span-12 md:tw-col-span-4">

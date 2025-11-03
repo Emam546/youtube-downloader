@@ -1,4 +1,6 @@
 import { DownloadButton } from "@src/components/common/downloadButton";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 import { Media } from "../../../../scripts/types/types";
 import { Label } from "../label";
 
@@ -25,6 +27,17 @@ function formatBytes(bytes: number, decimals = 2) {
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 }
 export default function MapData({ video, title, clippedData }: Props<unknown>) {
+  const mutate = useMutation({
+    async onMutate(data) {
+      const response = await axios.post("/api/prepare-download", data);
+      const token: string = response.data.token;
+      const a = document.createElement("a");
+      a.href = `/api/download/${token}`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    },
+  });
   if (!video.environment.includes(window.Environment)) return null;
   return (
     <tr>
@@ -45,27 +58,22 @@ export default function MapData({ video, title, clippedData }: Props<unknown>) {
         <DownloadButton
           shrink
           text="Download"
+          disabled={mutate.isLoading}
           onClick={() => {
-            if (window.Environment == "desktop")
-              if (clippedData) {
-                window.api.send("downloadVideoLink", {
+            const data = clippedData
+              ? {
                   clipped: true,
                   ...clippedData,
                   ...video.data,
-                });
-              } else {
-                window.api.send("downloadVideoLink", {
+                }
+              : {
                   clipped: false,
                   ...video.data,
-                });
-              }
+                };
+            if (window.Environment == "desktop")
+              window.api.send("downloadVideoLink", data as any);
             else if (window.Environment == "web") {
-              // const link = document.createElement("a");
-              // link.href = video.dlink;
-              // link.target == "_blank";
-              // document.body.appendChild(link);
-              // link.click();
-              // document.body.removeChild(link);
+              mutate.mutate(data as any);
             }
           }}
         />

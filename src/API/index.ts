@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { ResponseData, RelatedData } from "@scripts/types/types";
 import { ReturnedData as PlayListData } from "youtube-playlists-js";
 export const instance = axios.create({});
@@ -31,7 +31,38 @@ export async function getVideoData<T>(
       );
     }
   } else {
-    const data = await axios.get(`/api/${path}`, { params: { ...query } });
+    try {
+      const data = await axios.get(`/api/${path}`, {
+        params: { ...query },
+        signal,
+      });
+      return data.data.data;
+    } catch (error) {
+      const c = error as AxiosError<any, any>;
+      if (c?.response?.data.err) {
+        throw new Error(
+          new String(c?.response?.data.err).replace(
+            "Error: Error invoking remote method 'getVideoData': Error:",
+            ""
+          )
+        );
+      }
+      throw new Error(error as string);
+    }
+  }
+}
+
+export async function navigate(
+  navigate: string,
+  signal?: AbortSignal
+): Promise<string | null> {
+  if (window.Environment == "desktop") {
+    return await window.api.invoke("navigate", navigate);
+  } else {
+    const data = await axios.get(`/api/navigate`, {
+      params: { navigate: navigate },
+      signal,
+    });
     return data.data.data;
   }
 }

@@ -7,10 +7,10 @@ import type { DownloadFileToDesktop } from "@app/main/lib/main/utils/DownloadFil
 import type { downloadVideoAndExtractMetadata } from "@app/main/lib/main/getVideoLinkData";
 import { ConvertFromIpCMainFunc } from "@shared/api";
 import { getVideoLinkData } from "@app/main/lib/main/getVideoLinkData";
-import { navigate } from "@app/main/lib/main/lib/navigate";
-import { getVideoData } from "@app/main/lib/main/lib/getVideoData";
-import { searchData } from "@app/main/lib/main/lib/search";
-import { predictInputString } from "@app/main/lib/main/lib/predictInputString";
+import { navigate } from "@scripts/plugins/navigate";
+import { getVideoData } from "@scripts/plugins/getVideoData";
+import { searchData } from "@scripts/plugins/search";
+import { predictInputString } from "@scripts/plugins/predictInputString";
 export interface NavigateVideo {
   video: {
     link: string;
@@ -34,12 +34,12 @@ export namespace ApiMain {
   }
   interface OnceMethods {}
   interface HandleMethods {
-    getVideoData: typeof getVideoData;
-    getSearchData: typeof searchData;
+    getVideoData: ReturnType<typeof getVideoData>;
+    getSearchData: ReturnType<typeof searchData>;
     getPlaylistData: typeof getPlayListData;
     Download: typeof DownloadFileToDesktop;
-    navigate: typeof navigate;
-    predictInputString: typeof predictInputString;
+    navigate: ReturnType<typeof navigate>;
+    predictInputString: ReturnType<typeof predictInputString>;
   }
   interface HandleOnceMethods {}
 }

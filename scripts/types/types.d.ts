@@ -1,7 +1,7 @@
 import { VideoDataInfoType } from "@utils/server";
-
+export type Envs = "web" | "desktop";
 export interface Media<T> {
-  environment: ("web" | "desktop")[];
+  environment: Envs[];
   previewLink: string;
   data: VideoDataInfoType<T>;
   container: string;
