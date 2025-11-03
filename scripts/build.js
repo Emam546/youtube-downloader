@@ -3,7 +3,7 @@ const esbuild = require("esbuild");
 const fs = require("fs");
 const path = require("path");
 const folderPath = path.join(__dirname, "../out/scripts");
-const folders = ["youtube", "link", "Local", "ytdlp"];
+const folders = ["youtube", "link", "Local", "facebook", "ytdlp"];
 if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath, { recursive: true });
 folders.forEach((val) => {
   esbuild
@@ -22,6 +22,7 @@ folders.forEach((val) => {
 });
 const order = {
   apps: {
+    facebook: 3,
     youtube: 2,
     local: 1,
     link: -1,
