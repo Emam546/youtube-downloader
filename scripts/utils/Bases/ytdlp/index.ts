@@ -8,6 +8,7 @@ import {
 } from "../ffmpeg/resize/merge";
 import { convertSecondsToHHMMSS } from "@utils/time";
 import os from "os";
+import { getVideoInfo } from "../../ffmpeg";
 export const ytdlp = new YtDlp({ ffmpegPath });
 
 export interface YtdlpData extends FFmpegResizeMergeData {
@@ -22,9 +23,12 @@ export class YtdlpBase extends FfmpegResizeMergeBase {
   }
   async download(func: (path: string) => Writable) {
     if (!this.ytdlpData) return await super.download(func);
-    if (!this.ffmpegData && this.ytdlpData.manifest_url) {
-      this.link = this.ytdlpData.manifest_url;
-      return await super.download(func);
+    if (!this.ffmpegData) {
+      try {
+        await getVideoInfo(this.ytdlpData.url);
+        this.link = this.ytdlpData.url;
+        return await super.download(func);
+      } catch (error) {}
     }
     const ytdlpStream = ytdlp.stream(this.ytdlpData.link, {
       ...this.ytdlpData.args,
