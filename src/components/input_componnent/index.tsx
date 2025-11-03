@@ -31,10 +31,13 @@ export default function InputHolder() {
       setValue("search", decodeURIComponent(match[1]));
     } else {
       const [, path, id] = window.location.pathname.split("/");
+      const params = Object.fromEntries(
+        new URLSearchParams(window.location.search).entries()
+      );
       if (path)
         predictInputStr(path, {
           id,
-          ...(window.location.search as unknown as Record<string, string>),
+          ...params,
         }).then((str) => {
           if (str) setValue("search", str);
         });
