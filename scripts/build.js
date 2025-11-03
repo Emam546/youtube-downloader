@@ -24,8 +24,8 @@ const order = {
   apps: {
     youtube: 2,
     local: 1,
-    custom: -1,
-    link: -1000,
+    link: -1,
+    custom: -1000,
   },
   appVersion: packageJson.version,
   version: "v0.0.11",

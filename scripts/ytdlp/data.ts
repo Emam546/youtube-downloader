@@ -6,6 +6,7 @@ import { FormatResult, ytdlp } from "../utils/Bases/ytdlp";
 import { YtdlpData } from "./download";
 import { getFrameScreenShot, getVideoInfo } from "../utils/ffmpeg";
 import { v4 } from "uuid";
+import { asyncFindSequential } from "@utils/index";
 export interface YtDlpData {
   id: string;
   title: string;
@@ -113,10 +114,21 @@ export async function getData(
   };
 
   const ytdlpData = await getVideoData(link);
+  const correctLink = await asyncFindSequential(
+    ytdlpData.formats,
+    async (val) => {
+      if (!val.has_video) return false;
+      try {
+        await getVideoInfo(val.url);
+        return true;
+      } catch (error) {}
+      return false;
+    }
+  );
   let thumbnail = ytdlpData.thumbnails;
-  if (!thumbnail || !thumbnail.length) {
+  if ((!thumbnail || !thumbnail.length) && correctLink) {
     try {
-      const data = await getFrameScreenShot(ytdlpData.url);
+      const data = await getFrameScreenShot(correctLink?.url);
       thumbnail = [
         {
           id: "ss",
@@ -125,7 +137,7 @@ export async function getData(
       ];
     } catch (error) {}
   }
-  const metaData = await getVideoInfo(ytdlpData.url);
+  const metaData = await getVideoInfo(correctLink?.url || ytdlpData.url);
 
   const YtdpFormats = ytdlpData.formats;
   const videos: Media<YtdlpData>[] = [
@@ -134,7 +146,7 @@ export async function getData(
     ).map((quality) => {
       return {
         size: quality.filesize || quality.filesize_approx,
-        previewLink: ytdlpData.url,
+        previewLink: link,
         container: "mp4",
         environment: ["desktop"],
         data: {
@@ -147,7 +159,7 @@ export async function getData(
           fquality: quality.qualityLabel || quality.format_id,
           ftype: quality.ext,
           PATH: PATH,
-          previewLink: ytdlpData.url,
+          previewLink: link,
           title: ytdlpData.title,
         },
         text: {
@@ -164,7 +176,7 @@ export async function getData(
   const audios: Media<YtdlpData>[] = [
     ...YtdpFormats.filter((v) => !v.has_video && v.has_audio).map((audio) => {
       return {
-        previewLink: ytdlpData.url,
+        previewLink: link,
         container: "mp4",
         environment: ["desktop"],
         data: {
@@ -177,7 +189,7 @@ export async function getData(
           fquality: audio.quality?.toString(),
           ftype: audio.ext!,
           PATH: PATH,
-          previewLink: ytdlpData.url,
+          previewLink: link,
           title: `${ytdlpData.title} - audioOnly`,
         },
         text: {
@@ -193,7 +205,7 @@ export async function getData(
   const others: Media<YtdlpData>[] = [
     ...YtdpFormats.filter((v) => v.has_video && !v.has_audio).map((video) => {
       return {
-        previewLink: ytdlpData.url,
+        previewLink: link,
         container: "mp4",
         environment: ["desktop"],
         data: {
@@ -206,7 +218,7 @@ export async function getData(
           fquality: video.qualityLabel || video.format_id,
           ftype: video.ext!,
           PATH: PATH,
-          previewLink: ytdlpData.url,
+          previewLink: link,
           title: `${ytdlpData.title} - videoOnly`,
         },
         text: {
@@ -229,7 +241,7 @@ export async function getData(
         AUDIO: audios,
         OTHERS: others,
       },
-      viewerUrl: ytdlpData.url,
+      viewerUrl: correctLink?.url || "",
       title: ytdlpData.title,
       duration: metaData.format.duration,
     },
