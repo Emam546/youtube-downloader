@@ -261,7 +261,7 @@ export class FfmpegBase extends LinkDownloadBase {
     if (
       !this.ffmpegData &&
       !this.editData &&
-      !(!this.link || isFile(this.link))
+      (!this.link || !isFile(this.link))
     )
       return await super.download(func);
     const format = path.extname(this.downloadingState.path).slice(1);
