@@ -5,7 +5,7 @@ import fs from "fs";
 export const pluginDir = app.isPackaged
   ? path.join(app.getPath("userData"), "scripts")
   : path.join(__dirname, "../scripts");
-const orderFilePath = path.join(pluginDir, "order.json");
+export const orderFilePath = path.join(pluginDir, "order.json");
 
 export const Data: DataType = fs.existsSync(orderFilePath)
   ? JSON.parse(fs.readFileSync(orderFilePath).toString())

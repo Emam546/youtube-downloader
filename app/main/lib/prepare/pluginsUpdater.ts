@@ -3,11 +3,12 @@ import path from "path";
 import unzipper from "unzipper";
 import https from "https";
 import { HttpsDownloadAgent } from "@serv/util/axios";
-import { pluginDir, orderFilePath, DataType, Data } from "../main/lib/plugins";
+import { pluginDir, orderFilePath, Data } from "../main/lib/plugins";
 import semver from "semver";
 import { publish } from "../../../../package.json";
 import axios from "axios";
 import { app } from "electron";
+import { DataType } from "@scripts/plugins";
 function downloadFile(url: string, pathDir: string) {
   return new Promise<void>((result, reject) => {
     https.get(
@@ -47,6 +48,7 @@ export async function PrePare() {
   if (fs.existsSync(orderFilePath)) return;
   fs.mkdirSync(pluginDir, { recursive: true });
   await updateScripts();
+
 }
 export async function AfterLunch() {
   await updateScripts();
