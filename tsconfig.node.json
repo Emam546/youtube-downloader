@@ -22,6 +22,7 @@
     "./server/src",
     "utils",
     "./package.json",
-    "./scripts"
+    "./scripts/plugins",
+    "./scripts/types/types.d.ts"
   ]
 }
