@@ -1,5 +1,5 @@
 import { DownloadParams } from "..";
-import { YtDlp, ArgsOptions } from "ytdlp-nodejs";
+import { YtDlp, ArgsOptions, helpers } from "ytdlp-nodejs";
 import { Writable } from "stream";
 import { ffmpegPath } from "@utils/ffmpeg";
 import {
@@ -8,8 +8,18 @@ import {
 } from "../ffmpeg/resize/merge";
 import { convertSecondsToHHMMSS } from "@utils/time";
 import os from "os";
+import path from "path";
 import { getVideoInfo } from "../../ffmpeg";
-export const ytdlp = new YtDlp({ ffmpegPath });
+// import YTDlpWrap from "yt-dlp-wrap";
+export const ytdlp = new YtDlp({
+  ffmpegPath,
+  binaryPath: path.join(
+    helpers.BIN_DIR.replace("app.asar", "app.asar.unpacked"),
+    "yt-dlp.exe"
+  ),
+});
+
+
 
 export interface YtdlpData extends FFmpegResizeMergeData {
   ytdlpData?: FormatResult & { link: string };
