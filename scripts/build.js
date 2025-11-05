@@ -29,7 +29,7 @@ const order = {
     custom: -1000,
   },
   appVersion: packageJson.version,
-  version: "v0.0.11",
+  version: "v0.0.12",
 };
 
 fs.writeFileSync(path.join(folderPath, "order.json"), JSON.stringify(order));
