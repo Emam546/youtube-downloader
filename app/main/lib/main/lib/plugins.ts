@@ -18,7 +18,7 @@ export function getPluginsData() {
   return Data;
 }
 export async function DefinePlugins() {
-  Plugins.forEach(() => Plugins.pop());
+  Plugins.length = 0;
   const Data = getPluginsData();
   const plugins = fs.existsSync(pluginDir)
     ? fs.readdirSync(pluginDir).filter((dir) => {
