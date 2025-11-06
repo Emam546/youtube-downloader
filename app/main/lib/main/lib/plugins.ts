@@ -32,7 +32,7 @@ export async function DefinePlugins() {
   Promise.all(
     plugins.map<Promise<PluginType>>(async (folder) => {
       try {
-        return require(`${pluginDir}/${folder}/index.js`);
+        return require(`${pluginDir}/${folder}/index`);
       } catch (error) {
         console.error(error);
         return;
