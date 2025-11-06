@@ -27,12 +27,21 @@ autoUpdater.once("update-available", (update) => {
   });
   autoUpdater.once("metadata", async (metadata) => {
     console.log("start downloading");
-    await createUpdateWindow({
+    const win = await createUpdateWindow({
       preloadData: {
         curSize: 0,
         fileSize: metadata.size,
+        message: "Downloading the update ...",
       },
-      autoUpdater: autoUpdater,
+    });
+    autoUpdater.on("error", (e) => {
+      win.error(e);
+    });
+    autoUpdater.on("updater-downloaded", () => {
+      win.end();
+    });
+    autoUpdater.on("size", (size: number) => {
+      win.setCurSize(size);
     });
   });
   MainWindow.Window?.hide();

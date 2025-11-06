@@ -3,7 +3,12 @@ import path from "path";
 import unzipper from "unzipper";
 import https from "https";
 import { HttpsDownloadAgent } from "@serv/util/axios";
-import { pluginDir, orderFilePath, Data } from "../main/lib/plugins";
+import {
+  pluginDir,
+  orderFilePath,
+  getPluginsData,
+  DefinePlugins,
+} from "../main/lib/plugins";
 import semver from "semver";
 import { publish } from "../../../../package.json";
 import axios from "axios";
@@ -48,7 +53,6 @@ export async function PrePare() {
   if (fs.existsSync(orderFilePath)) return;
   fs.mkdirSync(pluginDir, { recursive: true });
   await updateScripts();
-
 }
 export async function AfterLunch() {
   await updateScripts();
@@ -57,6 +61,7 @@ async function updateScripts() {
   const res = await axios.get<DataType>(
     `https://raw.githubusercontent.com/${publish.owner}/${publish.repo}/scripts/order.json`
   );
+  const Data = getPluginsData();
   console.log("Remote scripts version", res.data.version);
   if (
     semver.lte(res.data.version, Data.version) ||
@@ -73,6 +78,5 @@ async function updateScripts() {
       apps: { ...Data.apps, ...res.data.apps },
     } as DataType)
   );
-  app.quit();
-  app.relaunch();
+  await DefinePlugins();
 }

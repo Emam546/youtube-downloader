@@ -1,3 +1,4 @@
+import os from "os";
 export function ObjectEntries<T extends object | Array<unknown>>(
   val: T
 ): {
@@ -70,4 +71,15 @@ export async function asyncFindSequential<T>(
     }
   }
   return undefined;
+}
+export function getYtDlpName() {
+  const platform = os.platform();
+  switch (platform) {
+    case "win32":
+      return "yt-dlp.exe";
+    case "darwin":
+      "yt-dlp_macos";
+    default:
+      return "yt-dlp";
+  }
 }

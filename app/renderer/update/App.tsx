@@ -8,7 +8,7 @@ function App(): JSX.Element {
   return (
     <>
       <div ref={ref} className="px-4 py-3">
-        <h2 className="mb-2">Downloading The Update ...</h2>
+        <h2 className="mb-2">{window.context.message}</h2>
         <ProgressBar />
       </div>
     </>

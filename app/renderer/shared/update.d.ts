@@ -3,6 +3,7 @@ import { ConnectionStatus } from "./progress";
 export interface Context {
   curSize: number;
   fileSize: number;
+  message: string;
 }
 export namespace ApiRender {
   interface OnMethods {
