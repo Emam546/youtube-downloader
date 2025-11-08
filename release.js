@@ -23,7 +23,7 @@ const options = {
   assets: assets,
 };
 const missedFile = assets.find((file) => !fs.existsSync(file));
-if (missedFile) throw new Error("missed File");
+if (missedFile) throw new Error(`missed File ${missedFile}`);
 console.log(assets);
 publishRelease(options, function (err, release) {
   if (err) return console.error(err);
