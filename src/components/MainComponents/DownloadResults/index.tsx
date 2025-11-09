@@ -19,12 +19,6 @@ export function ErrorMessage({ children }: { children: ReactNode }) {
   );
 }
 
-declare module "@distube/ytdl-core" {
-  interface videoFormat {
-    loudnessDb?: number;
-  }
-}
-
 export default function VideoResults() {
   const router = useRouter();
   const { ...query } = router.query as {
@@ -76,24 +70,24 @@ export default function VideoResults() {
   return (
     <>
       {/* <TypeApplication defaultState={false} env="desktop"> */}
-        {start != undefined && end != undefined && duration != undefined && (
-          <VideoViewer
-            start={start}
-            end={end}
-            duration={duration}
-            url={data.video.viewerUrl}
-            setDuration={(start, end) => {
-              router.replace(
-                {
-                  pathname: router.pathname, // Keep the current path
-                  query: { ...router.query, start, end }, // Add or update the query parameters
-                },
-                undefined,
-                { scroll: false }
-              );
-            }}
-          />
-        )}
+      {start != undefined && end != undefined && duration != undefined && (
+        <VideoViewer
+          start={start}
+          end={end}
+          duration={duration}
+          url={data.video.viewerUrl}
+          setDuration={(start, end) => {
+            router.replace(
+              {
+                pathname: router.pathname, // Keep the current path
+                query: { ...router.query, start, end }, // Add or update the query parameters
+              },
+              undefined,
+              { scroll: false }
+            );
+          }}
+        />
+      )}
       {/* </TypeApplication> */}
       <section className="tw-my-2.5">
         <div className="tw-grid tw-grid-cols-12 tw-flex-1 tw-gap-6">
