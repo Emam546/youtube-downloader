@@ -42,7 +42,8 @@
   },
   "_moduleAliases": {
     "@serv": "dist/server/src",
-    "@scripts": "dist/scripts"
+    "@scripts": "dist/scripts",
+    "@utils": "dist/utils"
   },
   "dependencies": {
     "@distube/ytdl-core": "^4.16.12",
