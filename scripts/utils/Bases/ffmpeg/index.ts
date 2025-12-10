@@ -7,8 +7,7 @@ import { continueDownloading, getTempName } from "./continueDownloading";
 import { PassThrough, Writable } from "stream";
 import { pipeAsync } from "../..";
 import { LinkDownloadBase, LinkDownloadData } from "../link";
-ffmpeg.setFfmpegPath(process.env.ffmpegPath!);
-ffmpeg.setFfprobePath(process.env.ffmpegProbe!);
+
 export interface FFmpegData extends LinkDownloadData {
   editData?: {
     audioOnly?: boolean;

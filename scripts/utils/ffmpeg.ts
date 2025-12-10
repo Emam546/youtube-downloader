@@ -4,6 +4,8 @@ import path from "path";
 import os from "os";
 import { v4 } from "uuid";
 const tempDir = os.tmpdir();
+ffmpeg.setFfmpegPath(process.env.ffmpegPath!);
+ffmpeg.setFfprobePath(process.env.ffmpegProbe!);
 export async function getFrameScreenShot(videoPath: string) {
   const metadata = await getVideoInfo(videoPath);
   const videoDuration = metadata.format.duration;
@@ -16,8 +18,7 @@ export async function getFrameScreenShot(videoPath: string) {
     const tempThumbnailPath = path.join(tempDir, `temp_thumbnail_${v4()}.png`);
     ffmpeg(videoPath)
       .on("end", () => {
-        if(!fs.existsSync(tempThumbnailPath))
-          return rej("unfounded image")
+        if (!fs.existsSync(tempThumbnailPath)) return rej("unfounded image");
         const data = fs.readFileSync(tempThumbnailPath);
         fs.unlinkSync(tempThumbnailPath);
         res(data.toString("base64"));
