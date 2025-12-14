@@ -1,3 +1,4 @@
+import "@utils/ffmpeg";
 import fs from "fs";
 import { DownloadParams } from "../..";
 import { getAllFormats } from "../../../../youtube/download";

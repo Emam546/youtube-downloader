@@ -1,6 +1,5 @@
+import "@utils/ffmpeg";
 import fs from "fs";
-
-
 import { FfmpegBase } from "../";
 import { getVideoInfo } from "../../../ffmpeg";
 

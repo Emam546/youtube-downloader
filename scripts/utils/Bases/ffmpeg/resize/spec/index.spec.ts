@@ -1,3 +1,4 @@
+import "@utils/ffmpeg";
 import Ffmpeg from "fluent-ffmpeg";
 import fs from "fs";
 import { getVideoInfo } from "../../../../ffmpeg";
@@ -33,7 +34,6 @@ describe("test local", () => {
         });
         await VideoDownloader.download((path) => fs.createWriteStream(path));
 
-    
         const videoInfo = await getVideoInfo(videoPath);
 
         expect(
@@ -63,7 +63,6 @@ describe("test local", () => {
           },
         });
         await VideoDownloader.download((path) => fs.createWriteStream(path));
-
 
         const videoInfo = await getVideoInfo(videoPath);
         expect(
@@ -98,7 +97,6 @@ describe("test local", () => {
         });
         await VideoDownloader.download((path) => fs.createWriteStream(path));
 
-      
         const videoInfo = await getVideoInfo(videoPath);
         expect(videoInfo.format.duration).toBeCloseTo(
           VideoDownloader.ffmpegData!.duration,
@@ -134,7 +132,6 @@ describe("test local", () => {
         });
         await VideoDownloader.download((path) => fs.createWriteStream(path));
 
-      
         const videoInfo = await getVideoInfo(videoPath);
         expect(videoInfo.format.duration).toBeCloseTo(
           VideoDownloader.ffmpegData!.duration,
@@ -210,7 +207,6 @@ describe("test local", () => {
         });
         await VideoDownloader.download((path) => fs.createWriteStream(path));
 
-
         const videoInfo = await getVideoInfo(videoPath);
         expect(videoInfo.format.duration).toBeCloseTo(
           VideoDownloader.ffmpegData!.duration,
@@ -223,4 +219,3 @@ describe("test local", () => {
     });
   });
 });
-
