@@ -69,8 +69,6 @@ export interface HttpHeaders {
 
 export interface Thumbnail {
   url: string;
-  height: number;
-  width: number;
   id?: string;
 }
 
@@ -81,7 +79,7 @@ export interface YtDlpVersion {
   repository: string;
 }
 
-export async function getYtdlpVideoData(url: string): Promise<YtDlpData> {
+async function getVideoData(url: string): Promise<YtDlpData> {
   const result = await ytdlp.execAsync(url, {
     dumpJson: true,
     checkAllFormats: true,
@@ -115,7 +113,7 @@ export async function getData(
     link: string;
   };
 
-  const ytdlpData = await getYtdlpVideoData(link);
+  const ytdlpData = await getVideoData(link);
   const correctLink = await asyncFindSequential(
     ytdlpData.formats,
     async (val) => {
@@ -135,8 +133,6 @@ export async function getData(
         {
           id: "ss",
           url: `data:image/jpeg;base64,${data}`,
-          width: 0,
-          height: 0,
         },
       ];
     } catch (error) {}
