@@ -115,7 +115,7 @@ const example = {
   ],
 };
 type Release = typeof example;
-export async function updateYtDlp() {
+export async function updateYtDlp(silent: boolean = true) {
   const response = await axios.get<Release>(
     "https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest"
   );
@@ -130,21 +130,24 @@ export async function updateYtDlp() {
   }
   const asset = response.data.assets.find((val) => val.name == ytdlpName);
   if (!asset) throw new Error(`unrecognized asset ${ytdlpName}`);
-  const win = await createUpdateWindow({
-    preloadData: {
-      curSize: 0,
-      fileSize: asset.size,
-      message: "Downloading Yt-dlp ...",
-    },
-  });
-  win.setFileSize(asset.size);
   const download = new EasyDl(asset.browser_download_url, ytDlpPath);
-  download.on("progress", (progress) => {
-    win.setFileSize(progress.total.bytes!);
-  });
-  download.on("error", (e) => {
-    win.error(e);
-  });
+  if (!silent) {
+    const win = await createUpdateWindow({
+      preloadData: {
+        curSize: 0,
+        fileSize: asset.size,
+        message: "Downloading Yt-dlp ...",
+      },
+    });
+    win.setFileSize(asset.size);
+    download.on("progress", (progress) => {
+      win.setFileSize(progress.total.bytes!);
+    });
+    download.on("error", (e) => {
+      win.error(e);
+    });
+    download.on("close", () => win.close());
+  }
+
   await download.wait();
-  win.close();
 }
