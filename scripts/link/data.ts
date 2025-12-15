@@ -131,7 +131,7 @@ export async function getData(
               previewLink: url,
               data: {
                 link: url,
-                resized: quality.height,
+                resize: quality.height,
               },
               ftype: videoFormat,
               fquality: quality.label,
@@ -222,7 +222,6 @@ export async function getData(
               },
             })) || undefined,
         },
-
         ...(await Promise.all(
           getResizedQualitiesFromLabel(orgQuality.label).map<
             Promise<Media<FFmpegResizeData>>
@@ -236,7 +235,7 @@ export async function getData(
               previewLink: url,
               data: {
                 link: url,
-                resized: quality.height,
+                resize: quality.height,
                 editData: {
                   videoOnly: true,
                 },
