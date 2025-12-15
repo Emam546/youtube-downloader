@@ -124,7 +124,7 @@ export async function getData(
           >(async (quality) => ({
             previewLink: url,
             container: videoFormat,
-            environment: ["desktop", "web"],
+            environment: ["desktop"],
             id: `${url}-${quality.label}`,
             data: {
               PATH: PATH,
@@ -228,7 +228,7 @@ export async function getData(
           >(async (quality) => ({
             previewLink: url,
             container: videoFormat,
-            environment: ["desktop", "web"],
+            environment: ["desktop"],
             id: `${url}-videoOnly-${quality.label}`,
             data: {
               PATH: PATH,
