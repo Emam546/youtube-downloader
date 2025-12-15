@@ -2,14 +2,13 @@ import { useQuery } from "@tanstack/react-query";
 import { useDispatch } from "react-redux";
 import { videoActions } from "@src/store/res-slice";
 import { ReactNode, useEffect } from "react";
-import Loading from "../../common/Loading";
 import { getVideoData as getVideoData } from "@src/API";
 import { useRouter } from "next/router";
 import VideoViewer from "../Viewer";
-import TypeApplication from "../../common/TypeApllication";
 import Thumbnail from "../../common/thumbnail";
 import { getTime } from "@src/utils/time";
 import TableDownload from "@src/components/common/table";
+import { loadingActions } from "@src/store/loading";
 
 export function ErrorMessage({ children }: { children: ReactNode }) {
   return (
@@ -44,11 +43,18 @@ export default function VideoResults() {
       dispatch(videoActions.setData(null));
     }
   }, [paramQuery.data]);
-
-  if (paramQuery.isLoading) return <Loading />;
+  useEffect(() => {
+    dispatch(
+      loadingActions.setData({
+        name: "search",
+        state: paramQuery.isLoading,
+      })
+    );
+  }, [paramQuery.isLoading]);
   if (paramQuery.isError) {
     return <ErrorMessage>{new String(paramQuery.error)}</ErrorMessage>;
   }
+  if (paramQuery.isLoading) return;
   if (!paramQuery.data)
     return <ErrorMessage>The video is not existed</ErrorMessage>;
   const data = paramQuery.data!;
@@ -65,8 +71,7 @@ export default function VideoResults() {
     start != undefined &&
     end != undefined &&
     duration != undefined &&
-    (start != 0 || duration - end > 1 || end - start < duration) &&
-    window.Environment == "desktop";
+    (start != 0 || duration - end > 1 || end - start < duration);
   return (
     <>
       {/* <TypeApplication defaultState={false} env="desktop"> */}

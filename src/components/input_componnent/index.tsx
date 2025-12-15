@@ -6,6 +6,10 @@ import { useForm } from "react-hook-form";
 import { ChangeEvent, useEffect } from "react";
 import { NavigateVideo } from "@src/types/api";
 import { predictInputStr, navigate } from "@src/API";
+import { useMutation } from "@tanstack/react-query";
+import Loading from "../common/Loading";
+import { useDispatch } from "react-redux";
+import loadingState, { loadingActions } from "@src/store/loading";
 interface DataFrom {
   search: string;
 }
@@ -13,15 +17,25 @@ function isVideo(val: unknown): val is NavigateVideo {
   return window.context != null && window.context.video != undefined;
 }
 
-function getTime(val: unknown): number | null {
-  if (typeof val == "string" && !isNaN(parseInt(val))) return parseInt(val);
-  return null;
-}
 export default function InputHolder() {
   const router = useRouter();
-  const routeNavigate = router.push;
-  const { register, handleSubmit, setValue, formState } = useForm<DataFrom>();
 
+  const routeNavigate = router.push;
+  const { register, handleSubmit, setValue, formState, watch } =
+    useForm<DataFrom>();
+  const navigateMutate = useMutation({
+    mutationFn: navigate,
+    mutationKey: ["search", watch("search")],
+  });
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(
+      loadingActions.setData({
+        name: "search",
+        state: navigateMutate.isLoading,
+      })
+    );
+  }, [navigateMutate.isLoading]);
   useEffect(() => {
     if (router.asPath.startsWith("/search")) {
       const regex = /\/search\/(.+)/;
@@ -45,7 +59,7 @@ export default function InputHolder() {
   useEffect(() => {
     async function analyzeUrl(value: string) {
       setValue("search", value);
-      const dest = await navigate(value);
+      const dest = await navigateMutate.mutateAsync(value);
       if (dest) routeNavigate(dest);
     }
     if (window.Environment == "desktop") {
@@ -62,9 +76,8 @@ export default function InputHolder() {
         method="POST"
         autoComplete="off"
         onSubmit={handleSubmit(async (data) => {
-          const dest = await navigate(data.search);
+          const dest = await navigateMutate.mutateAsync(data.search);
           if (dest) return routeNavigate(dest);
-
           return routeNavigate(`/search/${encodeURIComponent(data.search)}`);
         })}
       >
@@ -79,8 +92,7 @@ export default function InputHolder() {
               {...register("search", {
                 async onChange(e: ChangeEvent<HTMLInputElement>) {
                   const value = e.currentTarget.value;
-
-                  const dest = await navigate(value);
+                  const dest = await navigateMutate.mutateAsync(value);
                   if (dest) routeNavigate(dest);
                 },
               })}
