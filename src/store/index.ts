@@ -1,5 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import relatedVideos, { VideoInfo } from "./res-slice";
+import loadingState from "./loading";
 import { TypedUseSelectorHook, useSelector } from "react-redux";
 export type StoreData = {
   relatedVideos: VideoInfo;
@@ -7,6 +8,7 @@ export type StoreData = {
 const store = configureStore({
   reducer: {
     relatedVideos: relatedVideos.reducer,
+    loading: loadingState.reducer,
   },
 });
 export type AppStore = typeof store;
