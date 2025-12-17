@@ -54,7 +54,7 @@ export default function VideoResults() {
   if (paramQuery.isError) {
     return <ErrorMessage>{new String(paramQuery.error)}</ErrorMessage>;
   }
-  if (paramQuery.isLoading) return;
+  if (paramQuery.isLoading) return null;
   if (!paramQuery.data)
     return <ErrorMessage>The video is not existed</ErrorMessage>;
   const data = paramQuery.data!;
