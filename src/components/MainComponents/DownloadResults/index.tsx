@@ -30,10 +30,12 @@ export default function VideoResults() {
     queryKey: ["video", router.query.path || null, router.query.id || null],
     queryFn: ({ signal }) =>
       getVideoData(router.query.path as string, router.query, signal),
-    cacheTime: 1 * 1000 * 60,
-    staleTime: 1 * 1000 * 60,
-    // enabled: router.query.path,
-    retry: 0,
+    staleTime: Infinity, // data is always fresh
+    cacheTime: Infinity,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
+    retry: false,
   });
 
   useEffect(() => {
@@ -48,7 +50,7 @@ export default function VideoResults() {
       loadingActions.setData({
         name: "search",
         state: paramQuery.isLoading,
-      })
+      }),
     );
   }, [paramQuery.isLoading]);
   if (paramQuery.isError) {
@@ -88,7 +90,7 @@ export default function VideoResults() {
                 query: { ...router.query, start, end }, // Add or update the query parameters
               },
               undefined,
-              { scroll: false }
+              { scroll: false },
             );
           }}
         />
