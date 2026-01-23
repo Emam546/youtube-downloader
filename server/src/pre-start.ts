@@ -7,6 +7,9 @@
 import dotenv from "dotenv";
 import commandLineArgs from "command-line-args";
 import "@utils/ffmpeg";
+import { getYtDlpName } from "@utils/index";
+import path from "path";
+
 // **NOTE** Do not import any local paths here, or any libraries dependent
 // on environment variables.
 
@@ -30,3 +33,6 @@ const result2 = dotenv.config({
 if (result2.error) {
   throw result2.error;
 }
+const ytdlpPath = path.join("./", getYtDlpName());
+// eslint-disable-next-line node/no-process-env
+process.env.ytdlp_binDir = ytdlpPath;

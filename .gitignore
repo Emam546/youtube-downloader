@@ -67,3 +67,4 @@ dist
 *.mov
 
 **/test.*
+yt-dlp.exe
