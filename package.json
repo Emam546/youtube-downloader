@@ -35,7 +35,8 @@
   },
   "nodemonConfig": {
     "watch": [
-      "./server/src"
+      "./server/src",
+      "./scripts"
     ],
     "ext": "ts, html",
     "exec": "./node_modules/.bin/ts-node --project tsconfig.server.json --files -r tsconfig-paths/register ./server/src"

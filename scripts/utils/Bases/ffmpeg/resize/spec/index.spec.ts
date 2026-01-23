@@ -4,7 +4,7 @@ import fs from "fs";
 import { getVideoInfo } from "../../../../ffmpeg";
 import { FfmpegResizeBase } from "../index";
 
-const videoUrl = "newExample.mp4";
+const videoUrl = "https://www.w3schools.com/html/mov_bbb.mp4";
 const videoPath = "./video.mp4";
 jest.setTimeout(10000);
 describe("test local", () => {
@@ -208,6 +208,9 @@ describe("test local", () => {
         await VideoDownloader.download((path) => fs.createWriteStream(path));
 
         const videoInfo = await getVideoInfo(videoPath);
+        expect(
+          videoInfo.streams.find((v) => v.codec_type == "video")?.height
+        ).toEqual(VideoDownloader?.resize);
         expect(videoInfo.format.duration).toBeCloseTo(
           VideoDownloader.ffmpegData!.duration,
           -1
