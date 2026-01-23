@@ -20,7 +20,7 @@ function AudioLoudnessType(a: number, b: number): "High" | "Low" | "Same" {
 }
 const asyncFilter = async <T>(
   arr: T[],
-  predicate: Parameters<Array<T>["filter"]>[0]
+  predicate: Parameters<Array<T>["filter"]>[0],
 ): Promise<T[]> => {
   const results = await Promise.all(arr.map(predicate));
 
@@ -28,7 +28,7 @@ const asyncFilter = async <T>(
 };
 
 export async function getVideoData(
-  query: Record<string, any>
+  query: Record<string, any>,
 ): Promise<ResponseData<YtdlpData> | null> {
   const {
     id,
@@ -49,7 +49,7 @@ export async function getVideoData(
           g.codecs == v.codecs &&
           g.quality == v.quality &&
           g.container == v.container &&
-          g.loudnessDb == v.loudnessDb
+          g.loudnessDb == v.loudnessDb,
       );
       if (state) acc.push(v);
       return acc;
@@ -61,21 +61,24 @@ export async function getVideoData(
       } catch (error) {
         return false;
       }
-    }
+    },
   );
   const audioFormats = await asyncFilter(formats, async (cur) => {
     if (!(cur.hasAudio && !cur.hasVideo)) return false;
     if (cur.container.toLowerCase() != "mp4") return false;
     return true;
   });
-  const audioMerge = audioFormats.reduce((acc, cur) => {
-    if (!acc) return cur;
-    if (acc.bitrate! > cur.bitrate!) return acc;
-    if (acc.loudnessDb! > cur.loudnessDb!) return acc;
-    return cur;
-  }, null as null | videoFormat);
+  const audioMerge = audioFormats.reduce(
+    (acc, cur) => {
+      if (!acc) return cur;
+      if (acc.bitrate! > cur.bitrate!) return acc;
+      if (acc.loudnessDb! > cur.loudnessDb!) return acc;
+      return cur;
+    },
+    null as null | videoFormat,
+  );
   const YtdpFormats = await getAllFormats(
-    `https://www.youtube.com/watch?v=${id}`
+    `https://www.youtube.com/watch?v=${id}`,
   );
   const videos: Media<YtdlpData>[] = [
     ...(await Promise.all(
@@ -112,6 +115,7 @@ export async function getVideoData(
                   videoLink: video.url,
                   audioLink: audioMerge!.url,
                 },
+                link: video.url,
               },
               fquality: `${parseInt(video.qualityLabel)}`,
               ftype: video.container,
@@ -120,7 +124,7 @@ export async function getVideoData(
               title: basicData.videoDetails.title,
             },
           } as Media<YtdlpData>;
-        })
+        }),
     )),
     ...formats
       .filter((v) => v.hasVideo && v.hasAudio)
@@ -150,7 +154,7 @@ export async function getVideoData(
         } as Media<YtdlpData>;
       }),
     ...YtdpFormats.filter(
-      (quality) => quality.has_video && quality.has_audio
+      (quality) => quality.has_video && quality.has_audio,
     ).map((quality) => {
       return {
         size: quality.filesize || quality.filesize_approx,
@@ -309,7 +313,7 @@ export async function getVideoData(
       end: getTime(endQ, duration, duration),
       thumbnail: basicData.videoDetails.thumbnails.reduce(
         (cur, acc) => (cur.height > acc.height ? cur : acc),
-        basicData.videoDetails.thumbnails[0]
+        basicData.videoDetails.thumbnails[0],
       ).url,
       medias: {
         VIDEO: videos,
@@ -332,7 +336,6 @@ export async function getVideoData(
               .url,
             title: [v.title!],
             duration: v.length_seconds!,
-      
           };
         }),
       },
