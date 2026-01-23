@@ -1,0 +1,21 @@
+{
+  "name": "YouTube Downloader",
+  "description": "Send current page URL to YouTube downloader app",
+  "version": "1.0",
+  "manifest_version": 3,
+  "permissions": [
+    "tabs"
+  ],
+  "action": {
+    "default_title": "Send to Downloader",
+    "default_icon": {
+      "16": "icon.png",
+      "32": "icon.png",
+      "48": "icon.png",
+      "128": "icon.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}

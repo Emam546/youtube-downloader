@@ -9,6 +9,9 @@ extraFiles:
     to: "./screenshots"
     filter:
       - "**/*"
+  - from: "./dist/extension/extension.crx"
+    to: "./browser-extension/extension.crx"
+    
 directories:
   buildResources: build
   output: dist
