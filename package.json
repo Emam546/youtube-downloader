@@ -14,7 +14,7 @@
   "scripts": {
     "build:server": "ts-node build.ts",
     "build:next": "next build",
-    "build:extension": "ts-node --files  ./extension/build.ts",
+    "build:extension": "node extension/build.js",
     "build:scripts": "ts-node --project ./scripts/tsconfig.json --files -r tsconfig-paths/register ./scripts/build.ts",
     "export": "npm run build:next&&next export",
     "build": "npm run build:server && npm run build:next",
