@@ -67,7 +67,6 @@
     "command-line-args": "^5.2.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
-    "crx3": "^2.0.0",
     "dotenv": "^16.0.3",
     "easydl": "^1.2.0",
     "electron-serve": "^0.4.0",

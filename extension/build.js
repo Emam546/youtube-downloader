@@ -1,11 +1,18 @@
 const fs = require("fs");
 const path = require("path");
-const crx3 = require("crx3");
-
+const files = [
+  "./build.js",
+  "./manifest.json",
+  "./icon.png",
+  "./background.js",
+];
 async function build() {
   if (!fs.existsSync("dist/extension/")) fs.mkdirSync("dist/extension/");
-  await crx3([path.join(__dirname, "./manifest.json")], {
-    crxPath: "dist/extension/extension.crx",
+  files.forEach((element) => {
+    fs.copyFileSync(
+      path.join("./extension", element),
+      path.join("./dist/extension/", element),
+    );
   });
 
   console.log("Extension built as .crx");
