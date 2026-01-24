@@ -19,7 +19,7 @@ autoUpdater.once("update-available", (update) => {
   console.log("update available", update.tag_name);
   console.log("Download the update");
   autoUpdater.downloadUpdate(update).then((asset) => {
-    console.log(asset?.name);
+    if (!asset) return;
     autoUpdater.once("updater-downloaded", (savedFilePath) => {
       console.log("update finished");
       autoUpdater.quitAndInstall(savedFilePath);
@@ -27,6 +27,7 @@ autoUpdater.once("update-available", (update) => {
   });
   autoUpdater.once("metadata", async (metadata) => {
     console.log("start downloading");
+    MainWindow.Window?.hide();
     const win = await createUpdateWindow({
       preloadData: {
         curSize: 0,
@@ -44,7 +45,6 @@ autoUpdater.once("update-available", (update) => {
       win.setCurSize(size);
     });
   });
-  MainWindow.Window?.hide();
 });
 autoUpdater.once("update-not-available", () => {
   console.log("update not available");
