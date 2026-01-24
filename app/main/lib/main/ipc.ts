@@ -10,6 +10,7 @@ import { getVideoData } from "../../../../scripts/plugins/getVideoData";
 import { searchData } from "../../../../scripts/plugins/search";
 import { predictInputString } from "../../../../scripts/plugins/predictInputString";
 import { Plugins } from "./lib/plugins";
+import { showContextMenu } from "./lib/context";
 
 type OnMethodsType = {
   [K in keyof ApiMain.OnMethods]: ConvertToIpCMainFunc<ApiMain.OnMethods[K]>;
@@ -31,12 +32,14 @@ type HandelOnceMethodsType = {
 };
 export const OnMethods: OnMethodsType = {
   downloadVideoLink: DownloadVideo,
+  showContextMenu: showContextMenu,
 };
 export const OnceMethods: OnceMethodsType = {};
 export const HandleMethods: HandelMethodsType = {
   getVideoData(_, ...args) {
     return getVideoData(Plugins)(...args);
   },
+
   getSearchData(_, ...args) {
     return searchData(Plugins)(...args);
   },
