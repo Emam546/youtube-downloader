@@ -1,6 +1,6 @@
 {
   "name": "youtube-downloader",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "main": "./out/main/index.js",
   "description": "A Youtube videos downloader app",
   "repository": "https://github.com/Emam546/youtube-downloader",
@@ -129,7 +129,6 @@
     "autoprefixer": "^10.4.13",
     "bootstrap": "^5.3.0",
     "concurrently": "^8.2.2",
-    "crx": "^5.0.1",
     "electron": "^31.1.0",
     "electron-builder": "^24.13.3",
     "electron-vite": "^2.3.0",
