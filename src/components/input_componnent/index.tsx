@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { useForm } from "react-hook-form";
@@ -19,7 +20,6 @@ function isVideo(val: unknown): val is NavigateVideo {
 
 export default function InputHolder() {
   const router = useRouter();
-
   const routeNavigate = router.push;
   const { register, handleSubmit, setValue, formState, watch } =
     useForm<DataFrom>();
@@ -33,7 +33,7 @@ export default function InputHolder() {
       loadingActions.setData({
         name: "search",
         state: navigateMutate.isLoading,
-      })
+      }),
     );
   }, [navigateMutate.isLoading]);
   useEffect(() => {
@@ -45,7 +45,7 @@ export default function InputHolder() {
     } else {
       const [, path, id] = window.location.pathname.split("/");
       const params = Object.fromEntries(
-        new URLSearchParams(window.location.search).entries()
+        new URLSearchParams(window.location.search).entries(),
       );
       if (path)
         predictInputStr(path, {

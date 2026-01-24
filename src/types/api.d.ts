@@ -7,6 +7,7 @@ import type { DownloadFileToDesktop } from "@app/main/lib/main/utils/DownloadFil
 import type { downloadVideoAndExtractMetadata } from "@app/main/lib/main/getVideoLinkData";
 import { ConvertFromIpCMainFunc } from "@shared/api";
 import { getVideoLinkData } from "@app/main/lib/main/getVideoLinkData";
+import { showContextMenu } from "@app/main/lib/main/lib/context";
 import { navigate } from "@scripts/plugins/navigate";
 import { getVideoData } from "@scripts/plugins/getVideoData";
 import { searchData } from "@scripts/plugins/search";
@@ -25,12 +26,14 @@ export type Context = NavigateVideo | NavigateSearch | null;
 export namespace ApiRender {
   interface OnMethods {
     getInputUrl(url: string): void;
+    "paste-text": (text: string) => void;
   }
   interface OnceMethods {}
 }
 export namespace ApiMain {
   interface OnMethods {
     downloadVideoLink: ConvertFromIpCMainFunc<typeof DownloadVideo>;
+    showContextMenu: ConvertFromIpCMainFunc<typeof showContextMenu>;
   }
   interface OnceMethods {}
   interface HandleMethods {
@@ -39,6 +42,7 @@ export namespace ApiMain {
     getPlaylistData: typeof getPlayListData;
     Download: typeof DownloadFileToDesktop;
     navigate: ReturnType<typeof navigate>;
+
     predictInputString: ReturnType<typeof predictInputString>;
   }
   interface HandleOnceMethods {}
