@@ -19,9 +19,11 @@ export interface YtdlpData extends FFmpegResizeMergeData {
 
 export class YtdlpBase extends FfmpegResizeMergeBase {
   ytdlpData: YtdlpData["ytdlpData"];
-  constructor(data: DownloadParams<YtdlpData>) {
+  readonly cookies?: string;
+  constructor(data: DownloadParams<YtdlpData>, cookies?: string) {
     super(data);
     this.ytdlpData = data.data.data.ytdlpData;
+    this.cookies = cookies;
   }
   async download(func: (path: string) => Writable) {
     if (!this.ytdlpData) return await super.download(func);
@@ -37,6 +39,7 @@ export class YtdlpBase extends FfmpegResizeMergeBase {
       abortOnError: true,
       noKeepFragments: true,
       noContinue: true,
+      cookies: this.cookies,
       paths: `TEMP:${os.tmpdir()}`,
       onProgress: (p) => {
         this.setFileSize(p.total);
@@ -44,9 +47,9 @@ export class YtdlpBase extends FfmpegResizeMergeBase {
       downloadSections:
         this.ffmpegData &&
         `*${convertSecondsToHHMMSS(
-          this.ffmpegData.start
+          this.ffmpegData.start,
         )}-${convertSecondsToHHMMSS(
-          this.ffmpegData.duration + this.ffmpegData.start
+          this.ffmpegData.duration + this.ffmpegData.start,
         )}`,
     });
     ytdlpStream.pipe(func(this.downloadingState.path));

@@ -44,5 +44,5 @@ export async function getAllFormats(url: string): Promise<FormatResult[]> {
   });
 }
 export function download(data: DownloadParams<YtdlpData>) {
-  return new YtdlpBase(data);
+  return new YtdlpBase(data, process.env.YoutubeCookies);
 }

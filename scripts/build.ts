@@ -17,7 +17,7 @@ export const order = {
     custom: -1000,
   },
   appVersion: packageJson.version,
-  version: "v1.0.2",
+  version: "v1.0.3",
 };
 async function Process() {
   if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath, { recursive: true });
@@ -36,7 +36,7 @@ async function Process() {
           "import.meta.url": JSON.stringify(`file://index.js`),
         },
       });
-    })
+    }),
   );
   fs.writeFileSync(path.join(folderPath, "order.json"), JSON.stringify(order));
 }
