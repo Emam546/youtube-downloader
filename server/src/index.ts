@@ -13,7 +13,11 @@ const handle = app.getRequestHandler();
 app
   .prepare()
   .then(async () => {
-    await updateYtDlp();
+    try {
+      await updateYtDlp();
+    } catch (error) {
+      logger.err(error)
+    }
 
     server.get("*", (req, res) => {
       return handle(req, res);

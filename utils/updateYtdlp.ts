@@ -131,6 +131,7 @@ class UpdateYtdlpDownloader extends EasyDl {
     this.size = size;
   }
 }
+process.env.YTDL_NO_UPDATE = "1";
 export async function updateYtDlp(ytDlpPath: string) {
   const response = await axios.get<Release>(
     "https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest",

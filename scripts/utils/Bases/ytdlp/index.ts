@@ -39,7 +39,7 @@ export class YtdlpBase extends FfmpegResizeMergeBase {
       abortOnError: true,
       noKeepFragments: true,
       noContinue: true,
-      cookies: this.cookies,
+      // cookies: this.cookies,
       paths: `TEMP:${os.tmpdir()}`,
       onProgress: (p) => {
         this.setFileSize(p.total);
