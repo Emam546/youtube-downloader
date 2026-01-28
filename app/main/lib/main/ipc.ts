@@ -4,7 +4,7 @@ import { getPlayListData } from "@serv/routes/playlist/api";
 import { DownloadVideo } from "./utils/downloadVideoLink";
 import { DownloadFileToDesktop } from "./utils/DownloadFile";
 import { ObjectEntries } from "@utils/index";
-import { ipcMain } from "electron";
+import { BrowserWindow, ipcMain } from "electron";
 import { navigate } from "../../../../scripts/plugins/navigate";
 import { getVideoData } from "../../../../scripts/plugins/getVideoData";
 import { searchData } from "../../../../scripts/plugins/search";
@@ -36,8 +36,13 @@ export const OnMethods: OnMethodsType = {
 };
 export const OnceMethods: OnceMethodsType = {};
 export const HandleMethods: HandelMethodsType = {
-  getVideoData(_, ...args) {
-    return getVideoData(Plugins)(...args);
+  async getVideoData(e, ...args) {
+    const res = await getVideoData(Plugins)(...args);
+    const window = BrowserWindow.fromWebContents(e.sender)!;
+    if (window.isMinimized()) window.restore();
+    window.show();
+    window.focus();
+    return res;
   },
 
   getSearchData(_, ...args) {
