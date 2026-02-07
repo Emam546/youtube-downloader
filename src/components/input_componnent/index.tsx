@@ -27,6 +27,11 @@ export default function InputHolder() {
     mutationFn: navigate,
     mutationKey: ["search", watch("search")],
   });
+  async function analyzeUrl(value: string) {
+    setValue("search", value);
+    const dest = await navigateMutate.mutateAsync(value);
+    if (dest) routeNavigate(dest);
+  }
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(
@@ -52,16 +57,11 @@ export default function InputHolder() {
           id,
           ...params,
         }).then((str) => {
-          if (str) setValue("search", str);
+          if (str) analyzeUrl(str);
         });
     }
   }, []);
   useEffect(() => {
-    async function analyzeUrl(value: string) {
-      setValue("search", value);
-      const dest = await navigateMutate.mutateAsync(value);
-      if (dest) routeNavigate(dest);
-    }
     if (window.Environment == "desktop") {
       window.api.on("getInputUrl", async (_, url) => {
         analyzeUrl(url);
