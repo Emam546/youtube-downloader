@@ -20,6 +20,7 @@ function isVideo(val: unknown): val is NavigateVideo {
 
 export default function InputHolder() {
   const router = useRouter();
+  const inputHolder = useRef<HTMLInputElement>(null);
   const routeNavigate = router.push;
   const { register, handleSubmit, setValue, formState, watch } =
     useForm<DataFrom>();
@@ -69,6 +70,12 @@ export default function InputHolder() {
       if (isVideo(window.context)) analyzeUrl(window.context.video.link);
     }
   }, []);
+  useEffect(() => {
+    return window.api.on("paste-text", (e, text) => {
+      const active = document.activeElement as HTMLInputElement;
+      if (active == inputHolder.current) setValue("search", text);
+    });
+  }, [inputHolder]);
   return (
     <div className="tw-w-[700px] tw-max-w-full tw-min-w-fit tw-mx-auto tw-px-2 sm:tw-px-10 tw-py-10">
       <form
@@ -96,6 +103,7 @@ export default function InputHolder() {
                   if (dest) routeNavigate(dest);
                 },
               })}
+              ref={inputHolder}
               className="focus:tw-outline-none tw-flex-1 tw-shrink tw-border-[6px] tw-rounded-l tw-text-[#555] tw-bg-white tw-min-w-0 tw-w-full tw-border-r-0 tw-border-primary tw-px-3 tw-py-3 tw-h-full"
             />
           </div>
