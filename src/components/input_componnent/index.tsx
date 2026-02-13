@@ -20,7 +20,6 @@ function isVideo(val: unknown): val is NavigateVideo {
 
 export default function InputHolder() {
   const router = useRouter();
-  const inputHolder = useRef<HTMLInputElement>(null);
   const routeNavigate = router.push;
   const { register, handleSubmit, setValue, formState, watch } =
     useForm<DataFrom>();
@@ -29,9 +28,9 @@ export default function InputHolder() {
     mutationKey: ["search", watch("search")],
   });
   async function analyzeUrl(value: string) {
-    setValue("search", value);
     const dest = await navigateMutate.mutateAsync(value);
     if (dest) routeNavigate(dest);
+    setValue("search", value);
   }
   const dispatch = useDispatch();
   useEffect(() => {
@@ -53,29 +52,25 @@ export default function InputHolder() {
       const params = Object.fromEntries(
         new URLSearchParams(window.location.search).entries(),
       );
-      if (path)
+      if (path.length > 0)
         predictInputStr(path, {
           id,
           ...params,
         }).then((str) => {
-          if (str) analyzeUrl(str);
+          if (str != null) setValue("search", str);
         });
+      else {
+        if (window.Environment == "desktop")
+          if (isVideo(window.context)) analyzeUrl(window.context.video.link);
+      }
     }
   }, []);
   useEffect(() => {
-    if (window.Environment == "desktop") {
-      window.api.on("getInputUrl", async (_, url) => {
+    if (window.Environment == "desktop")
+      return window.api.on("getInputUrl", async (_, url) => {
         analyzeUrl(url);
       });
-      if (isVideo(window.context)) analyzeUrl(window.context.video.link);
-    }
   }, []);
-  useEffect(() => {
-    return window.api.on("paste-text", (e, text) => {
-      const active = document.activeElement as HTMLInputElement;
-      if (active == inputHolder.current) setValue("search", text);
-    });
-  }, [inputHolder]);
   return (
     <div className="tw-w-[700px] tw-max-w-full tw-min-w-fit tw-mx-auto tw-px-2 sm:tw-px-10 tw-py-10">
       <form
@@ -103,7 +98,6 @@ export default function InputHolder() {
                   if (dest) routeNavigate(dest);
                 },
               })}
-              ref={inputHolder}
               className="focus:tw-outline-none tw-flex-1 tw-shrink tw-border-[6px] tw-rounded-l tw-text-[#555] tw-bg-white tw-min-w-0 tw-w-full tw-border-r-0 tw-border-primary tw-px-3 tw-py-3 tw-h-full"
             />
           </div>

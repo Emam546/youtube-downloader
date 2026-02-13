@@ -37,6 +37,7 @@ export default function SharedLayout({
         const value = active.value;
         active.value = value.slice(0, start) + text + value.slice(end);
         active.selectionStart = active.selectionEnd = start + text.length; // move cursor
+        active.dispatchEvent(new Event("input", { bubbles: true }));
       }
     });
   }, []);
