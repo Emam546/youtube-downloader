@@ -30,12 +30,13 @@ export default function VideoResults() {
     queryKey: ["video", router.query.path || null, router.query.id || null],
     queryFn: ({ signal }) =>
       getVideoData(router.query.path as string, router.query, signal),
-    staleTime: Infinity, // data is always fresh
-    cacheTime: Infinity,
+    staleTime: 60 * 1000 * 60, // data is always fresh
+    cacheTime: 60 * 1000 * 60,
     refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
+    refetchOnReconnect: true,
     refetchOnMount: false,
-    retry: false,
+    retry: 3,
+    enabled: router.query.id != null && router.query.path != null,
   });
 
   useEffect(() => {
