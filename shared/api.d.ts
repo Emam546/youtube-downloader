@@ -7,7 +7,7 @@ type ExcludeFirst<T extends any[]> = T extends [infer First, ...infer Rest]
   ? Rest
   : never;
 type ConvertFromIpCMainFunc<
-  T extends (event: IpcMainEvent, ...args: any) => any
+  T extends (event: IpcMainEvent, ...args: any) => any,
 > = (...args: ExcludeFirst<Parameters<T>>) => ReturnType<T>;
 type ConvertToIpCHandleMainFunc<T extends (...args: any[]) => any> = (
   event: IpcMainInvokeEvent,
@@ -19,6 +19,7 @@ export namespace ApiMain {
     setTitle(name: string): void;
     closeWindow(): void;
     openFolder(path: string): void;
+    openFolderSelected(path: string): void;
     openFile(path: string): void;
     opeFileWith(path: string): void;
     setContentHeight(height: number): void;

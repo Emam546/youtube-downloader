@@ -5,6 +5,7 @@ import {
   OpenFile,
   OpenFileWith,
   OpenFolder,
+  OpenFolderSelected,
   ShutDown,
   SleepComputer,
 } from "../lib/ipcmain";
@@ -45,6 +46,9 @@ export const OnMethods: OnMethodsType = {
   openFolder: function (_, path: string): void {
     OpenFolder(path);
   },
+  openFolderSelected: function (_, path: string): void {
+    OpenFolderSelected(path);
+  },
   openFile: function (_, path: string): void {
     OpenFile(path);
   },
@@ -67,7 +71,7 @@ export const OnMethods: OnMethodsType = {
     window.hide();
   },
   ToggleWindowMaximizeState: function (
-    event: Electron.CrossProcessExports.IpcMainEvent
+    event: Electron.CrossProcessExports.IpcMainEvent,
   ): void {
     const window = BrowserWindow.fromWebContents(event.sender);
     if (!window) return;
