@@ -2,7 +2,7 @@ import { ResponseData, Media, ReturnedSearch } from "../types/types";
 import { getTime } from "../utils";
 import { validateID } from "./utils";
 import { videoFormat } from "@distube/ytdl-core";
-import { getInfo } from "@distube/ytdl-core";
+import { getInfo, getBasicInfo } from "@distube/ytdl-core";
 import { PATH } from "./valid";
 import axios from "axios";
 import { YtdlpData, YtdlpBase, getAllFormats } from "./download";
@@ -40,10 +40,10 @@ export async function getVideoData(
     end?: string;
   };
   if (id == undefined || !validateID(id)) return null;
-  const basicData = await getInfo(id);
+  const basicData = await getBasicInfo(`https://www.youtube.com/watch?v=${id}`);
   const duration = parseInt(basicData.videoDetails.lengthSeconds);
   const formats = await asyncFilter(
-    basicData.formats.reduce((acc, v) => {
+    basicData.formats?.reduce((acc, v) => {
       const state = !acc.some(
         (g) =>
           g.codecs == v.codecs &&
@@ -53,7 +53,7 @@ export async function getVideoData(
       );
       if (state) acc.push(v);
       return acc;
-    }, [] as videoFormat[]),
+    }, [] as videoFormat[]) || [],
     async (cur) => {
       try {
         await axios.head(cur.url);
