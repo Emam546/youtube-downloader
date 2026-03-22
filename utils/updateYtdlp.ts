@@ -140,6 +140,7 @@ export async function updateYtDlp(ytDlpPath: string) {
     try {
       const currentVersion = await getCurrentVersionOfytdlp(ytDlpPath);
       console.log("Yt-dlp current version", currentVersion);
+      console.log("yt-dlp latest version", response.data.tag_name);
       if (compareYtdlpVersions(currentVersion, response.data.tag_name) < 0)
         return;
     } catch (error) {
@@ -148,6 +149,7 @@ export async function updateYtDlp(ytDlpPath: string) {
   }
   const asset = response.data.assets.find((val) => val.name == ytdlpName);
   if (!asset) throw new Error(`unrecognized asset ${ytdlpName}`);
+  console.log("update available");
   const download = new UpdateYtdlpDownloader(
     asset.browser_download_url,
     ytDlpPath,
