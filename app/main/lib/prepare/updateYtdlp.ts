@@ -11,23 +11,23 @@ export async function updateYtDlp(silent: boolean = true) {
   try {
     const download = await orgupdateYtDlp(ytDlpPath);
     if (!download) return;
-    if (!silent) {
-      const win = await createUpdateWindow({
-        preloadData: {
-          curSize: 0,
-          fileSize: download.size,
-          message: "Downloading Yt-dlp ...",
-        },
-      });
-      win.setFileSize(download.size);
-      download.on("progress", (progress) => {
-        win.setFileSize(progress.total.bytes!);
-      });
-      download.on("error", (e) => {
-        win.error(e);
-      });
-      download.on("close", () => win.close());
-    }
+
+    const win = await createUpdateWindow({
+      preloadData: {
+        curSize: 0,
+        fileSize: download.size,
+        message: "Downloading Yt-dlp ...",
+      },
+    });
+    if (silent) win.hide();
+    win.setFileSize(download.size);
+    download.on("progress", (progress) => {
+      win.setFileSize(progress.total.bytes!);
+    });
+    download.on("error", (e) => {
+      win.error(e);
+    });
+    download.on("close", () => win.close());
 
     await download.wait();
   } catch (error) {
