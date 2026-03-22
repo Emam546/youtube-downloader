@@ -3,7 +3,9 @@
  * https://jestjs.io/docs/configuration
  */
 import type { Config } from "jest";
+import dotenv from "dotenv";
 import { pathsToModuleNameMapper } from "ts-jest";
+dotenv.config({ path: "test.env" });
 const config: Config = {
   transform: {
     "^.+\\.(ts|tsx)$": ["ts-jest", { tsconfig: "./tsconfig.test.json" }],
@@ -25,7 +27,7 @@ const config: Config = {
       },
       {
         prefix: "<rootDir>/",
-      }
+      },
     ),
   },
 };
