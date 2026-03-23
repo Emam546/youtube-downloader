@@ -86,7 +86,7 @@ async function getVideoData(url: string): Promise<YtDlpData> {
     skipDownload: true,
   });
 
-  const data = JSON.parse(result) as YtDlpData;
+  const data = JSON.parse(result.output) as YtDlpData;
 
   const formats = data.formats.map((data) => {
     return {
@@ -107,7 +107,7 @@ async function getVideoData(url: string): Promise<YtDlpData> {
   return { ...data, formats };
 }
 export async function getData(
-  query: Record<string, any>
+  query: Record<string, any>,
 ): Promise<ResponseData<YtdlpData> | null> {
   const { link } = query as {
     link: string;
@@ -123,7 +123,7 @@ export async function getData(
         return true;
       } catch (error) {}
       return false;
-    }
+    },
   );
   let thumbnail = ytdlpData.thumbnails;
   if ((!thumbnail || !thumbnail.length) && correctLink) {
@@ -142,7 +142,7 @@ export async function getData(
   const YtdpFormats = ytdlpData.formats;
   const videos: Media<YtdlpData>[] = [
     ...YtdpFormats.filter(
-      (quality) => quality.has_video && quality.has_audio
+      (quality) => quality.has_video && quality.has_audio,
     ).map((quality) => {
       return {
         size: quality.filesize || quality.filesize_approx,

@@ -15,9 +15,9 @@ export async function getAllFormats(url: string): Promise<FormatResult[]> {
   const result = await ytdlp.execAsync(url, {
     dumpJson: true,
     checkAllFormats: true,
+    jsRuntime: "node",
   });
-
-  const data = JSON.parse(result).formats as YtDlpFormat[];
+  const data = JSON.parse(result.output).formats as YtDlpFormat[];
 
   return (
     await asyncFilter(data, async (data) => {

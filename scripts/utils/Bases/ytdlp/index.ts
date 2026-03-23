@@ -41,9 +41,6 @@ export class YtdlpBase extends FfmpegResizeMergeBase {
       noContinue: true,
       cookies: this.cookies,
       paths: `TEMP:${os.tmpdir()}`,
-      onProgress: (p) => {
-        this.setFileSize(p.total);
-      },
       downloadSections:
         this.ffmpegData &&
         `*${convertSecondsToHHMMSS(
@@ -52,8 +49,10 @@ export class YtdlpBase extends FfmpegResizeMergeBase {
           this.ffmpegData.duration + this.ffmpegData.start,
         )}`,
     });
-    ytdlpStream.pipe(func(this.downloadingState.path));
-    await ytdlpStream.promise;
+    ytdlpStream.on("progress", (p) => {
+      this.setFileSize(p.total);
+    });
+    await ytdlpStream.pipeAsync(func(this.downloadingState.path));
     // return new Promise<void>((res, rej) => {
     //   ytdlpStream.stderr.once("error", (e) => rej(e.toString()));
 
