@@ -13,21 +13,21 @@ export async function getSearchData(search: string): Promise<RelatedData[]> {
 export async function getVideoData<T>(
   path: string,
   query: any,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ): Promise<ResponseData<T> | null> {
   if (window.Environment == "desktop") {
     try {
       return (await window.api.invoke(
         "getVideoData",
         path,
-        query
+        query,
       )) as ResponseData<T>;
     } catch (error) {
       throw new Error(
         new String(error).replace(
           "Error: Error invoking remote method 'getVideoData': Error:",
-          ""
-        )
+          "",
+        ),
       );
     }
   } else {
@@ -43,8 +43,8 @@ export async function getVideoData<T>(
         throw new Error(
           new String(c?.response?.data.err).replace(
             "Error: Error invoking remote method 'getVideoData': Error:",
-            ""
-          )
+            "",
+          ),
         );
       }
       throw new Error(error as string);
@@ -54,7 +54,7 @@ export async function getVideoData<T>(
 
 export async function navigate(
   navigate: string,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ): Promise<string | null> {
   if (window.Environment == "desktop") {
     return await window.api.invoke("navigate", navigate);
@@ -69,21 +69,25 @@ export async function navigate(
 export async function predictInputStr(
   path: string,
   query: any,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ): Promise<string | null> {
   if (window.Environment == "desktop") {
     return await window.api.invoke("predictInputString", path, query);
   } else {
-    const data = await axios.get(`/api/${path}/predict`, {
+    const res = await axios.get(`/api/${path}/predict`, {
       params: { ...query },
+      validateStatus(status) {
+        return status < 500;
+      },
       signal,
     });
-    return data.data.data;
+    if (res.status == 404) return null;
+    return res.data?.data;
   }
 }
 export async function getYoutubeListData(
   id: string,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ): Promise<PlayListData | null> {
   if (window.Environment == "desktop") {
     return await window.api.invoke("getPlaylistData", id);

@@ -68,3 +68,5 @@ dist
 
 **/test.*
 yt-dlp.exe
+development.env
+*.tmp

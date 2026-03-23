@@ -139,6 +139,7 @@ export async function updateYtDlp(ytDlpPath: string) {
   if (fs.existsSync(ytDlpPath)) {
     try {
       const currentVersion = await getCurrentVersionOfytdlp(ytDlpPath);
+      console.log(ytDlpPath);
       console.log("Yt-dlp current version", currentVersion);
       console.log("yt-dlp latest version", response.data.tag_name);
       if (compareYtdlpVersions(response.data.tag_name, currentVersion) <= 0)
