@@ -141,7 +141,7 @@ export async function updateYtDlp(ytDlpPath: string) {
       const currentVersion = await getCurrentVersionOfytdlp(ytDlpPath);
       console.log("Yt-dlp current version", currentVersion);
       console.log("yt-dlp latest version", response.data.tag_name);
-      if (compareYtdlpVersions(currentVersion, response.data.tag_name) < 0)
+      if (compareYtdlpVersions(response.data.tag_name, currentVersion) <= 0)
         return;
     } catch (error) {
       console.error(error);
