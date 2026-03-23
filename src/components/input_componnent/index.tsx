@@ -1,6 +1,5 @@
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { useForm } from "react-hook-form";
@@ -8,9 +7,10 @@ import { ChangeEvent, useEffect } from "react";
 import { NavigateVideo } from "@src/types/api";
 import { predictInputStr, navigate } from "@src/API";
 import { useMutation } from "@tanstack/react-query";
-import Loading from "../common/Loading";
 import { useDispatch } from "react-redux";
-import loadingState, { loadingActions } from "@src/store/loading";
+import { loadingActions } from "@src/store/loading";
+import { queryClient } from "@src/utils/queryClient";
+
 interface DataFrom {
   search: string;
 }
@@ -79,7 +79,10 @@ export default function InputHolder() {
         autoComplete="off"
         onSubmit={handleSubmit(async (data) => {
           const dest = await navigateMutate.mutateAsync(data.search);
-          if (dest) return routeNavigate(dest);
+          if (dest) {
+            queryClient.refetchQueries(["video"]);
+            return routeNavigate(dest);
+          }
           return routeNavigate(`/search/${encodeURIComponent(data.search)}`);
         })}
       >

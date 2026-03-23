@@ -35,7 +35,8 @@ export default function VideoResults() {
     refetchOnWindowFocus: false,
     refetchOnReconnect: true,
     refetchOnMount: false,
-    retry: 3,
+    retry: 2,
+    retryDelay: 4,
     enabled: router.query.id != null && router.query.path != null,
   });
 
