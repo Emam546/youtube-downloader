@@ -10,13 +10,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactElement, ReactNode, useEffect } from "react";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import { NextPage } from "next";
+import { queryClient } from "@src/utils/queryClient";
 
 config.autoAddCss = false;
-const queryClient = new QueryClient();
 declare module "next" {}
 export type NextPageWithSpecialComponent<
   P = Record<string, unknown>,
-  IP = P
+  IP = P,
 > = NextPage<P, IP> & {
   getLayout?: () => ReactNode;
 };
