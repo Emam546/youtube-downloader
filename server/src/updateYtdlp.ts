@@ -9,7 +9,7 @@ process.env.ytdlp_binDir = ytdlpPath;
 export async function updateYtDlp() {
   const download = await orgUpdateYtDlp(ytdlpPath);
   if (!download) return;
-
+  download.start();
   await download.wait();
   logger.info("Ytdlp downloaded");
 }
