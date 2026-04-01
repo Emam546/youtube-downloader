@@ -67,11 +67,11 @@ export default function TableDownload<T>({
 
             return (
               <li
-                key={i}
+                key={`${type}-${i}`}
                 role="tab"
                 className={classnames(
                   "tw-px-3 tw-py-2.5 tw-rounded-t-lg tw-flex tw-items-center tw-justify-center tw-gap-1.5 tw-cursor-pointer tw-font-bold ",
-                  "aria-selected:tw-text-primary aria-selected:tw-bg-[#eee] aria-selected:tw-border-[#ddd] aria-selected:tw-border-b-transparent"
+                  "aria-selected:tw-text-primary aria-selected:tw-bg-[#eee] aria-selected:tw-border-[#ddd] aria-selected:tw-border-b-transparent",
                 )}
                 aria-selected={state == type}
                 onClick={() => setState(type)}
@@ -88,7 +88,7 @@ export default function TableDownload<T>({
                 VIDEO &&
                 VIDEO.map((video, i) => (
                   <MapData
-                    key={video.id}
+                    key={`${video.id}-${i}`}
                     video={video}
                     title={title}
                     clippedData={clippedData}
@@ -98,7 +98,7 @@ export default function TableDownload<T>({
                 AUDIO &&
                 AUDIO.map((video, i) => (
                   <MapData
-                    key={video.id}
+                    key={`${video.id}-${i}`}
                     video={video}
                     title={title}
                     clippedData={clippedData}
@@ -108,7 +108,7 @@ export default function TableDownload<T>({
                 OTHERS &&
                 OTHERS.map((video, i) => (
                   <MapData
-                    key={video.id}
+                    key={`${video.id}-${i}`}
                     video={video}
                     title={title}
                     clippedData={clippedData}
