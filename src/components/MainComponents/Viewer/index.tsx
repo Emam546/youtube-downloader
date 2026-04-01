@@ -52,7 +52,7 @@ export default function VideoViewer({
             playing={playing}
             width="100%"
             height="100%"
-            referrerpolicy="strict-origin-when-cross-origin"
+            referrerPolicy="strict-origin-when-cross-origin"
             origin="https://www.youtube-nocookie.com"
             onPlay={() => {
               if (!hasPlayed) {
