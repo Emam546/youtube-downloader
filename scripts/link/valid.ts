@@ -5,17 +5,14 @@ import axios from "axios";
 export const PATH = "link";
 export async function isDownloadableVideo(url: string) {
   try {
-    const res = await axios.head(url, { timeout: 5000 });
+    const res = await axios.head(url, { timeout: 100000 });
 
     const type = res.headers["content-type"];
     if (!type) return false;
 
     const videoTypes = [
-      "video/mp4",
-      "video/webm",
-      "video/ogg",
-      "video/x-matroska",
-      "video/quicktime",
+      "video/",
+      "application/octet-stream", // fallback (many servers use this)
     ];
 
     return videoTypes.some((t) => type.includes(t));
@@ -28,14 +25,14 @@ function isFfmpeg(url: string) {
     getVideoInfo(url)
       .then(() => res(true))
       .catch(() => res(false));
-    setTimeout(() => res(true), 3000);
+    setTimeout(() => res(false), 90000);
   });
 }
 export async function navigate(str: string): Promise<string | null> {
   try {
     if (!isValidUrl(str)) return null;
     if (!(await isDownloadableVideo(str))) return null;
-    if (!isFfmpeg(str)) return null;
+    if (!(await isFfmpeg(str))) return null;
     return `/${PATH}/${v4()}?link=${encodeURI(str)}`;
   } catch (error) {}
   return null;
