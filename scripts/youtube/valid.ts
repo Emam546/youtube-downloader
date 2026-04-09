@@ -1,4 +1,5 @@
 import { isValidUrl } from "@utils/index";
+import { NavigateData } from "../types/types";
 import { getTime } from "../utils";
 import { validateURL as ValidateUrlYoutube } from "./utils";
 import { youtube_parser } from "./utils";
@@ -6,7 +7,7 @@ import { youtube_parser } from "./utils";
 type YoutubeParams = [
   string | null,
   string | null,
-  [number | null, number | null] | null
+  [number | null, number | null] | null,
 ];
 function appendPathToBaseUrl(...paths: string[]) {
   // Ensure there is exactly one slash between base URL and path
@@ -22,8 +23,9 @@ function appendPathToBaseUrl(...paths: string[]) {
 }
 export const PATH = "youtube";
 const baseUrl = `/${PATH}/`;
-function getPathYoutubeUrl(youtubeUrl: URL) {
+function getPathYoutubeUrl(youtubeUrl: URL): NavigateData | null {
   const [id, list, time] = extractParams(youtubeUrl);
+  if (!id) return null;
   const url = id ? appendPathToBaseUrl(baseUrl, encodeURI(id)) : baseUrl;
   const searchParams = new URLSearchParams();
   if (list) searchParams.set("list", list);
@@ -31,7 +33,12 @@ function getPathYoutubeUrl(youtubeUrl: URL) {
     if (time[0]) searchParams.set("start", time[0].toString());
     if (time[1]) searchParams.set("end", time[1].toString());
   }
-  return `${url}?${searchParams.toString()}`;
+  return {
+    id,
+    path: PATH,
+    queries: {},
+    navigate: `${url}?${searchParams.toString()}`,
+  };
 }
 function extractParams(youtubeUrl: URL): YoutubeParams {
   const id = youtube_parser(youtubeUrl.href);
@@ -52,7 +59,7 @@ function isYoutubeUrl(val: string): boolean {
     .slice(0, 2)
     .some((val) => val != null);
 }
-export function navigate(str: string): string | null {
+export function navigate(str: string): NavigateData | null {
   if (isYoutubeUrl(str)) return getPathYoutubeUrl(new URL(str));
   return null;
 }

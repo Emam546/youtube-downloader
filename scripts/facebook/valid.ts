@@ -1,3 +1,5 @@
+import { NavigateData } from "../types/types";
+
 export const PATH = "facebook";
 
 // getFbVideoId.js
@@ -43,7 +45,7 @@ export function getFbVideoId(url: string): string | null {
   // - https://m.facebook.com/story.php?story_fbid={id}&id={user}
   // - https://www.facebook.com/permalink.php?story_fbid={id}&id={user}
   const pathMatch = url.match(
-    /\/videos?\/([0-9]+)|\/video\.php|\/permalink\.php|\/story\.php/
+    /\/videos?\/([0-9]+)|\/video\.php|\/permalink\.php|\/story\.php/,
   );
   if (pathMatch && pathMatch[1]) return pathMatch[1];
 
@@ -58,11 +60,15 @@ export function getFbVideoId(url: string): string | null {
   return null;
 }
 
-
-
-export async function navigate(str: string): Promise<string | null> {
+export async function navigate(str: string): Promise<NavigateData | null> {
   const id = getFbVideoId(str);
-  if (id) return `/${PATH}/${id}`;
+  if (id)
+    return {
+      path: PATH,
+      id,
+      navigate: `/${PATH}/${id}`,
+      queries: {},
+    };
   return null;
 }
 export function predictInputString(query: any): string {

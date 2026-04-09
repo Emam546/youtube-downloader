@@ -28,6 +28,12 @@ interface RelatedData {
   title: string;
   data: ReturnedSearch[];
 }
+interface NavigateData {
+  path: string;
+  id: string;
+  navigate: string;
+  queries: Record<string, string>;
+}
 type TabsType = "VIDEO" | "AUDIO" | "OTHERS";
 
 export interface ResponseData<T> {

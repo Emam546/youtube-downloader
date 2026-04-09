@@ -1,4 +1,5 @@
 import { v4 } from "uuid";
+import { NavigateData } from "../types/types";
 import { ytdlp } from "../utils/Bases/ytdlp";
 export const PATH = "custom";
 export async function isValidYtdlpUrl(str: string): Promise<boolean> {
@@ -12,9 +13,16 @@ export async function isValidYtdlpUrl(str: string): Promise<boolean> {
     return false;
   }
 }
-export async function navigate(str: string): Promise<string | null> {
-  if (await isValidYtdlpUrl(str))
-    return `/${PATH}/${v4()}?link=${encodeURI(str)}`;
+export async function navigate(str: string): Promise<NavigateData | null> {
+  if (await isValidYtdlpUrl(str)) {
+    const id = v4();
+    return {
+      path: PATH,
+      id,
+      navigate: `/${PATH}/${id}?link=${encodeURI(str)}`,
+      queries: { link: encodeURI(str) },
+    };
+  }
   return null;
 }
 export function predictInputString(query: any): string {

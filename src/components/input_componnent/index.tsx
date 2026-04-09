@@ -22,17 +22,16 @@ export default function InputHolder() {
   const router = useRouter();
   const routeNavigate = router.push;
   const { register, handleSubmit, setValue, formState, watch } =
-    useForm<DataFrom>();
+    useForm<DataFrom>({});
   const navigateMutate = useMutation({
     mutationFn: navigate,
-    retry: 0,
+    retry: 2,
     retryDelay: 0,
-
     mutationKey: ["search", watch("search")],
   });
   async function analyzeUrl(value: string) {
     const dest = await navigateMutate.mutateAsync({ navigate: value });
-    if (dest) routeNavigate(dest);
+    if (dest) routeNavigate(dest.navigate);
     setValue("search", value);
   }
   const dispatch = useDispatch();
@@ -40,10 +39,10 @@ export default function InputHolder() {
     dispatch(
       loadingActions.setData({
         name: "search",
-        state: navigateMutate.isPending,
+        state: formState.isSubmitting,
       }),
     );
-  }, [navigateMutate.isPending]);
+  }, [formState.isSubmitting]);
   useEffect(() => {
     if (router.asPath.startsWith("/search")) {
       const regex = /\/search\/(.+)/;
@@ -85,16 +84,16 @@ export default function InputHolder() {
             navigate: data.search,
           });
           if (dest) {
-            await queryClient.refetchQueries(
+            await queryClient.resetQueries(
               {
-                queryKey: ["video"],
-                exact: false,
+                queryKey: ["video", dest.path, dest.id],
+                exact: true,
               },
               { cancelRefetch: true },
             );
-            return routeNavigate(dest);
-          }
-          return routeNavigate(`/search/${encodeURIComponent(data.search)}`);
+            return routeNavigate(dest.navigate);
+          } else
+            return routeNavigate(`/search/${encodeURIComponent(data.search)}`);
         })}
       >
         <h2 className="tw-text-3xl tw-font-normal tw-text-center tw-mb-7">
@@ -111,7 +110,7 @@ export default function InputHolder() {
                   const dest = await navigateMutate.mutateAsync({
                     navigate: value,
                   });
-                  if (dest) routeNavigate(dest);
+                  if (dest) routeNavigate(dest.navigate);
                 },
               })}
               className="focus:tw-outline-none tw-flex-1 tw-shrink tw-border-[6px] tw-rounded-l tw-text-[#555] tw-bg-white tw-min-w-0 tw-w-full tw-border-r-0 tw-border-primary tw-px-3 tw-py-3 tw-h-full"
@@ -119,7 +118,6 @@ export default function InputHolder() {
           </div>
           <button
             type="submit"
-            disabled={formState.isSubmitting}
             title="start"
             className="tw-text-white tw-bg-primary tw-rounded-r-3 tw-flex tw-items-center tw-gap-x-2 tw-cursor-pointer tw-p-5 sm:tw-px-6 hover:tw-bg-primary/80 tw-text-sm"
           >

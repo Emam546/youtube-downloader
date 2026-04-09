@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { ErrorMessage } from "../DownloadResults";
 import { SectionHeader } from "../../common/header";
+import { loadingActions } from "@src/store/loading";
+import { useEffect } from "react";
 export default function SearchVideoResult() {
   const { search } = useRouter().query;
   const paramQuery = useQuery({
@@ -16,8 +18,13 @@ export default function SearchVideoResult() {
     retry: 0,
     enabled: search != undefined,
   });
+  useEffect(() => {
+    loadingActions.setData({
+      name: "gettingData",
+      state: paramQuery.isLoading,
+    });
+  }, [paramQuery.isLoading]);
   if (!search) return null;
-  if (paramQuery.isLoading) return <Loading />;
   if (paramQuery.isError)
     return (
       <>
@@ -27,7 +34,7 @@ export default function SearchVideoResult() {
         </ErrorMessage>
       </>
     );
-
+  paramQuery.data = paramQuery.data?.filter((val) => val.data.length > 0);
   return (
     <section>
       {paramQuery.data?.length == 0 && <div>No results</div>}

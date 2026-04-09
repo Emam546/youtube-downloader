@@ -2,6 +2,7 @@ import { v4 } from "uuid";
 import { isValidUrl } from "@utils/index";
 import { getVideoInfo } from "../utils/ffmpeg";
 import axios from "axios";
+import { NavigateData } from "../types/types";
 export const PATH = "link";
 export async function isDownloadableVideo(url: string) {
   try {
@@ -28,12 +29,19 @@ function isFfmpeg(url: string) {
     setTimeout(() => res(false), 90000);
   });
 }
-export async function navigate(str: string): Promise<string | null> {
+export async function navigate(str: string): Promise<NavigateData | null> {
   try {
     if (!isValidUrl(str)) return null;
     if (!(await isDownloadableVideo(str))) return null;
+
     if (!(await isFfmpeg(str))) return null;
-    return `/${PATH}/${v4()}?link=${encodeURI(str)}`;
+    const id = v4();
+    return {
+      path: PATH,
+      id,
+      navigate: `/${PATH}/${id}?link=${encodeURI(str)}`,
+      queries: { link: encodeURI(str) },
+    };
   } catch (error) {}
   return null;
 }

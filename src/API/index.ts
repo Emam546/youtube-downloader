@@ -1,5 +1,5 @@
 import axios, { AxiosError } from "axios";
-import { ResponseData, RelatedData } from "@scripts/types/types";
+import { ResponseData, RelatedData, NavigateData } from "@scripts/types/types";
 import { ReturnedData as PlayListData } from "youtube-playlists-js";
 export const instance = axios.create({});
 export async function getSearchData(search: string): Promise<RelatedData[]> {
@@ -58,7 +58,7 @@ export async function navigate({
 }: {
   navigate: string;
   signal?: AbortSignal;
-}): Promise<string | null> {
+}): Promise<NavigateData | null> {
   if (window.Environment == "desktop") {
     return await window.api.invoke("navigate", navigate);
   } else {
