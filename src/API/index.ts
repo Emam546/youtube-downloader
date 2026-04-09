@@ -52,10 +52,13 @@ export async function getVideoData<T>(
   }
 }
 
-export async function navigate(
-  navigate: string,
-  signal?: AbortSignal,
-): Promise<string | null> {
+export async function navigate({
+  navigate,
+  signal,
+}: {
+  navigate: string;
+  signal?: AbortSignal;
+}): Promise<string | null> {
   if (window.Environment == "desktop") {
     return await window.api.invoke("navigate", navigate);
   } else {

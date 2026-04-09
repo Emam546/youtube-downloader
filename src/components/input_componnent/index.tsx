@@ -25,10 +25,13 @@ export default function InputHolder() {
     useForm<DataFrom>();
   const navigateMutate = useMutation({
     mutationFn: navigate,
+    retry: 0,
+    retryDelay: 0,
+
     mutationKey: ["search", watch("search")],
   });
   async function analyzeUrl(value: string) {
-    const dest = await navigateMutate.mutateAsync(value);
+    const dest = await navigateMutate.mutateAsync({ navigate: value });
     if (dest) routeNavigate(dest);
     setValue("search", value);
   }
@@ -37,10 +40,10 @@ export default function InputHolder() {
     dispatch(
       loadingActions.setData({
         name: "search",
-        state: navigateMutate.isLoading,
+        state: navigateMutate.isPending,
       }),
     );
-  }, [navigateMutate.isLoading]);
+  }, [navigateMutate.isPending]);
   useEffect(() => {
     if (router.asPath.startsWith("/search")) {
       const regex = /\/search\/(.+)/;
@@ -78,9 +81,17 @@ export default function InputHolder() {
         method="POST"
         autoComplete="off"
         onSubmit={handleSubmit(async (data) => {
-          const dest = await navigateMutate.mutateAsync(data.search);
+          const dest = await navigateMutate.mutateAsync({
+            navigate: data.search,
+          });
           if (dest) {
-            queryClient.refetchQueries(["video"]);
+            await queryClient.refetchQueries(
+              {
+                queryKey: ["video"],
+                exact: false,
+              },
+              { cancelRefetch: true },
+            );
             return routeNavigate(dest);
           }
           return routeNavigate(`/search/${encodeURIComponent(data.search)}`);
@@ -97,7 +108,9 @@ export default function InputHolder() {
               {...register("search", {
                 async onChange(e: ChangeEvent<HTMLInputElement>) {
                   const value = e.currentTarget.value;
-                  const dest = await navigateMutate.mutateAsync(value);
+                  const dest = await navigateMutate.mutateAsync({
+                    navigate: value,
+                  });
                   if (dest) routeNavigate(dest);
                 },
               })}

@@ -30,8 +30,8 @@ export default function SearchVideoResult() {
 
   return (
     <section>
-      {paramQuery.data.length == 0 && <div>No results</div>}
-      {paramQuery.data.map((val) => {
+      {paramQuery.data?.length == 0 && <div>No results</div>}
+      {paramQuery.data?.map((val) => {
         return (
           <div key={val.id}>
             <SectionHeader>{val.title}</SectionHeader>
