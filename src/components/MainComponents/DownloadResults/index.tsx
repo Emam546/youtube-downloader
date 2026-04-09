@@ -31,7 +31,6 @@ export default function VideoResults() {
     queryFn: ({ signal }) =>
       getVideoData(router.query.path as string, router.query, signal),
     staleTime: 60 * 1000 * 60, // data is always fresh
-    cacheTime: 60 * 1000 * 60,
     refetchOnWindowFocus: false,
     refetchOnReconnect: true,
     refetchOnMount: false,
@@ -50,7 +49,7 @@ export default function VideoResults() {
   useEffect(() => {
     dispatch(
       loadingActions.setData({
-        name: "search",
+        name: "gettingData",
         state: paramQuery.isLoading,
       }),
     );
