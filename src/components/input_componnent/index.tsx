@@ -39,10 +39,10 @@ export default function InputHolder() {
     dispatch(
       loadingActions.setData({
         name: "search",
-        state: formState.isSubmitting,
+        state: formState.isSubmitting || navigateMutate.isPending,
       }),
     );
-  }, [formState.isSubmitting]);
+  }, [formState.isSubmitting, navigateMutate.isPending]);
   useEffect(() => {
     if (router.asPath.startsWith("/search")) {
       const regex = /\/search\/(.+)/;
