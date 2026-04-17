@@ -2,6 +2,7 @@ import { Router } from "express";
 import { getData, predictInputString } from "./utils";
 import { Plugins } from "@serv/plugins";
 import { getFileName, VideoDataClippedType } from "@utils/server";
+import { HttpStatusCode } from "axios";
 
 const router = Router();
 const downloads = new Map<string, VideoDataClippedType<unknown>>();
@@ -23,7 +24,7 @@ router.post("/prepare-download", (req, res) => {
   setTimeout(() => downloads.delete(token), 5 * 60 * 1000); // expire in 5 min
   res.json({ msg: "Success", status: true, token });
 });
-router.get("/download/:token", (req, res) => {
+router.get("/download/:token", async (req, res) => {
   const data = downloads.get(req.params.token);
   if (!data) return res.status(404).send("Invalid or expired token");
   const downloader = Plugins.find((v) => v.PATH == data.PATH);
@@ -32,9 +33,9 @@ router.get("/download/:token", (req, res) => {
   const encodedFilename = encodeURIComponent(fileName);
   res.setHeader(
     "Content-Disposition",
-    `attachment; filename="${encodedFilename}"; filename*=UTF-8''${encodedFilename}`
+    `attachment; filename="${encodedFilename}"; filename*=UTF-8''${encodedFilename}`,
   );
-  downloader
+  await downloader
     ?.download({
       curSize: 0,
       data,
