@@ -54,7 +54,7 @@ export default function Thumbnail({ src, title }: Props) {
         <DownloadButton
           className="tw-w-full"
           text="Thumbnail"
-          disabled={mutation.isLoading}
+          disabled={mutation.isPending}
           onClick={() => {
             mutation.mutate();
           }}

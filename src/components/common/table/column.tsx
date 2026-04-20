@@ -58,7 +58,7 @@ export default function MapData({ video, title, clippedData }: Props<unknown>) {
         <DownloadButton
           shrink
           text="Download"
-          disabled={mutate.isLoading}
+          disabled={mutate.isPending}
           onClick={() => {
             const data = clippedData
               ? {

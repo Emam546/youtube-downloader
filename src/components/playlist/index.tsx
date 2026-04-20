@@ -18,7 +18,6 @@ export default function PlayList() {
     queryKey: ["list", listId],
     queryFn: ({ signal }) => getYoutubeListData(listId, signal),
     enabled: listId != undefined,
-    cacheTime: 1 * 1000 * 60,
     staleTime: 1 * 1000 * 60,
   });
   const scrollContainer = useRef<ComponentRef<"div">>(null);
