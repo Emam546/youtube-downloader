@@ -12,5 +12,6 @@
       "@utils/*": ["./utils/*"]
     }
   },
-  "include": ["server/src", "scripts", "./build.ts"]
+  "include": ["server/src", "scripts", "./utils", "./build.ts"],
+  "exclude": ["node_modules"]
 }
