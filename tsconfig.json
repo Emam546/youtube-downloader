@@ -19,7 +19,6 @@
       "@serv/*": ["./server/src/*"],
       "@shared/*": ["./shared/*"],
       "@utils/*": ["./utils/*"],
-      "@app/*": ["./app/*"],
       "@shared/renderer/*": ["./app/renderer/shared/*"],
       "@scripts/*": ["./scripts/*"]
     },
@@ -31,5 +30,5 @@
     "skipLibCheck": true
   },
   "include": ["src", "shared", "utils", "./scripts", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "app", "server"]
 }
