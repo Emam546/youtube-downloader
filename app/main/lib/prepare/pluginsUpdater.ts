@@ -63,7 +63,7 @@ async function updateScripts() {
     `https://raw.githubusercontent.com/${publish.owner}/${publish.repo}/scripts/order.json`
   );
   const Data = getPluginsData();
-  logger.info("Remote scripts version", res.data.version);
+  logger.info(`Remote scripts version ${res.data.version}`);
   if (
     semver.lte(res.data.version, Data.version) ||
     semver.lt(app.getVersion(), res.data.appVersion)

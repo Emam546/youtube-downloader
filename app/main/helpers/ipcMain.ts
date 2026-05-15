@@ -32,7 +32,7 @@ type HandelOnceMethodsType = {
 
 export const OnMethods: OnMethodsType = {
   log(_, ...arg) {
-    logger.info(arg);
+    logger.info(JSON.stringify(arg));
   },
   setTitle: function (event, name: string): void {
     const window = BrowserWindow.fromWebContents(event.sender);
