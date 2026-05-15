@@ -3,7 +3,10 @@ import { app } from "electron";
 import { jetLogger, LoggerModes } from "jet-logger";
 import path from "path";
 import { isDev, isProd } from "../utils";
-const logPath = path.join(app.getAppPath(), "./app.log");
+import fs from "fs";
+const logPath = path.join(app.getPath("exe"), "./app.log");
+//delete the content before the start
+fs.writeFileSync(logPath, "");
 export const logger = jetLogger(
   app.isPackaged ? LoggerModes.File : LoggerModes.Console,
   logPath,
