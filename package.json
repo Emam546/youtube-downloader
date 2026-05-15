@@ -100,6 +100,7 @@
     "ytdlp-nodejs": "^3.4.4"
   },
   "devDependencies": {
+    "@electron-toolkit/eslint-config-ts": "^2.0.0",
     "@electron-toolkit/tsconfig": "^1.0.1",
     "@types/bcrypt": "^5.0.0",
     "@types/bootstrap": "^5.2.6",
@@ -131,7 +132,7 @@
     "electron-builder": "^24.13.3",
     "electron-vite": "^2.3.0",
     "esbuild": "^0.24.2",
-    "eslint": "^8.32.0",
+    "eslint": "^8.57.1",
     "eslint-config-next": "13.4.4",
     "eslint-plugin-node": "^11.1.0",
     "find": "^0.3.0",

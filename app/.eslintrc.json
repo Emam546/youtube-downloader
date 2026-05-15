@@ -1,12 +1,12 @@
 {
   "root": true,
   "parser": "@typescript-eslint/parser",
-  "extends": "@electron-toolkit",
-  "rules": {
-    "no-console": 1
-  },
+  "extends": ["@electron-toolkit/eslint-config-ts"],
   "parserOptions": {
     "project": "./tsconfig.node.json"
   },
-  "ignorePatterns": ["spec", "preload", "renderer"]
+  "rules": {
+    "no-console": "warn"
+  },
+  "ignorePatterns": ["spec/**", "preload/**", "renderer/**"]
 }
