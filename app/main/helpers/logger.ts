@@ -4,7 +4,7 @@ import { jetLogger, LoggerModes } from "jet-logger";
 import path from "path";
 import { isDev, isProd } from "../utils";
 import fs from "fs";
-const logPath = path.join(app.getPath("exe"), "./app.log");
+const logPath = path.join(path.dirname(app.getPath("exe")), "./app.log");
 //delete the content before the start
 fs.writeFileSync(logPath, "");
 export const logger = jetLogger(
