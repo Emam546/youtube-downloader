@@ -6,8 +6,9 @@ import {
   MenuItem,
 } from "electron";
 
-export const showContextMenu = (event: Electron.IpcMainEvent, params: any) => {
-  const mainWindow = BrowserWindow.fromWebContents(event.sender)!;
+export const showContextMenu = (event: Electron.IpcMainEvent, params) => {
+  const mainWindow = BrowserWindow.fromWebContents(event.sender);
+  if (!mainWindow) return;
   const menu = Menu.buildFromTemplate(
     [
       mainWindow.webContents.canGoBack() && {
@@ -44,6 +45,5 @@ export const showContextMenu = (event: Electron.IpcMainEvent, params: any) => {
       },
     ].filter((v) => v) as (MenuItemConstructorOptions | MenuItem)[],
   );
-  // return menu;
-  menu.popup({ window: BrowserWindow.fromWebContents(event.sender)! });
+  menu.popup({ window: mainWindow });
 };

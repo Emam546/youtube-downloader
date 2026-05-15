@@ -2,7 +2,6 @@ import { Router } from "express";
 import { getData, predictInputString } from "./utils";
 import { Plugins } from "@serv/plugins";
 import { getFileName, VideoDataClippedType } from "@utils/server";
-import { HttpStatusCode } from "axios";
 
 const router = Router();
 const downloads = new Map<string, VideoDataClippedType<unknown>>();

@@ -9,6 +9,7 @@ const loadingState = createSlice({
   reducers: {
     setData(state, action: { payload: { name: string; state: boolean } }) {
       states[action.payload.name] = action.payload.state;
+      window.log(states);
       return Array.from(Object.values(states)).some((v) => v == true);
     },
   },

@@ -2,6 +2,7 @@ import path from "path";
 import { app } from "electron";
 import { DataType, PluginType } from "@scripts/plugins";
 import fs from "fs";
+import { logger } from "@app/main/helpers/logger";
 export const pluginDir = app.isPackaged
   ? path.join(app.getPath("userData"), "scripts")
   : path.join(__dirname, "../scripts");
@@ -34,10 +35,10 @@ export async function DefinePlugins() {
       try {
         return require(`${pluginDir}/${folder}/index`);
       } catch (error) {
-        console.error(error);
+        logger.err(error);
         return;
       }
-    })
+    }),
   ).then((plugins) => {
     plugins
       .filter((p) => p && Data.apps[p.PATH] != undefined)
@@ -45,9 +46,6 @@ export async function DefinePlugins() {
         return Data.apps[b.PATH] - Data.apps[a.PATH];
       })
       .forEach((v) => Plugins.push(v));
-    console.log(
-      "Apps",
-      Plugins.map((v) => v.PATH)
-    );
+    logger.info(`Apps ${Plugins.map((v) => v.PATH)}`);
   });
 }

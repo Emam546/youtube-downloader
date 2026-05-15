@@ -14,6 +14,7 @@ import { publish } from "../../../../package.json";
 import axios from "axios";
 import { app } from "electron";
 import { DataType } from "@scripts/plugins";
+import { logger } from "@app/main/helpers/logger";
 function downloadFile(url: string, pathDir: string) {
   return new Promise<void>((result, reject) => {
     https.get(
@@ -62,13 +63,13 @@ async function updateScripts() {
     `https://raw.githubusercontent.com/${publish.owner}/${publish.repo}/scripts/order.json`
   );
   const Data = getPluginsData();
-  console.log("Remote scripts version", res.data.version);
+  logger.info("Remote scripts version", res.data.version);
   if (
     semver.lte(res.data.version, Data.version) ||
     semver.lt(app.getVersion(), res.data.appVersion)
   )
     return;
-  console.log("Scripts update available");
+  logger.info("Scripts update available");
   const DOWNLOAD_URL = `https://github.com/${publish.owner}/${publish.repo}/archive/refs/heads/scripts.zip`;
   await downloadFile(DOWNLOAD_URL, pluginDir);
   fs.writeFileSync(

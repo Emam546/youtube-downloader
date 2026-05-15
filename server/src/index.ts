@@ -16,7 +16,7 @@ app
     try {
       await updateYtDlp();
     } catch (error) {
-      logger.err(error)
+      logger.err(error);
     }
 
     server.get("*", (req, res) => {

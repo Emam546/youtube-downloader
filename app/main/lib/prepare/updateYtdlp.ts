@@ -4,10 +4,11 @@ import { pluginDir } from "../main/lib/plugins";
 import { createUpdateWindow } from "../update";
 import path from "path";
 import { updateYtDlp as orgupdateYtDlp } from "@utils/updateYtdlp";
+import { logger } from "@app/main/helpers/logger";
 const ytdlpName = getYtDlpName();
 export const ytDlpPath = path.join(pluginDir, ytdlpName);
 process.env.ytdlp_binDir = ytDlpPath;
-export async function updateYtDlp(silent: boolean = true) {
+export async function updateYtDlp(silent = true) {
   try {
     const download = await orgupdateYtDlp(ytDlpPath);
     if (!download) return;
@@ -22,7 +23,7 @@ export async function updateYtDlp(silent: boolean = true) {
     if (silent) win.hide();
     win.setFileSize(download.size);
     download.on("progress", (progress) => {
-      win.setFileSize(progress.total.bytes!);
+      win.setFileSize(progress.total.bytes);
     });
     download.on("error", (e) => {
       win.error(e);
@@ -31,6 +32,6 @@ export async function updateYtDlp(silent: boolean = true) {
 
     await download.wait();
   } catch (error) {
-    console.error(error);
+    logger.err(error);
   }
 }

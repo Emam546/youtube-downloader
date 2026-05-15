@@ -10,6 +10,7 @@ import {
   SleepComputer,
 } from "../lib/ipcmain";
 import { ApiMain } from "@shared/api";
+import { logger } from "./logger";
 type OnMethodsType = {
   [K in keyof ApiMain.OnMethods]: ConvertToIpCMainFunc<ApiMain.OnMethods[K]>;
 };
@@ -28,10 +29,10 @@ type HandelOnceMethodsType = {
     ApiMain.HandleOnceMethods[K]
   >;
 };
+
 export const OnMethods: OnMethodsType = {
   log(_, ...arg) {
-    // eslint-disable-next-line no-console
-    console.log(...arg);
+    logger.info(arg);
   },
   setTitle: function (event, name: string): void {
     const window = BrowserWindow.fromWebContents(event.sender);

@@ -5,6 +5,7 @@ import {
   dialog,
 } from "electron";
 import { powerSaveBlocker } from "electron";
+import { logger } from "../helpers/logger";
 
 export class PowerStarter {
   private id: number | null = null;
@@ -30,7 +31,7 @@ export class DownloaderWindow extends DownloadingWindow {
 
   resumable?: boolean;
   fileSize?: number;
-  curSize: number = 0;
+  curSize = 0;
 
   state: ProgressBarState["status"] = "connecting";
 
@@ -42,7 +43,7 @@ export class DownloaderWindow extends DownloadingWindow {
     delete this.Windows[window.id];
   }
   public static fromWebContents(
-    webContents: Electron.WebContents
+    webContents: Electron.WebContents,
   ): DownloaderWindow | null {
     const win = BrowserWindow.fromWebContents(webContents);
     if (!win) return null;
@@ -67,7 +68,7 @@ export class DownloaderWindow extends DownloadingWindow {
     this.speedTransfer += size;
     this.setCurSize(this.curSize + size);
     const speed = Math.round(
-      this.speedTransfer / Math.ceil((Date.now() - this.startTime) / 1000)
+      this.speedTransfer / Math.ceil((Date.now() - this.startTime) / 1000),
     );
     this.onSpeed(speed);
     if (this.state != "pause") this.changeState("receiving");
@@ -105,8 +106,8 @@ export class DownloaderWindow extends DownloadingWindow {
       this.changeState("pause");
     }
   }
-  error(err: any) {
-    console.error(err);
+  error(err) {
+    logger.err(err);
     if (!this.isDestroyed()) {
       dialog.showErrorBox("Error Happened", err.toString());
       this.close();

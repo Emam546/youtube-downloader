@@ -1,3 +1,6 @@
+import { logger } from "./helpers/logger";
 import app from "./index";
 
-app.on("ready", async () => {});
+app.on("ready", () => {
+  logger.info("development");
+});

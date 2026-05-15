@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+import { logger } from "@app/main/helpers/logger";
 import { exec } from "child_process";
 import path from "path";
 export function OpenFile(filePath: string) {
@@ -42,7 +43,7 @@ export function OpenFileWith(filePath: string) {
   });
 }
 export function OpenFolder(filePath: string) {
-  return new Promise((res, rej) => {
+  return new Promise((res, ) => {
     let command: string;
     switch (process.platform) {
       case "win32":
@@ -51,7 +52,7 @@ export function OpenFolder(filePath: string) {
       default:
         throw new Error(`Unsupported platform: ${process.platform}`);
     }
-    exec(command, (err) => {
+    exec(command, () => {
       res(true);
     });
   });
@@ -84,14 +85,14 @@ export function ShutDown(force: boolean, time = 0) {
     `shutdown /s ${force ? "/f" : ""} /t ${time}`,
     (error, stdout, stderr) => {
       if (error) {
-        console.error(`Error: ${error.message}`);
+        logger.err(`Error: ${error.message}`);
         return;
       }
       if (stderr) {
-        console.error(`Stderr: ${stderr}`);
+        logger.err(`Stderr: ${stderr}`);
         return;
       }
-      console.log(`Stdout: ${stdout}`);
+      logger.info(`Stdout: ${stdout}`);
     },
   );
 }
@@ -100,14 +101,14 @@ export function SleepComputer() {
     `rundll32.exe powrprof.dll, SetSuspendState Sleep`,
     (error, stdout, stderr) => {
       if (error) {
-        console.error(`Error: ${error.message}`);
+        logger.err(`Error: ${error.message}`);
         return;
       }
       if (stderr) {
-        console.error(`Stderr: ${stderr}`);
+        logger.err(`Stderr: ${stderr}`);
         return;
       }
-      console.log(`Stdout: ${stdout}`);
+      logger.info(`Stdout: ${stdout}`);
     },
   );
 }

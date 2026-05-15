@@ -38,7 +38,8 @@ export const OnceMethods: OnceMethodsType = {};
 export const HandleMethods: HandelMethodsType = {
   async getVideoData(e, ...args) {
     const res = await getVideoData(Plugins)(...args);
-    const window = BrowserWindow.fromWebContents(e.sender)!;
+    const window = BrowserWindow.fromWebContents(e.sender);
+    if (!window) return null;
     if (window.isMinimized()) window.restore();
     window.show();
     window.focus();

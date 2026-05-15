@@ -6,6 +6,7 @@ import EasyDl from "easydl";
 import cproc from "child_process";
 import path from "path";
 import { DownloadInstance } from "@serv/util/axios";
+import { logger } from "../helpers/logger";
 
 export interface Data {
   owner: string;
@@ -32,7 +33,7 @@ export interface ProgressData {
 export default class AppUpdater extends EventEmitter {
   data: Data;
   update?: Release;
-  public hasUpdate: boolean = false;
+  public hasUpdate = false;
   constructor(data: Data) {
     super();
     this.data = data;
@@ -42,7 +43,7 @@ export default class AppUpdater extends EventEmitter {
   }
   async checkForUpdates(): Promise<Release> {
     const response = await DownloadInstance.get<Releases>(
-      `https://api.github.com/repos/${this.data.owner}/${this.data.repo}/releases`
+      `https://api.github.com/repos/${this.data.owner}/${this.data.repo}/releases`,
     );
     const update = response.data.find((release) => {
       return semver.gt(release.tag_name, app.getVersion());
@@ -51,6 +52,7 @@ export default class AppUpdater extends EventEmitter {
       this.hasUpdate = false;
       this.emit("update-not-available");
 
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return response.data.find((release) => {
         return semver.eq(release.tag_name, app.getVersion());
       })!;
@@ -66,7 +68,7 @@ export default class AppUpdater extends EventEmitter {
     const asset = update.assets.find((asset) => regEx.test(asset.name));
     if (!asset) return null;
     const filename = `${path.basename(asset.name)}-upgrade${path.extname(
-      asset.name
+      asset.name,
     )}`;
 
     const downloader = new EasyDl(
@@ -74,7 +76,7 @@ export default class AppUpdater extends EventEmitter {
       path.join(directory, filename),
       {
         existBehavior: "ignore",
-      }
+      },
     );
     downloader.on("metadata", (metadata) => {
       this.emit("metadata", metadata);
@@ -84,7 +86,7 @@ export default class AppUpdater extends EventEmitter {
       if (!state) return;
       this.emit(
         "updater-downloaded",
-        downloader.savedFilePath || path.join(directory, filename)
+        downloader.savedFilePath || path.join(directory, filename),
       );
     });
     downloader.on("error", (e) => {
@@ -98,7 +100,7 @@ export default class AppUpdater extends EventEmitter {
   }
   async quitAndInstall(setupPath: string) {
     if (!fs.existsSync(setupPath))
-      return console.warn("file doesn't exist", setupPath);
+      return logger.warn(`file doesn't exist ${setupPath}`);
     if (process.platform == "win32") {
       cproc.spawn(`${setupPath}`, ["/SILENT"]).unref();
       app.quit();

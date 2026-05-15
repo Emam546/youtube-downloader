@@ -28,8 +28,9 @@ export default function VideoResults() {
   const dispatch = useDispatch();
   const paramQuery = useQuery({
     queryKey: ["video", router.query.path || null, router.query.id || null],
-    queryFn: ({ signal }) =>
-      getVideoData(router.query.path as string, router.query, signal),
+    queryFn: ({ signal }) => {
+      return getVideoData(router.query.path as string, router.query, signal);
+    },
     staleTime: 60 * 1000 * 60, // data is always fresh
     refetchOnWindowFocus: false,
     refetchOnReconnect: true,
