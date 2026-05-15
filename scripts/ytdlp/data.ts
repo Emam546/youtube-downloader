@@ -82,7 +82,8 @@ export interface YtDlpVersion {
 async function getVideoData(url: string): Promise<YtDlpData> {
   const result = await ytdlp.execAsync(url, {
     dumpJson: true,
-    checkAllFormats: true,
+    jsRuntime: "node",
+    
     skipDownload: true,
     socketTimeout: 60,
   });
