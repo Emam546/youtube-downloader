@@ -7,6 +7,7 @@ import { updateYtDlp as orgupdateYtDlp } from "@utils/updateYtdlp";
 import { logger } from "@app/main/helpers/logger";
 const ytdlpName = getYtDlpName();
 export const ytDlpPath = path.join(pluginDir, ytdlpName);
+logger.info(`ytdlp-path ${ytDlpPath}`);
 process.env.ytdlp_binDir = ytDlpPath;
 export async function updateYtDlp(silent = true) {
   try {

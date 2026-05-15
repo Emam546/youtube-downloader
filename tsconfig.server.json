@@ -13,5 +13,5 @@
     }
   },
   "include": ["server/src", "scripts", "./utils", "./build.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "app"]
 }

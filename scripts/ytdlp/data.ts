@@ -84,6 +84,7 @@ async function getVideoData(url: string): Promise<YtDlpData> {
     dumpJson: true,
     checkAllFormats: true,
     skipDownload: true,
+    socketTimeout: 60,
   });
 
   const data = JSON.parse(result.output) as YtDlpData;

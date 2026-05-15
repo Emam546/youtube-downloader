@@ -12,6 +12,7 @@ import { getVideoInfo } from "../../ffmpeg";
 
 export const ytdlp = new YtDlp({
   binaryPath: process.env.ytdlp_binDir,
+  ffmpegPath: process.env.ffmpegPath,
 });
 export interface YtdlpData extends FFmpegResizeMergeData {
   ytdlpData?: FormatResult & { link: string };

@@ -21,7 +21,7 @@ function isVideo(val: unknown): val is NavigateVideo {
 export default function InputHolder() {
   const router = useRouter();
   const routeNavigate = router.push;
-  const { register, handleSubmit, setValue, formState, watch } =
+  const { register, handleSubmit, setValue, formState, watch, getValues } =
     useForm<DataFrom>({});
   const navigateMutate = useMutation({
     mutationFn: navigate,
@@ -30,9 +30,10 @@ export default function InputHolder() {
     mutationKey: ["search", watch("search")],
   });
   async function analyzeUrl(value: string) {
-    const dest = await navigateMutate.mutateAsync({ navigate: value });
-    if (dest) routeNavigate(dest.navigate);
     setValue("search", value);
+    const dest = await navigateMutate.mutateAsync({ navigate: value });
+
+    if (dest) await routeNavigate(dest.navigate);
   }
   const dispatch = useDispatch();
   useEffect(() => {
@@ -83,16 +84,8 @@ export default function InputHolder() {
           const dest = await navigateMutate.mutateAsync({
             navigate: data.search,
           });
-          if (dest) {
-            await queryClient.resetQueries(
-              {
-                queryKey: ["video", dest.path, dest.id],
-                exact: true,
-              },
-              { cancelRefetch: true },
-            );
-            return routeNavigate(dest.navigate);
-          } else
+          if (dest) return routeNavigate(dest.navigate);
+          else
             return routeNavigate(`/search/${encodeURIComponent(data.search)}`);
         })}
       >
@@ -119,6 +112,26 @@ export default function InputHolder() {
           <button
             type="submit"
             title="start"
+            onClick={async () => {
+              const [, path, id] = window.location.pathname.split("/");
+              if (path == "search") {
+                await queryClient.resetQueries(
+                  {
+                    queryKey: ["search", id],
+                    exact: true,
+                  },
+                  { cancelRefetch: true },
+                );
+              } else if (path) {
+                await queryClient.resetQueries(
+                  {
+                    queryKey: ["video", path, id],
+                    exact: true,
+                  },
+                  { cancelRefetch: true },
+                );
+              }
+            }}
             className="tw-text-white tw-bg-primary tw-rounded-r-3 tw-flex tw-items-center tw-gap-x-2 tw-cursor-pointer tw-p-5 sm:tw-px-6 hover:tw-bg-primary/80 tw-text-sm"
           >
             <span className="tw-hidden sm:tw-block">Start</span>
