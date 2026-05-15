@@ -6,8 +6,9 @@ const files = [
   "./icon.png",
   "./background.js",
 ];
+const dir = path.join(process.cwd(), "dist", "extension");
 async function build() {
-  if (!fs.existsSync("dist/extension/")) fs.mkdirSync("dist/extension/");
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
   files.forEach((element) => {
     fs.copyFileSync(
       path.join("./extension", element),
