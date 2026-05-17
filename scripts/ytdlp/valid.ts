@@ -2,14 +2,25 @@ import { v4 } from "uuid";
 import { NavigateData } from "../types/types";
 import { ytdlp } from "../utils/Bases/ytdlp";
 export const PATH = "custom";
-export async function isValidYtdlpUrl(str: string): Promise<boolean> {
+export async function isValidYtdlpUrl(url: string): Promise<boolean> {
   try {
-    await ytdlp.execAsync(str, {
-      abortOnError: true,
+    const output = await ytdlp.execAsync(url, {
+      dumpSingleJson: true,
       skipDownload: true,
+      noWarnings: true,
+      abortOnError: true,
     });
-    return true;
-  } catch (error) {
+
+    const data = JSON.parse(output.output);
+
+    // reject playlists/channels/pages
+    if (data?._type && data._type !== "video") {
+      return false;
+    }
+
+    // must contain a video id + title
+    return !!data?.title;
+  } catch {
     return false;
   }
 }
