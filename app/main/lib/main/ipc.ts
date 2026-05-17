@@ -11,6 +11,7 @@ import { searchData } from "../../../../scripts/plugins/search";
 import { predictInputString } from "../../../../scripts/plugins/predictInputString";
 import { Plugins } from "./lib/plugins";
 import { showContextMenu } from "./lib/context";
+import { logger } from "@app/main/helpers/logger";
 
 type OnMethodsType = {
   [K in keyof ApiMain.OnMethods]: ConvertToIpCMainFunc<ApiMain.OnMethods[K]>;
@@ -37,13 +38,18 @@ export const OnMethods: OnMethodsType = {
 export const OnceMethods: OnceMethodsType = {};
 export const HandleMethods: HandelMethodsType = {
   async getVideoData(e, ...args) {
-    const res = await getVideoData(Plugins)(...args);
-    const window = BrowserWindow.fromWebContents(e.sender);
-    if (!window) return null;
-    if (window.isMinimized()) window.restore();
-    window.show();
-    window.focus();
-    return res;
+    try {
+      const res = await getVideoData(Plugins)(...args);
+      const window = BrowserWindow.fromWebContents(e.sender);
+      if (!window) return null;
+      if (window.isMinimized()) window.restore();
+      window.show();
+      window.focus();
+      return res;
+    } catch (error) {
+      logger.err(error, true);
+      throw error;
+    }
   },
 
   getSearchData(_, ...args) {
