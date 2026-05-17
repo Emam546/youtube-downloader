@@ -20,18 +20,17 @@ jobs:
           node-version: 20.0.0
       - name: install dependencies
         run: npm install
-      - name: packing
-        run: npm run pack
-      - name: publish
-        run: npm run publish
       - name: Build scripts
         run: npm run build:scripts
       - name: Create scripts zip
+        shell: pwsh
         run: |
-            cd ./out/scripts
-            zip -r ../../scripts.zip .
+          Compress-Archive -Path ./out/scripts/* -DestinationPath ./scripts.zip
+      - name: packing
+        run: npm run pack
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             scripts.zip
+            dist/youtube-downloader-setup-${{ github.event.release.tag_name }}-win.exe
