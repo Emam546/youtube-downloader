@@ -6,7 +6,10 @@ import {
   MenuItem,
 } from "electron";
 
-export const showContextMenu = (event: Electron.IpcMainEvent, params) => {
+export const showContextMenu = (
+  event: Electron.IpcMainEvent,
+  params: string,
+) => {
   const mainWindow = BrowserWindow.fromWebContents(event.sender);
   if (!mainWindow) return;
   const menu = Menu.buildFromTemplate(

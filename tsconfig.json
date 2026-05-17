@@ -20,7 +20,8 @@
       "@shared/*": ["./shared/*"],
       "@utils/*": ["./utils/*"],
       "@shared/renderer/*": ["./app/renderer/shared/*"],
-      "@scripts/*": ["./scripts/*"]
+      "@scripts/*": ["./scripts/*"],
+      "@app/*": ["./app/*"]
     },
     "plugins": [
       {

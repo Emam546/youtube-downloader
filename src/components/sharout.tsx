@@ -24,7 +24,7 @@ export default function SharedLayout({
       // Get selected text
       const selection = window.getSelection()?.toString();
       // Send selection to main process to show menu
-      window.api.send("showContextMenu", selection);
+      if (selection) window.api.send("showContextMenu", selection);
     });
   }, []);
   useEffect(() => {

@@ -71,7 +71,7 @@ export default function MapData({ video, title, clippedData }: Props<unknown>) {
                   ...video.data,
                 };
             if (window.Environment == "desktop")
-              window.api.send("downloadVideoLink", data as any);
+              window.api.send("downloadVideoLink", data as never);
             else if (window.Environment == "web") {
               mutate.mutate(data as any);
             }
