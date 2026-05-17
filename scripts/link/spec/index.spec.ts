@@ -31,8 +31,7 @@ describe("test basic functions", () => {
 });
 
 describe("test getData from different link", () => {
-  const videoUrl =
-    "https://s301d4.downet.net/download/1775285461/69cf6355035e3/Fallout.2024.S01E06.720p.WEB.AKWAM.mp4";
+  const videoUrl = "https://www.w3schools.com/Html/mov_bbb.mp4";
   jest.setTimeout(80000);
   test("should get Data Right", async () => {
     const data = await navigate(videoUrl);
