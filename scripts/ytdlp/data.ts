@@ -7,6 +7,7 @@ import { YtdlpData } from "./download";
 import { getFrameScreenShot, getVideoInfo } from "../utils/ffmpeg";
 import { v4 } from "uuid";
 import { asyncFindSequential } from "@utils/index";
+import { getYtdlpStreams } from "../utils/func";
 export interface YtDlpData {
   id: string;
   title: string;
@@ -80,15 +81,7 @@ export interface YtDlpVersion {
 }
 
 async function getVideoData(url: string): Promise<YtDlpData> {
-  const result = await ytdlp.execAsync(url, {
-    dumpJson: true,
-    jsRuntime: "node",
-    
-    skipDownload: true,
-    socketTimeout: 60,
-  });
-
-  const data = JSON.parse(result.output) as YtDlpData;
+  const data = await getYtdlpStreams(url);
 
   const formats = data.formats.map((data) => {
     return {

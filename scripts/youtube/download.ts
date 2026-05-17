@@ -2,21 +2,13 @@ import { asyncFilter } from "@utils/index";
 import axios from "axios";
 import { getQualityFromResolution } from "../utils";
 import { DownloadParams } from "../utils/Bases";
-import {
-  YtdlpData,
-  YtdlpBase,
-  FormatResult,
-  ytdlp,
-  YtDlpFormat,
-} from "../utils/Bases/ytdlp";
+import { YtdlpData, YtdlpBase, FormatResult } from "../utils/Bases/ytdlp";
+import { getYtdlpStreams } from "../utils/func";
 export { YtdlpBase };
 export type { YtdlpData };
 export async function getAllFormats(url: string): Promise<FormatResult[]> {
-  const result = await ytdlp.execAsync(url, {
-    dumpJson: true,
-    jsRuntime: "node",
-  });
-  const data = JSON.parse(result.output).formats as YtDlpFormat[];
+  const result = await getYtdlpStreams(url);
+  const data = result.formats;
 
   return (
     await asyncFilter(data, async (data) => {
