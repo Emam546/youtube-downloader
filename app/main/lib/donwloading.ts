@@ -106,10 +106,10 @@ export class DownloaderWindow extends DownloadingWindow {
       this.changeState("pause");
     }
   }
-  error(err) {
+  error(err: Error) {
     logger.err(err);
     if (!this.isDestroyed()) {
-      dialog.showErrorBox("Error Happened", err.toString());
+      dialog.showErrorBox("Error Happened", err.message);
       this.close();
     }
   }
