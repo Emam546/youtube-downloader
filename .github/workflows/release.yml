@@ -10,6 +10,7 @@ permissions:
 env:
   GH_TOKEN: ${{ secrets.GH_TOKEN }}
 jobs:
+  
   publish_on_win:
     runs-on: windows-latest
     steps:
@@ -23,3 +24,14 @@ jobs:
         run: npm run pack
       - name: publish
         run: npm run publish
+      - name: Build extension
+        run: npm run build:extension
+      - name: Create extension zip
+        run: |
+            cd ./out/scripts
+            zip -r ../../extension.zip .
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            extension.zip
