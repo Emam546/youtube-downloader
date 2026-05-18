@@ -19,7 +19,7 @@ const appServe = isProd
   : null;
 export const createMainWindow = async (
   options: BrowserWindowConstructorOptions,
-  preloadData?: Context
+  preloadData?: Context,
 ): Promise<BrowserWindow> => {
   const state: Electron.BrowserWindowConstructorOptions = {
     show: false,
@@ -55,7 +55,7 @@ export const createMainWindow = async (
       additionalArguments: [
         convertFunc(
           encodeURIComponent(JSON.stringify(preloadData || null)),
-          "data"
+          "data",
         ),
       ],
     },
@@ -73,6 +73,9 @@ export const createMainWindow = async (
   win.on("close", saveState);
   if (isProd && appServe) {
     await appServe(win);
+    win.webContents.on("devtools-opened", () => {
+      win.webContents.closeDevTools();
+    });
   } else if (isDev) {
     await win.loadURL(`http://localhost:3000`);
     win.webContents.openDevTools();
