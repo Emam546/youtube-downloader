@@ -22,9 +22,9 @@ export default function SharedLayout({
       e.preventDefault();
 
       // Get selected text
-      const selection = window.getSelection()?.toString();
+      const selection = window.getSelection()?.toString() || "";
       // Send selection to main process to show menu
-      if (selection) window.api.send("showContextMenu", selection);
+      window.api.send("showContextMenu", selection);
     });
   }, []);
   useEffect(() => {
