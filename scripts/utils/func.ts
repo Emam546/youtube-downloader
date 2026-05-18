@@ -1,6 +1,6 @@
 import { spawn } from "child_process";
 import { YtDlpData } from "../ytdlp/data";
-
+import os from "os";
 export function getYtdlpStreams(url: string) {
   return new Promise<YtDlpData>((resolve, reject) => {
     const args = [
@@ -12,6 +12,8 @@ export function getYtdlpStreams(url: string) {
       "--check-all-formats",
       "--js-runtime",
       "node",
+      "--paths",
+      `TEMP:${os.tmpdir()}`,
     ];
 
     const proc = spawn(process.env.ytdlp_binDir!, args);
