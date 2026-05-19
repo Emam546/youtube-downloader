@@ -19,7 +19,7 @@
     "export": "npm run build:next&&next export",
     "build": "npm run build:server && npm run build:next",
     "lint": "eslint server app src --ext .ts,.tsx",
-    "lint:src": "eslint -c ./src/.eslintrc.json src",
+    "lint:src": "tsc --noEmit && eslint -c ./src/.eslintrc.json src",
     "lint:server": "eslint -c ./server/.eslintrc.json --ext  .ts server/src/ ",
     "lint:electron": "eslint -c app/.eslintrc.json --ext .ts app/main/",
     "start": "node -r module-alias/register ./dist/server/src --env=production",
@@ -31,7 +31,6 @@
     "dev:desk": "concurrently -n \"NEXT,ELECTRON\" -c \"yellow,blue\" --kill-others \"next dev\" \"npm run dev-electron\"",
     "build:desk": "npm run build:next&&next export -o ./out/renderer && npm run build:electron &&npm run build:extension",
     "build:win": "electron-builder --win -p never&&innosetup-compiler setup.iss --verbose",
-    "publish": "node release.js",
     "pack": "npm run build:desk&&npm run build:win"
   },
   "nodemonConfig": {
@@ -141,7 +140,6 @@
     "jest": "^29.4.0",
     "nodemon": "^3.1.4",
     "postcss": "^8.4.21",
-    "publish-release": "^1.6.1",
     "sass": "^1.58.3",
     "supertest": "^6.3.3",
     "tailwindcss": "^3.2.7",
