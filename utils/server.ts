@@ -29,8 +29,34 @@ export type ClippingDataType<G> =
     })
   | (G & { clipped: false });
 export type VideoDataClippedType<T> = ClippingDataType<VideoDataInfoType<T>>;
-export function removeUnwantedChars(val: string) {
-  return val.replace(/[/\\?%*:|"<>]/g, "-").replace(/#[^\s#]+/g, "");
+const WINDOWS_RESERVED_NAMES =
+  /^(con|prn|aux|nul|com[1-9]|lpt[1-9])(\..*)?$/i;
+
+export function removeUnwantedChars(input: string) {
+  let name = input
+    .normalize("NFKC") // normalize unicode (important for cross-platform)
+    // remove control chars
+    .replace(/[\u0000-\u001f\u007f]/g, "")
+    // replace invalid windows chars
+    .replace(/[<>:"/\\|?*]/g, "-")
+    // remove hashtags patterns if you want (your logic kept)
+    .replace(/#[^\s#]+/g, "")
+    // collapse whitespace
+    .replace(/\s+/g, " ")
+    .trim();
+
+  // remove trailing dots/spaces (Windows breaks on these)
+  name = name.replace(/[. ]+$/g, "");
+
+  // avoid reserved device names
+  if (WINDOWS_RESERVED_NAMES.test(name)) {
+    name = `_${name}`;
+  }
+
+  // fallback for empty result
+  if (!name) name = "file";
+
+  return name;
 }
 const AppPrefix = "YoutubeDownloader";
 export function getFileName<T>(data: VideoDataClippedType<T>) {
