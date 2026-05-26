@@ -8,7 +8,7 @@ import { LocalData } from "./download";
 import { getData } from "../link/data";
 
 async function getVideoData(
-  filePath: string
+  filePath: string,
 ): Promise<(ResponseData<LocalData>["video"] & { filePath: string }) | null> {
   try {
     const metadata = await getVideoInfo(filePath);
@@ -42,7 +42,7 @@ function isVideoFile(filename: string) {
   return videoExtensions.test(filename);
 }
 export async function downloadVideoAndExtractMetadata(
-  query: any
+  query: any,
 ): Promise<ResponseData<LocalData> | null> {
   if (!query.id) return null;
 
@@ -51,10 +51,11 @@ export async function downloadVideoAndExtractMetadata(
     const videos = getVideos(filePath);
     for (let i = 0; i < videos.length; i++) {
       try {
-        return await downloadVideoAndExtractMetadata({
+        const result = await downloadVideoAndExtractMetadata({
           ...query,
           id: path.join(filePath, videos[i]),
         });
+        if (result != null) return result;
       } catch (error) {
         console.log(error);
       }
@@ -77,22 +78,24 @@ export async function downloadVideoAndExtractMetadata(
   };
 }
 function getVideos(folderDist: string) {
-  return fs
-    .readdirSync(folderDist)
-    .filter(
-      (v) => fs.lstatSync(path.join(folderDist, v)).isFile() && isVideoFile(v)
-    );
+  return fs.readdirSync(folderDist).filter((v) => {
+    try {
+      fs.lstatSync(path.join(folderDist, v)).isFile() && isVideoFile(v);
+    } catch (error) {
+      return false;
+    }
+  });
 }
 export async function getAllVideosData(
   folderDist: string,
   mainFile?: string,
-  limit = 20
+  limit = 20,
 ) {
   const files = getVideos(folderDist);
   const arr = sliceArray(
     files.filter((v) => path.join(folderDist, v) != mainFile),
     files.findIndex((v) => path.join(folderDist, v) == mainFile) || 0,
-    limit
+    limit,
   );
   const data: Array<ReturnedSearch> = [];
   for (let i = 0; i < arr.length; i++) {
