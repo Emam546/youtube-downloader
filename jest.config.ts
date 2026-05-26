@@ -15,6 +15,7 @@ const config: Config = {
   testEnvironment: "node",
   preset: "ts-jest",
   testTimeout: 120000,
+  maxWorkers: 1,
   moduleFileExtensions: ["ts", "tsx", "js", "json", "css"],
   moduleNameMapper: {
     ...pathsToModuleNameMapper(
