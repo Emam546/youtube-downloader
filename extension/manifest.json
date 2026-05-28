@@ -1,10 +1,13 @@
 {
-  "name": "YouTube Downloader",
-  "description": "Send current page URL to YouTube downloader app",
+  "name": "Video Downloader Bridge",
+  "description": "Send the current video/page URL to the downloader app",
   "version": "1.0",
   "manifest_version": 3,
   "permissions": [
     "tabs"
+  ],
+  "host_permissions": [
+    "<all_urls>"
   ],
   "action": {
     "default_title": "Send to Downloader",
@@ -17,5 +20,32 @@
   },
   "background": {
     "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content-script.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "icon.png"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ],
+  "icons": {
+    "16": "icon.png",
+    "32": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
   }
 }
