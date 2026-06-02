@@ -32,7 +32,6 @@ export default function InputHolder() {
   async function analyzeUrl(value: string) {
     setValue("search", value);
     const dest = await navigateMutate.mutateAsync({ navigate: value });
-
     if (dest) await routeNavigate(dest.navigate);
   }
   const dispatch = useDispatch();
@@ -69,6 +68,12 @@ export default function InputHolder() {
     }
   }, []);
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const referredLink = params.get("referredLink");
+
+    if (referredLink) 
+      analyzeUrl(referredLink);
+    
     if (window.Environment == "desktop")
       return window.api.on("getInputUrl", async (_, url) => {
         analyzeUrl(url);
