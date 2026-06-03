@@ -28,7 +28,7 @@ autoUpdater.once("update-available", (update) => {
   });
   autoUpdater.once("metadata", async (metadata) => {
     logger.info("start downloading");
-    MainWindow.Window?.hide();
+    MainWindow.Windows.forEach((e) => e.hide());
     const win = await createUpdateWindow({
       preloadData: {
         curSize: 0,

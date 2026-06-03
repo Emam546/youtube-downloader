@@ -25,7 +25,7 @@ async function createWindow(args: string[]) {
   const data = lunchArgs(args);
   return await createMainWindow(
     {},
-    data ? { video: { link: data } } : undefined
+    data ? { video: { link: data } } : undefined,
   );
 }
 app.whenReady().then(async () => {
@@ -44,12 +44,12 @@ else
     //argv has the process.argv arguments of the second instance.
     if (!app.hasSingleInstanceLock()) return;
     if (MainWindow.Window) {
-      if (MainWindow.Window.isMinimized()) MainWindow.Window.restore();
-      MainWindow.Window.focus();
-      if (argv.length >= 2) {
-        const data = lunchArgs(argv);
-        if (data) MainWindow.Window.webContents.send("getInputUrl", data);
+      if (argv.length >= 2 && lunchArgs(argv)) {
+        createWindow(argv);
+        return;
       }
+      MainWindow.Window.focus();
+      if (MainWindow.Window.isMinimized()) MainWindow.Window.restore();
     } else if (!autoUpdater.hasUpdate) createWindow(argv);
   });
 
