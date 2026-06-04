@@ -1,4 +1,4 @@
-import { app } from "electron";
+import { app, Notification } from "electron";
 // import { autoUpdater } from "electron-updater";
 import { createUpdateWindow } from "@app/main/lib/update";
 import AppUpdater from "./AppUpdater";
@@ -19,13 +19,18 @@ app.whenReady().then(async () => {
 autoUpdater.once("update-available", (update) => {
   logger.info("update available", update.tag_name);
   logger.info("Download the update");
-  autoUpdater.downloadUpdate(update).then((asset) => {
-    if (!asset) return;
-    autoUpdater.once("updater-downloaded", (savedFilePath) => {
-      logger.info("update finished");
-      autoUpdater.quitAndInstall(savedFilePath);
-    });
+  const notification = new Notification({
+    title: "Update Available",
+
+    body: `Version ${update.tag_name} is available. Click to download.`,
   });
+
+  notification.show();
+  notification.on("click", async () => {
+    logger.info("User accepted update");
+    autoUpdater.downloadUpdate(update);
+  });
+
   autoUpdater.once("metadata", async (metadata) => {
     logger.info("start downloading");
     MainWindow.Windows.forEach((e) => e.hide());
@@ -39,8 +44,10 @@ autoUpdater.once("update-available", (update) => {
     autoUpdater.on("error", (e) => {
       win.error(e);
     });
-    autoUpdater.on("updater-downloaded", () => {
+    autoUpdater.once("updater-downloaded", (savedFilePath) => {
+      logger.info("update finished");
       win.end();
+      autoUpdater.quitAndInstall(savedFilePath);
     });
     autoUpdater.on("size", (size: number) => {
       win.setCurSize(size);

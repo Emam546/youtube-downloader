@@ -62,7 +62,7 @@ export default class AppUpdater extends EventEmitter {
       return update;
     }
   }
-  async downloadUpdate(update: Release) {
+  downloadUpdate(update: Release) {
     const directory = app.getPath("temp");
     const regEx = PlatForms[process.platform];
     const asset = update.assets.find((asset) => regEx.test(asset.name));
