@@ -38,7 +38,7 @@ export function removeUnwantedChars(input: string) {
     // remove control chars
     .replace(/[\u0000-\u001f\u007f]/g, "")
     // replace invalid windows chars
-    .replace(/[<>:"/\\|?*]/g, "-")
+    .replace(/[<>:"/\\|?*@]/g, "-")
     // remove hashtags patterns if you want (your logic kept)
     .replace(/#[^\s#]+/g, "")
     // collapse whitespace
