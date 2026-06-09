@@ -26,7 +26,7 @@ function isVideo(v: string) {
   return mime.contentType(v).toString().includes("video") || false;
 }
 export async function downloadVideoAndExtractMetadata(
-  query: any
+  query: any,
 ): Promise<ResponseData<LinkDownloadData> | null> {
   if (!query.link) return null;
 
@@ -45,7 +45,7 @@ export async function downloadVideoAndExtractMetadata(
       let endFileNameIndex = contentDisposition.lastIndexOf('"');
       reqFilename = contentDisposition.substring(
         startFileNameIndex,
-        endFileNameIndex
+        endFileNameIndex,
       );
     }
     // Extract useful metadata
@@ -69,7 +69,7 @@ export async function downloadVideoAndExtractMetadata(
 export async function getData(
   metadata: Ffmpeg.FfprobeData,
   url: string,
-  fileName: string
+  fileName: string,
 ): Promise<NonNullable<ResponseData<LinkDownloadData>["video"]>> {
   const videoFormat = path.extname(fileName).slice(1);
   const videoSize = metadata.format.size; // in bytes
@@ -78,13 +78,14 @@ export async function getData(
 
   // Additional info: codec and resolution
   const videoStream = videoStreams.find(
-    (stream) => stream.codec_type === "video"
+    (stream) => stream.codec_type === "video",
   );
   const audioStream = videoStreams.find(
-    (stream) => stream.codec_type === "audio"
+    (stream) => stream.codec_type === "audio",
   );
   let thumbnail = await getFrameScreenShot(url);
 
+  const videoTitle = path.extname(path.basename(fileName))[0];
   const orgQuality =
     videoStream &&
     getQualityFromResolution(videoStream.width!, videoStream.height!);
@@ -106,7 +107,7 @@ export async function getData(
             },
             ftype: videoFormat,
             fquality: orgQuality.label,
-            title: path.basename(fileName),
+            title: videoTitle,
           },
           quality: orgQuality.height,
           text: {
@@ -135,7 +136,7 @@ export async function getData(
               },
               ftype: videoFormat,
               fquality: quality.label,
-              title: path.basename(fileName),
+              title: videoTitle,
             },
             quality: quality.height,
             text: {
@@ -150,7 +151,7 @@ export async function getData(
                 link: url,
                 resize: quality.height,
               })) || undefined,
-          }))
+          })),
         )),
       ],
       AUDIO: audioStream && [
@@ -170,7 +171,7 @@ export async function getData(
             },
             ftype: videoFormat,
             fquality: `${audioStream.codec_name}`,
-            title: `${path.basename(fileName)} - audioOnly`,
+            title: `${videoTitle} - audioOnly`,
           },
           quality: 0,
           text: {
@@ -204,7 +205,7 @@ export async function getData(
             },
             ftype: videoFormat,
             fquality: orgQuality.label,
-            title: `${path.basename(fileName)} videoOnly`,
+            title: `${videoTitle} videoOnly`,
           },
           quality: orgQuality.height,
           text: {
@@ -242,7 +243,7 @@ export async function getData(
               },
               ftype: videoFormat,
               fquality: quality.label,
-              title: `${path.basename(fileName)}-videoOnly`,
+              title: `${videoTitle}-videoOnly`,
             },
             quality: quality.height,
             text: {
@@ -260,7 +261,7 @@ export async function getData(
                   videoOnly: true,
                 },
               })) || undefined,
-          }))
+          })),
         )),
       ],
     },
