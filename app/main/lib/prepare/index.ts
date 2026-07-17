@@ -11,5 +11,4 @@ export async function PrePare() {
 }
 export async function AfterLunch() {
   AfterLunchScripts();
-  updateYtDlp();
 }
