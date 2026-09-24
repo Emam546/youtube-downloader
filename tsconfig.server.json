@@ -7,11 +7,25 @@
     "noEmit": false,
     "baseUrl": "./",
     "paths": {
-      "@serv/*": ["./server/src/*"],
-      "@scripts/*": ["./scripts/*"],
-      "@utils/*": ["./utils/*"]
+      "@serv/*": [
+        "./server/src/*"
+      ],
+      "@scripts/*": [
+        "./scripts/*"
+      ],
+      "@utils/*": [
+        "./utils/*"
+      ]
     }
   },
-  "include": ["server/src", "scripts", "./utils", "./build.ts"],
-  "exclude": ["node_modules", "app"]
+  "include": [
+    "server/src",
+    "scripts",
+    "./utils",
+    "./build.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "app"
+  ]
 }

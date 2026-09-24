@@ -181,9 +181,15 @@ export async function getVideoData(
         id: `${id}_videoytdlp_${quality.qualityLabel}`,
       } as Media<YtdlpData>;
     }),
-  ].sort((a, b) => {
-    return b.quality - a.quality;
-  });
+  ]
+    .map((video, _, acc) => {
+      if (acc.some((g) => g.quality == video.quality))
+        video.text.str = `${video.quality}p (.${video.container})`;
+      return video;
+    })
+    .sort((a, b) => {
+      return b.quality - a.quality;
+    });
 
   const loudness =
     basicData.player_response.playerConfig.audioConfig.loudnessDb;

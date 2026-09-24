@@ -16,7 +16,7 @@ export async function isDownloadableVideo(url: string) {
       "application/octet-stream", // fallback (many servers use this)
     ];
 
-    return videoTypes.some((t) => type.includes(t));
+    return videoTypes.some((t) => (type as string).includes(t));
   } catch (err) {
     return false;
   }
