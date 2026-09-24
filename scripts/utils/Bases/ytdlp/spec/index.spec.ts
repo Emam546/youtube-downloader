@@ -9,8 +9,8 @@ const videoPath = "./video.mp4";
 export function download(data: DownloadParams<YtdlpData>) {
   return new YtdlpBase(data);
 }
+jest.setTimeout(500000);
 describe("test download", () => {
-  jest.setTimeout(500000);
   describe("test unClipped", () => {
     test("simple video", async () => {
       const formats = await getAllFormats(videoUrl);
@@ -72,11 +72,41 @@ describe("test download", () => {
       const videoInfo = await getVideoInfo(videoPath);
       expect(videoInfo.format.duration).toBeCloseTo(
         VideoDownloader.ffmpegData?.duration!,
-        0
+        0,
       );
       expect(
-        videoInfo.streams.some((stream) => stream.codec_type == "audio")
+        videoInfo.streams.some((stream) => stream.codec_type == "audio"),
       ).toBeTruthy();
     });
   });
+});
+test("test download a video with a problem", async () => {
+  const videoUrl =
+    "https://www.facebook.com/watch/?ref=saved&v=1328520638649977";
+
+  const formats = await getAllFormats(videoUrl);
+  const format = formats.find((v) => v.has_video && v.has_audio);
+  if (!format) return;
+  const VideoDownloader = download({
+    curSize: 0,
+    data: {
+      clipped: false,
+      data: {
+        ytdlpData: {
+          link: videoUrl,
+          ...format,
+        },
+      },
+      PATH: "youtube",
+      ftype: format.type,
+      fquality: "asdfs",
+      previewLink: "sdsf",
+      title: "asdasd",
+    },
+    downloadingState: {
+      continued: false,
+      path: videoPath,
+    },
+  });
+  await VideoDownloader.download((path) => fs.createWriteStream(path));
 });

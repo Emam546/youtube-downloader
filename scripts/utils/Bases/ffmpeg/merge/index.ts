@@ -122,5 +122,6 @@ export class FfmpegMergeBase extends FfmpegResizeBase {
         await pipeAsync(stream.pipe.pipe(func(stream.path)));
       });
     }
+    return this.downloadingState.path
   }
 }
