@@ -49,5 +49,7 @@ export class FfmpegResizeMergeBase extends FfmpegMergeBase {
           .format(format)
       );
     }
+    return this.downloadingState.path
   }
+  
 }

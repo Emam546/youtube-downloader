@@ -216,5 +216,6 @@ export class FfmpegResizeBase extends FfmpegBase {
         await this.prepareDownResize(command);
       });
     }
+    return this.downloadingState.path
   }
 }

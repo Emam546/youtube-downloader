@@ -182,11 +182,18 @@ export async function getVideoData(
       } as Media<YtdlpData>;
     }),
   ]
+<<<<<<< HEAD
     .map((video, _, acc) => {
       if (acc.some((g) => g.quality == video.quality))
         video.text.str = `${video.quality}p (.${video.container})`;
       return video;
     })
+=======
+    .reduce<Media<YtdlpData>[]>((acc, cur) => {
+      if (!acc.some((v) => v.quality == cur.quality)) acc.push(cur);
+      return acc;
+    }, [])
+>>>>>>> 8d4427dda9cad9a97e17039780f31394c9a2b9d0
     .sort((a, b) => {
       return b.quality - a.quality;
     });

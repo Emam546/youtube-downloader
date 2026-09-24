@@ -1,6 +1,5 @@
 import { DownloadParams } from "..";
 import { YtDlp, ArgsOptions } from "ytdlp-nodejs";
-import path from "path";
 import { Writable } from "stream";
 import {
   FfmpegResizeMergeBase,
@@ -54,6 +53,7 @@ export class YtdlpBase extends FfmpegResizeMergeBase {
       this.setFileSize(p.total);
     });
     await ytdlpStream.pipeAsync(func(this.downloadingState.path));
+    return this.downloadingState.path;
     // return new Promise<void>((res, rej) => {
     //   ytdlpStream.stderr.once("error", (e) => rej(e.toString()));
 

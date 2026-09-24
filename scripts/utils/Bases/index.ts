@@ -25,11 +25,11 @@ export class DownloadBase<T = unknown> extends EventEmitter {
   }
   static async getEstimatedFileSize(
     data: {},
-    duration?: number
+    duration?: number,
   ): Promise<number | null> {
     return null;
   }
-  async download(func: (path: string) => Writable) {
+  async download(func: (path: string) => Writable): Promise<string|null> {
     throw new Error("unimplemented function");
   }
   setPauseButton(state: "Pause" | "Start", enabled: boolean = true) {

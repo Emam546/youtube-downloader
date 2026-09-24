@@ -90,6 +90,7 @@
     "react-player": "^2.16.0",
     "react-range": "^1.8.14",
     "react-redux": "^8.0.7",
+    "sanitize-filename": "^1.6.4",
     "semver": "^7.6.3",
     "throttle": "^1.0.3",
     "undici": "^7.10.0",

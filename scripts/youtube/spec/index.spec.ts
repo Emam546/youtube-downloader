@@ -3,12 +3,13 @@ import { getData } from "..";
 import { getAllFormats } from "../download";
 import { getVideoID } from "../utils";
 const videoUrl = "https://www.youtube.com/watch?v=tCDvOQI3pco";
-
-jest.setTimeout(50000);
+import fs from "fs"
+jest.setTimeout(500000);
 test("test get All formats", async () => {
   const result = await getAllFormats(
     "https://www.youtube.com/watch?v=KgROpzrFzcY"
   );
+  fs.writeFileSync("result.json",JSON.stringify(result))
   expect(result.length).toBeGreaterThan(0);
 
 });

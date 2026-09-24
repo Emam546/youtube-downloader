@@ -52,7 +52,7 @@ export class FfmpegBase extends LinkDownloadBase {
 
   static async getEstimatedFileSize(
     data: FFmpegData,
-    duration?: number
+    duration?: number,
   ): Promise<number | null> {
     if (!data.editData || !data.link) return null;
     const { audioOnly, videoOnly } = data.editData;
@@ -105,7 +105,7 @@ export class FfmpegBase extends LinkDownloadBase {
     const numberOfFrames =
       parseInt(
         metaData.streams.find((formate) => formate.codec_type == "video")
-          ?.nb_frames || ""
+          ?.nb_frames || "",
       ) *
       ((this.ffmpegData?.duration || duration) / duration);
     this.rebuildingState = true;
@@ -129,7 +129,7 @@ export class FfmpegBase extends LinkDownloadBase {
         if (percent.percent) {
           const targetSize = percent.targetSize * 1024;
           const totalFileSize = Math.round(
-            (targetSize / percent.percent) * 100
+            (targetSize / percent.percent) * 100,
           );
           this.setFileSize(totalFileSize);
         } else if (percent.frames) {
@@ -159,9 +159,9 @@ export class FfmpegBase extends LinkDownloadBase {
     const numberOfFrames = Math.floor(
       parseInt(
         metaData.streams.find((formate) => formate.codec_type == "video")
-          ?.nb_frames || ""
+          ?.nb_frames || "",
       ) *
-        ((this.ffmpegData?.duration || duration) / duration)
+        ((this.ffmpegData?.duration || duration) / duration),
     );
     // const pipe = await this.pipe(getTempName(this.downloadingState.path));
     this.setPauseButton("Pause");
@@ -174,7 +174,7 @@ export class FfmpegBase extends LinkDownloadBase {
           ? [
               `-t ${this.ffmpegData.duration}`, // Set duration for both video and audio
             ]
-          : []
+          : [],
       )
       .outputOptions("-movflags frag_keyframe+empty_moov")
       .outputOptions("-c copy")
@@ -201,7 +201,7 @@ export class FfmpegBase extends LinkDownloadBase {
     const metaData = await getVideoInfo(tempPath);
     const numberOfFrames = parseInt(
       metaData.streams.find((formate) => formate.codec_type == "video")
-        ?.nb_frames || ""
+        ?.nb_frames || "",
     );
     await new Promise<void>((res, rej) => {
       const command = ffmpeg()
@@ -215,7 +215,7 @@ export class FfmpegBase extends LinkDownloadBase {
           this.onGetChunk(progress.targetSize - this.curSize);
           if (numberOfFrames) {
             const totalFileSize = Math.round(
-              (numberOfFrames / progress.frames) * targetSize
+              (numberOfFrames / progress.frames) * targetSize,
             );
             this.setFileSize(totalFileSize);
           }
@@ -268,8 +268,8 @@ export class FfmpegBase extends LinkDownloadBase {
     this.setFileSize(
       (await FfmpegBase.getEstimatedFileSize(
         this,
-        this.ffmpegData?.duration
-      )) || undefined
+        this.ffmpegData?.duration,
+      )) || undefined,
     );
     if (
       this.downloadingState.continued &&
@@ -280,7 +280,7 @@ export class FfmpegBase extends LinkDownloadBase {
           this.link!,
           this.downloadingState.path,
           this.ffmpegData?.start || 0,
-          this.ffmpegData?.duration
+          this.ffmpegData?.duration,
         )
       ).format(format);
 
@@ -300,5 +300,6 @@ export class FfmpegBase extends LinkDownloadBase {
       });
     }
     await this.converting();
+    return this.downloadingState.path;
   }
 }

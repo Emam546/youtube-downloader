@@ -20,7 +20,7 @@ export interface LinkDownloadData {
 }
 export async function DownloadTheFile(
   link: string,
-  range?: string
+  range?: string,
 ): Promise<IncomingMessage> {
   const response = await getHttpMethod(link, range);
 
@@ -33,7 +33,7 @@ export async function DownloadTheFile(
         throw new Error(
           `Sever Failed With Status Code:${
             response.statusCode || "unrecognized status code"
-          }`
+          }`,
         );
     }
   }
@@ -49,7 +49,7 @@ export class LinkDownloadBase extends DownloadBase {
   }
   static async getEstimatedFileSize(
     data: LinkDownloadData,
-    duration?: number
+    duration?: number,
   ): Promise<number | null> {
     if (!data.link) return super.getEstimatedFileSize(data, duration);
     const res = await DownloadInstance.head(data.link, {
@@ -73,7 +73,7 @@ export class LinkDownloadBase extends DownloadBase {
     });
     const contentSize = await LinkDownloadBase.getEstimatedFileSize(this);
     if (contentSize) {
-      if (contentSize == this.curSize) return;
+      if (contentSize == this.curSize) return null;
       this.setFileSize(contentSize);
     }
     const acceptRanges = res.headers["accept-ranges"] as string | undefined;
@@ -84,11 +84,12 @@ export class LinkDownloadBase extends DownloadBase {
     this.changeState("connecting");
     const response = await DownloadTheFile(
       this.link,
-      this.resumable ? range : undefined
+      this.resumable ? range : undefined,
     );
     response.once("data", () => {
       this.setPauseButton("Pause");
     });
     await pipeAsync(response.pipe(func(this.downloadingState.path)));
+    return this.downloadingState.path;
   }
 }

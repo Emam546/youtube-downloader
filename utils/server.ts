@@ -3,9 +3,9 @@ import http from "http";
 import { IncomingMessage } from "http";
 import { HttpDownloadAgent, HttpsDownloadAgent } from "@serv/util/axios";
 import path from "path";
-
+import sanitize from "sanitize-filename";
 export async function WrapResponse<T>(
-  fetchData: Promise<Response>
+  fetchData: Promise<Response>,
 ): Promise<T> {
   const res = await fetchData;
   if (res.status >= 300)
@@ -29,11 +29,10 @@ export type ClippingDataType<G> =
     })
   | (G & { clipped: false });
 export type VideoDataClippedType<T> = ClippingDataType<VideoDataInfoType<T>>;
-const WINDOWS_RESERVED_NAMES =
-  /^(con|prn|aux|nul|com[1-9]|lpt[1-9])(\..*)?$/i;
+const WINDOWS_RESERVED_NAMES = /^(con|prn|aux|nul|com[1-9]|lpt[1-9])(\..*)?$/i;
 
 export function removeUnwantedChars(input: string) {
-  let name = input
+  let name = sanitize(input, { replacement: " " })
     .normalize("NFKC") // normalize unicode (important for cross-platform)
     // remove control chars
     .replace(/[\u0000-\u001f\u007f]/g, "")
@@ -62,16 +61,16 @@ const AppPrefix = "YoutubeDownloader";
 export function getFileName<T>(data: VideoDataClippedType<T>) {
   if (data.clipped) {
     return removeUnwantedChars(
-      `${AppPrefix} - ${data.title} v${data.fquality} ${data.start}-${data.end}.${data.ftype}`
+      `${AppPrefix} - ${data.title} v${data.fquality} ${data.start}-${data.end}.${data.ftype}`,
     );
   } else
     return removeUnwantedChars(
-      `${AppPrefix} - ${data.title} v${data.fquality}.${data.ftype}`
+      `${AppPrefix} - ${data.title} v${data.fquality}.${data.ftype}`,
     );
 }
 export function getOriginalFileName(filename: string) {
   const regex = new RegExp(
-    `^${AppPrefix} - (.+?) v[\\w]+(?: \\d+-\\d+)?\\.\\w+$`
+    `^${AppPrefix} - (.+?) v[\\w]+(?: \\d+-\\d+)?\\.\\w+$`,
   );
   const match = filename.match(regex);
 
@@ -93,7 +92,7 @@ export function getHttpMethod(dlink: string, range?: string) {
         },
         (response) => {
           res(response);
-        }
+        },
       );
     else
       http.get(
@@ -104,7 +103,7 @@ export function getHttpMethod(dlink: string, range?: string) {
         },
         (response) => {
           res(response);
-        }
+        },
       );
   });
 }
