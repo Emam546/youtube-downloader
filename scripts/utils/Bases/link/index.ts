@@ -73,7 +73,7 @@ export class LinkDownloadBase extends DownloadBase {
     });
     const contentSize = await LinkDownloadBase.getEstimatedFileSize(this);
     if (contentSize) {
-      if (contentSize == this.curSize) return null;
+      if (contentSize == this.curSize) return this.downloadingState.path;
       this.setFileSize(contentSize);
     }
     const acceptRanges = res.headers["accept-ranges"] as string | undefined;
@@ -90,6 +90,7 @@ export class LinkDownloadBase extends DownloadBase {
       this.setPauseButton("Pause");
     });
     await pipeAsync(response.pipe(func(this.downloadingState.path)));
+  
     return this.downloadingState.path;
   }
 }

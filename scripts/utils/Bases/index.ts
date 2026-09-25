@@ -1,13 +1,12 @@
 import { VideoDataClippedType } from "@utils/server";
 import EventEmitter from "events";
 import { Readable, Writable } from "stream";
-
+import fs from "fs";
 export interface WindowData {
   downloadingState: {
     path: string;
     continued: boolean;
   };
-  curSize: number;
 }
 export interface DownloadParams<T> extends WindowData {
   data: VideoDataClippedType<T>;
@@ -18,10 +17,14 @@ export class DownloadBase<T = unknown> extends EventEmitter {
   enableThrottle: boolean = false;
   readonly curSize: number;
 
-  constructor({ downloadingState, curSize }: DownloadParams<T>) {
+  constructor({ downloadingState }: DownloadParams<T>) {
     super();
     this.downloadingState = downloadingState;
-    this.curSize = curSize;
+
+    this.curSize = fs.existsSync(this.downloadingState.path)
+      ? fs.statSync(this.downloadingState.path).size
+      : 0;
+    this.setCurSize(this.curSize);
   }
   static async getEstimatedFileSize(
     data: {},
@@ -29,7 +32,7 @@ export class DownloadBase<T = unknown> extends EventEmitter {
   ): Promise<number | null> {
     return null;
   }
-  async download(func: (path: string) => Writable): Promise<string|null> {
+  async download(func: (path: string) => Writable): Promise<string | null> {
     throw new Error("unimplemented function");
   }
   setPauseButton(state: "Pause" | "Start", enabled: boolean = true) {
@@ -60,6 +63,20 @@ export class DownloadBase<T = unknown> extends EventEmitter {
   }
   resetSpeed() {
     this.emit("resetSpeed");
+  }
+  wrap(base: DownloadBase) {
+    base.on("setPauseButton", (state: "Pause" | "Start", enabled?: boolean) =>
+      this.setPauseButton(state, enabled),
+    );
+    base.on("setFileSize", (size?: number) => this.setFileSize(size));
+    base.on("setResumability", (state: boolean) => this.setResumability(state));
+    base.on("changeState", (state: string) => this.changeState(state));
+    base.on("setCurSize", (size: number) => this.setCurSize(size));
+    base.on("setThrottleState", (state: boolean) =>
+      this.setThrottleState(state),
+    );
+    base.on("onGetChunk", (size: number) => this.onGetChunk(size));
+    base.on("resetSpeed", () => this.resetSpeed());
   }
   async pipe(path: string): Promise<Writable> {
     this.emit("pipe", path);

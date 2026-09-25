@@ -9,7 +9,6 @@ jest.setTimeout(50000);
 describe("test local", () => {
   test("test ffmpeg non-clipped", async () => {
     const videoDownloader = new FfmpegBase({
-      curSize: 0,
       data: {
         clipped: false,
         data: {
@@ -38,7 +37,6 @@ describe("test local", () => {
   });
   test("test ffmpeg clipped", async () => {
     const videoDownloader = new FfmpegBase({
-      curSize: 0,
       data: {
         clipped: true,
         start: 4,
@@ -69,7 +67,6 @@ describe("test local", () => {
     describe("clipped", () => {
       test("test ffmpeg videoOnly", async () => {
         const VideoDownloader = new FfmpegBase({
-          curSize: 0,
           data: {
             clipped: true,
             start: 4,
@@ -104,7 +101,6 @@ describe("test local", () => {
       });
       test("test ffmpeg audioOnly", async () => {
         const VideoDownloader = new FfmpegBase({
-          curSize: 0,
           data: {
             clipped: true,
             start: 4,

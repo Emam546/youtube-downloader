@@ -13,13 +13,17 @@ export class FfmpegResizeMergeBase extends FfmpegMergeBase {
   constructor(data: DownloadParams<FFmpegMergeData>) {
     super(data);
   }
+  async prepareDownResize(command: ffmpeg.FfmpegCommand) {
+    this.link = this.mergeData?.videoLink;
+    return super.prepareDownResize(command);
+  }
   async download(func: (path: string) => Writable) {
     if (!(this.resize && this.mergeData)) return await super.download(func);
     this.setFileSize(
       (await FfmpegResizeMergeBase.getEstimatedFileSize(
         this,
-        this.ffmpegData?.duration
-      )) || undefined
+        this.ffmpegData?.duration,
+      )) || undefined,
     );
     const format = path.extname(this.downloadingState.path).slice(1);
     if (
@@ -35,9 +39,9 @@ export class FfmpegResizeMergeBase extends FfmpegMergeBase {
             },
             this.downloadingState.path,
             this.ffmpegData?.start || 0,
-            this.ffmpegData?.duration || 1000000000000
+            this.ffmpegData?.duration || 1000000000000,
           )
-        ).format(format)
+        ).format(format),
       );
     } else {
       await this.prepareDownResize(
@@ -46,10 +50,9 @@ export class FfmpegResizeMergeBase extends FfmpegMergeBase {
           .setStartTime(this.ffmpegData?.start || 0)
           .input(this.mergeData.audioLink)
           .setStartTime(this.ffmpegData?.start || 0)
-          .format(format)
+          .format(format),
       );
     }
-    return this.downloadingState.path
+    return this.downloadingState.path;
   }
-  
 }

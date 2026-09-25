@@ -16,8 +16,8 @@ export const order = {
     link: -1,
     custom: -1000,
   },
-  appVersion: packageJson.version,
-  version: "v1.0.13",
+  appVersion: "2.0.4",
+  version: "v1.0.14",
 };
 async function Process() {
   if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath, { recursive: true });

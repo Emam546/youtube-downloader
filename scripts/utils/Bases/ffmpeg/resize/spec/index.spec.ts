@@ -12,7 +12,6 @@ describe("test local", () => {
     describe("Non Clipped", () => {
       test("test ffmpeg videoOnly", async () => {
         const VideoDownloader = new FfmpegResizeBase({
-          curSize: 0,
           data: {
             clipped: false,
             data: {
@@ -37,12 +36,11 @@ describe("test local", () => {
         const videoInfo = await getVideoInfo(videoPath);
 
         expect(
-          videoInfo.streams.some((stream) => stream.codec_type == "audio")
+          videoInfo.streams.some((stream) => stream.codec_type == "audio"),
         ).toBeFalsy();
       });
       test("test ffmpeg audioOnly", async () => {
         const VideoDownloader = new FfmpegResizeBase({
-          curSize: 0,
           data: {
             clipped: false,
             data: {
@@ -66,14 +64,13 @@ describe("test local", () => {
 
         const videoInfo = await getVideoInfo(videoPath);
         expect(
-          videoInfo.streams.some((stream) => stream.codec_type == "video")
+          videoInfo.streams.some((stream) => stream.codec_type == "video"),
         ).toBeFalsy();
       });
     });
     describe("clipped", () => {
       test("test ffmpeg videoOnly", async () => {
         const VideoDownloader = new FfmpegResizeBase({
-          curSize: 0,
           data: {
             clipped: true,
             start: 4,
@@ -100,15 +97,14 @@ describe("test local", () => {
         const videoInfo = await getVideoInfo(videoPath);
         expect(videoInfo.format.duration).toBeCloseTo(
           VideoDownloader.ffmpegData!.duration,
-          -1
+          -1,
         );
         expect(
-          videoInfo.streams.some((stream) => stream.codec_type == "audio")
+          videoInfo.streams.some((stream) => stream.codec_type == "audio"),
         ).toBeFalsy();
       });
       test("test ffmpeg audioOnly", async () => {
         const VideoDownloader = new FfmpegResizeBase({
-          curSize: 0,
           data: {
             clipped: true,
             start: 4,
@@ -135,10 +131,10 @@ describe("test local", () => {
         const videoInfo = await getVideoInfo(videoPath);
         expect(videoInfo.format.duration).toBeCloseTo(
           VideoDownloader.ffmpegData!.duration,
-          -1
+          -1,
         );
         expect(
-          videoInfo.streams.some((stream) => stream.codec_type == "video")
+          videoInfo.streams.some((stream) => stream.codec_type == "video"),
         ).toBeFalsy();
       });
     });
@@ -147,7 +143,6 @@ describe("test local", () => {
     describe("Non Clipped", () => {
       test("test ffmpeg videoOnly", async () => {
         const VideoDownloader = new FfmpegResizeBase({
-          curSize: 0,
           data: {
             clipped: false,
             data: {
@@ -172,17 +167,16 @@ describe("test local", () => {
 
         const videoInfo = await getVideoInfo(videoPath);
         expect(
-          videoInfo.streams.find((v) => v.codec_type == "video")?.height
+          videoInfo.streams.find((v) => v.codec_type == "video")?.height,
         ).toEqual(VideoDownloader?.resize);
         expect(
-          videoInfo.streams.some((stream) => stream.codec_type == "audio")
+          videoInfo.streams.some((stream) => stream.codec_type == "audio"),
         ).toBeFalsy();
       });
     });
     describe("clipped", () => {
       test("test ffmpeg videoOnly", async () => {
         const VideoDownloader = new FfmpegResizeBase({
-          curSize: 0,
           data: {
             clipped: true,
             start: 4,
@@ -209,14 +203,14 @@ describe("test local", () => {
 
         const videoInfo = await getVideoInfo(videoPath);
         expect(
-          videoInfo.streams.find((v) => v.codec_type == "video")?.height
+          videoInfo.streams.find((v) => v.codec_type == "video")?.height,
         ).toEqual(VideoDownloader?.resize);
         expect(videoInfo.format.duration).toBeCloseTo(
           VideoDownloader.ffmpegData!.duration,
-          -1
+          -1,
         );
         expect(
-          videoInfo.streams.some((stream) => stream.codec_type == "audio")
+          videoInfo.streams.some((stream) => stream.codec_type == "audio"),
         ).toBeFalsy();
       });
     });

@@ -15,7 +15,7 @@ export function pipeAsync(pipe: Writable) {
         console.error(e);
         rej(e);
       })
-      .on("finish", () => pipe.on("close", () => res()));
+      .on("finish", res);
   });
 }
 export type QualitiesType = {
@@ -33,10 +33,10 @@ const qualities: QualitiesType[] = [
   { label: "144p", width: 256, height: 144 },
 ];
 export function getResizedQualitiesFromLabel(
-  fromQuality: QualitiesType["label"]
+  fromQuality: QualitiesType["label"],
 ) {
   const index = qualities.findIndex(
-    (q) => q.label.toLowerCase() === fromQuality.toLowerCase()
+    (q) => q.label.toLowerCase() === fromQuality.toLowerCase(),
   );
 
   if (index === -1) {

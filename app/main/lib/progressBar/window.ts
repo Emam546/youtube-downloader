@@ -24,7 +24,7 @@ export interface VideoData {
 export interface PipeListener extends NodeJS.EventEmitter {
   pipe<T extends WritableStream>(
     destination: T,
-    options?: { end?: boolean | undefined }
+    options?: { end?: boolean | undefined },
   ): T;
 }
 export interface DownloadingStatus {
@@ -69,11 +69,6 @@ export const defaultPageData: ProgressData = {
     },
   ],
 };
-export interface BaseDownloaderWindow<T> {
-  fromWebContents(
-    webContents: Electron.WebContents
-  ): BaseDownloaderWindow<T> | null;
-}
 export interface BrowserProps extends BrowserWindowConstructorOptions {
   preloadData: Context;
 }
@@ -84,18 +79,17 @@ export class BaseDownloaderWindow<T> extends DownloaderWindow {
   pageData: ProgressData;
   public flag: FlagType;
   private stream?: WriteStream;
-  private readonly curStream: ModifiedThrottle;
+  private curStream?: ModifiedThrottle;
   readonly link: string;
   readonly videoData: VideoData["video"];
   enableThrottle: boolean;
   downloadSpeed: number;
   downloadingState: StateType;
   state: ProgressBarState["status"] = "connecting";
-  readonly curSize: number;
   constructor(
     options: BrowserProps,
     downloader: (data: WindowData) => DownloadBase<T>,
-    data: DownloaderData
+    data: DownloaderData,
   ) {
     super({
       icon: "build/icon.ico",
@@ -115,7 +109,7 @@ export class BaseDownloaderWindow<T> extends DownloaderWindow {
         additionalArguments: [
           convertFunc(
             encodeURIComponent(JSON.stringify(options.preloadData)),
-            "data"
+            "data",
           ),
         ],
       },
@@ -123,37 +117,19 @@ export class BaseDownloaderWindow<T> extends DownloaderWindow {
 
     this.enableThrottle = data.downloadingStatus.enableThrottle;
     this.downloadSpeed = data.downloadingStatus.downloadSpeed;
-    this.curStream = new ModifiedThrottle({
-      bps: this.enableThrottle
-        ? Math.max(1024, this.downloadSpeed)
-        : Number.MAX_SAFE_INTEGER,
-      writableHighWaterMark: 1024 * 5,
-      delayTime: 5000,
-    });
+
     this.pageData = data.pageData;
     this.flag =
       data.fileStatus.continued && fs.existsSync(data.fileStatus.path)
         ? "a"
         : "w";
     this.downloadingState = data.fileStatus;
-    this.curSize = this.flag == "a" ? this.getRealSize() : 0;
     this.link = data.videoData.link;
     this.videoData = data.videoData.video;
     this.downloader = downloader({
       downloadingState: this.downloadingState,
-      curSize: this.curSize,
     });
 
-    this.curStream.on("reset-speed", () => {
-      this.resetSpeed();
-    });
-    this.curStream.on("delayed-pause", () => {
-      if (this.state == "receiving") this.changeState("connecting");
-    });
-
-    this.curStream.on("data", (data: Buffer) =>
-      this.onGetChunk(data.byteLength)
-    );
     this.downloader.on("setPauseButton", this.setPauseButton.bind(this));
     this.downloader.on("setFileSize", this.setFileSize.bind(this));
     this.downloader.on("changeState", this.changeState.bind(this));
@@ -161,18 +137,18 @@ export class BaseDownloaderWindow<T> extends DownloaderWindow {
     this.downloader.on("setThrottleState", this.setThrottleState.bind(this));
     this.downloader.on("onGetChunk", this.onGetChunk.bind(this));
     this.downloader.on("resetSpeed", this.resetSpeed.bind(this));
-    this.downloader.on("error", this.error.bind(this));
+    // this.downloader.on("error", this.error.bind(this));
     this.on("close", () => {
-      if (!this.curStream.closed) this.curStream.destroy();
+      if (this.curStream && !this.curStream.closed) this.curStream.destroy();
       this.downloader.close();
     });
     DownloadTray.addWindow(this);
   }
   public static fromWebContents(
-    webContents: Electron.WebContents
+    webContents: Electron.WebContents,
   ): BaseDownloaderWindow<unknown> | null {
     return DownloaderWindow.fromWebContents(
-      webContents
+      webContents,
     ) as BaseDownloaderWindow<unknown>;
   }
   async download() {
@@ -190,8 +166,25 @@ export class BaseDownloaderWindow<T> extends DownloaderWindow {
   }
 
   pipe(path: string): internal.Writable {
+    this.curStream = new ModifiedThrottle({
+      bps: this.enableThrottle
+        ? Math.max(1024, this.downloadSpeed)
+        : Number.MAX_SAFE_INTEGER,
+      writableHighWaterMark: 1024 * 5,
+      delayTime: 5000,
+    });
+    this.curStream.on("reset-speed", () => {
+      this.resetSpeed();
+    });
+    this.curStream.on("delayed-pause", () => {
+      if (this.state == "receiving") this.changeState("connecting");
+    });
+    this.curStream.on("data", (data: Buffer) =>
+      this.onGetChunk(data.byteLength),
+    );
     if (this.stream && !this.stream.destroyed)
       throw new Error("there is unclosed stream file");
+
     this.stream = fs.createWriteStream(path, {
       flags: this.flag,
     });
@@ -207,15 +200,15 @@ export class BaseDownloaderWindow<T> extends DownloaderWindow {
   setThrottleState(state: boolean) {
     this.enableThrottle = state;
     this.resetSpeed();
-    this.curStream.setSpeed(
-      state ? Math.max(1024, this.downloadSpeed) : Number.MAX_SAFE_INTEGER
+    this.curStream?.setSpeed(
+      state ? Math.max(1024, this.downloadSpeed) : Number.MAX_SAFE_INTEGER,
     );
   }
   trigger(state: boolean) {
     super.trigger(state);
     if (state) this.setPauseButton("Pause");
     else this.setPauseButton("Start");
-    this.curStream.trigger(state);
+    this.curStream?.trigger(state);
   }
   cancel() {
     if (fs.existsSync(this.downloadingState.path))

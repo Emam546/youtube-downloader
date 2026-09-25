@@ -36,7 +36,6 @@ router.get("/download/:token", async (req, res) => {
   );
   await downloader
     ?.download({
-      curSize: 0,
       data,
       downloadingState: {
         continued: false,

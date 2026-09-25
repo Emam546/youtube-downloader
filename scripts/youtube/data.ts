@@ -5,7 +5,8 @@ import { videoFormat } from "@distube/ytdl-core";
 import { getInfo, getBasicInfo } from "@distube/ytdl-core";
 import { PATH } from "./valid";
 import axios from "axios";
-import { YtdlpData, YtdlpBase, getAllFormats } from "./download";
+import { YtdlMerge, YtdlpMergeData, getAllFormats } from "./download";
+import { chooseBestFormats } from "./choose_qualities";
 
 declare module "@distube/ytdl-core" {
   interface videoFormat {
@@ -29,7 +30,7 @@ const asyncFilter = async <T>(
 
 export async function getVideoData(
   query: Record<string, any>,
-): Promise<ResponseData<YtdlpData> | null> {
+): Promise<ResponseData<YtdlpMergeData> | null> {
   const {
     id,
     start: startQ,
@@ -80,7 +81,7 @@ export async function getVideoData(
   const YtdpFormats = await getAllFormats(
     `https://www.youtube.com/watch?v=${id}`,
   );
-  const videos: Media<YtdlpData>[] = [
+  const videos: Media<YtdlpMergeData>[] = [
     ...(await Promise.all(
       formats
         .filter((v) => v.hasVideo && !v.hasAudio && audioMerge != undefined)
@@ -98,7 +99,7 @@ export async function getVideoData(
             previewLink: `https://www.youtube.com/watch?v=${id}`,
             container: video.container,
             size:
-              (await YtdlpBase.getEstimatedFileSize({
+              (await YtdlMerge.getEstimatedFileSize({
                 mergeData: {
                   videoLink: video.url,
                   audioLink: audioMerge!.url,
@@ -123,7 +124,7 @@ export async function getVideoData(
               previewLink: `https://www.youtube.com/watch?v=${id}`,
               title: basicData.videoDetails.title,
             },
-          } as Media<YtdlpData>;
+          } as Media<YtdlpMergeData>;
         }),
     )),
     ...formats
@@ -151,7 +152,7 @@ export async function getVideoData(
           },
           quality: parseInt(video.qualityLabel),
           id: `${id}_videoMerged_${i}`,
-        } as Media<YtdlpData>;
+        } as Media<YtdlpMergeData>;
       }),
     ...YtdpFormats.filter(
       (quality) => quality.has_video && quality.has_audio,
@@ -179,28 +180,57 @@ export async function getVideoData(
         },
         quality: parseInt(quality.qualityLabel!),
         id: `${id}_videoytdlp_${quality.qualityLabel}`,
-      } as Media<YtdlpData>;
+      } as Media<YtdlpMergeData>;
+    }),
+    ...chooseBestFormats(YtdpFormats).qualities.map((quality) => {
+      return {
+        size: quality.video.filesize || quality.video.filesize_approx,
+        previewLink: `https://www.youtube.com/watch?v=${id}`,
+        container: "mp4",
+        environment: ["desktop", "web"],
+        data: {
+          data: {
+            interfaces: {
+              video: {
+                ...quality.video,
+                link: `https://www.youtube.com/watch?v=${id}`,
+              },
+              audio: {
+                ...quality.audio,
+                link: `https://www.youtube.com/watch?v=${id}`,
+              },
+            },
+          },
+          fquality: quality.video.qualityLabel,
+          ftype: quality.video.ext,
+          PATH: PATH,
+          previewLink: `https://www.youtube.com/watch?v=${id}`,
+          title: basicData.videoDetails.title,
+        },
+        text: {
+          str: `${quality.video.qualityLabel} (.${quality.video.ext})`,
+        },
+        quality: parseInt(quality.video.qualityLabel!),
+        id: `${id}_videoytdlp_${quality.video.qualityLabel}`,
+      } as Media<YtdlpMergeData>;
     }),
   ]
-<<<<<<< HEAD
     .map((video, _, acc) => {
       if (acc.some((g) => g.quality == video.quality))
         video.text.str = `${video.quality}p (.${video.container})`;
       return video;
     })
-=======
-    .reduce<Media<YtdlpData>[]>((acc, cur) => {
+    .reduce<Media<YtdlpMergeData>[]>((acc, cur) => {
       if (!acc.some((v) => v.quality == cur.quality)) acc.push(cur);
       return acc;
     }, [])
->>>>>>> 8d4427dda9cad9a97e17039780f31394c9a2b9d0
     .sort((a, b) => {
       return b.quality - a.quality;
     });
 
   const loudness =
     basicData.player_response.playerConfig.audioConfig.loudnessDb;
-  const audios: Media<YtdlpData>[] = [
+  const audios: Media<YtdlpMergeData>[] = [
     ...audioFormats
       .filter((v) => v.hasAudio && !v.hasVideo)
       .map((audio, i) => {
@@ -234,7 +264,7 @@ export async function getVideoData(
           container: audio.container,
           quality: parseInt(audio.quality),
           id: `${id}_audio_${i}`,
-        } as Media<YtdlpData>;
+        } as Media<YtdlpMergeData>;
       }),
     ...YtdpFormats.filter((v) => !v.has_video && v.has_audio).map((audio) => {
       return {
@@ -261,10 +291,10 @@ export async function getVideoData(
         },
         quality: audio.quality,
         id: `${id}_videoytdlp_${audio.quality}`,
-      } as Media<YtdlpData>;
+      } as Media<YtdlpMergeData>;
     }),
   ];
-  const others: Media<YtdlpData>[] = [
+  const others: Media<YtdlpMergeData>[] = [
     ...formats
       .filter((v) => v.hasVideo && !v.hasAudio)
       .map((video, i) => {
@@ -288,7 +318,7 @@ export async function getVideoData(
               video.qualityLabel
             } (${video.videoCodec?.toUpperCase()}) (.${video.container})`,
           },
-        } as Media<YtdlpData>;
+        } as Media<YtdlpMergeData>;
       }),
     ...YtdpFormats.filter((v) => v.has_video && !v.has_audio).map((video) => {
       return {
@@ -315,7 +345,7 @@ export async function getVideoData(
         },
         quality: parseInt(video.qualityLabel!),
         id: `${id}_videoytdlp_${video.qualityLabel}`,
-      } as Media<YtdlpData>;
+      } as Media<YtdlpMergeData>;
     }),
   ].sort((a, b) => {
     return b.quality - a.quality;

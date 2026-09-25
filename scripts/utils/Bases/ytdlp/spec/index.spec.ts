@@ -17,7 +17,6 @@ describe("test download", () => {
       const format = formats.find((v) => v.has_video && v.has_audio);
       if (!format) return;
       const VideoDownloader = download({
-        curSize: 0,
         data: {
           clipped: false,
           data: {
@@ -46,7 +45,6 @@ describe("test download", () => {
       const format = formats.find((v) => v.has_video && v.has_audio);
       if (!format) return;
       const VideoDownloader = download({
-        curSize: 0,
         data: {
           clipped: true,
           start: 0,
@@ -88,7 +86,6 @@ test("test download a video with a problem", async () => {
   const format = formats.find((v) => v.has_video && v.has_audio);
   if (!format) return;
   const VideoDownloader = download({
-    curSize: 0,
     data: {
       clipped: false,
       data: {

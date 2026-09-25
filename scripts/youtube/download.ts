@@ -2,10 +2,11 @@ import { asyncFilter } from "@utils/index";
 import axios from "axios";
 import { getQualityFromResolution } from "../utils";
 import { DownloadParams } from "../utils/Bases";
-import { YtdlpData, YtdlpBase, FormatResult } from "../utils/Bases/ytdlp";
+import { FormatResult } from "../utils/Bases/ytdlp";
+import { YtdlMerge, YtdlpMergeData } from "../utils/Bases/ytdlp/mix";
 import { getYtdlpStreams } from "../utils/func";
-export { YtdlpBase };
-export type { YtdlpData };
+export { YtdlMerge };
+export type { YtdlpMergeData };
 export async function getAllFormats(url: string): Promise<FormatResult[]> {
   const result = await getYtdlpStreams(url);
   const data = result.formats;
@@ -34,6 +35,6 @@ export async function getAllFormats(url: string): Promise<FormatResult[]> {
     };
   });
 }
-export function download(data: DownloadParams<YtdlpData>) {
-  return new YtdlpBase(data, process.env.YoutubeCookies);
+export function download(data: DownloadParams<YtdlpMergeData>) {
+  return new YtdlMerge(data, process.env.YoutubeCookies);
 }

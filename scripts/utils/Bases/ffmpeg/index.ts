@@ -153,16 +153,20 @@ export class FfmpegBase extends LinkDownloadBase {
     this.setCurSize(0);
     this.changeState("connecting");
     this.setResumability(true);
-    const metaData = await getVideoInfo(this.link!);
-    const duration = metaData.format.duration;
-    if (!duration) throw new Error("Unrecognized time");
-    const numberOfFrames = Math.floor(
-      parseInt(
-        metaData.streams.find((formate) => formate.codec_type == "video")
-          ?.nb_frames || "",
-      ) *
-        ((this.ffmpegData?.duration || duration) / duration),
-    );
+    let numberOfFrames = NaN;
+    try {
+      const metaData = await getVideoInfo(this.link!);
+      const duration = metaData.format.duration;
+      if (!duration) throw new Error("Unrecognized time");
+      numberOfFrames = Math.floor(
+        parseInt(
+          metaData.streams.find((formate) => formate.codec_type == "video")
+            ?.nb_frames || "60",
+        ) *
+          ((this.ffmpegData?.duration || duration) / duration),
+      );
+    } catch (error) {}
+
     // const pipe = await this.pipe(getTempName(this.downloadingState.path));
     this.setPauseButton("Pause");
     if (this.editData?.audioOnly) command.noVideo();
