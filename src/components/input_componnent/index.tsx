@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRight, faPaste } from "@fortawesome/free-solid-svg-icons";
 import { useForm } from "react-hook-form";
 import { ChangeEvent, useEffect } from "react";
 import { NavigateVideo } from "@src/types/api";
@@ -21,7 +21,7 @@ function isVideo(val: unknown): val is NavigateVideo {
 export default function InputHolder() {
   const router = useRouter();
   const routeNavigate = router.push;
-  const { register, handleSubmit, setValue, formState, watch, getValues } =
+  const { register, handleSubmit, setValue, formState, watch } =
     useForm<DataFrom>({});
   const navigateMutate = useMutation({
     mutationFn: navigate,
@@ -29,10 +29,26 @@ export default function InputHolder() {
     retryDelay: 0,
     mutationKey: ["search", watch("search")],
   });
+  const searchValue = watch("search");
+  const isEmpty = !searchValue?.trim();
   async function analyzeUrl(value: string) {
     setValue("search", value);
     const dest = await navigateMutate.mutateAsync({ navigate: value });
     if (dest) await routeNavigate(dest.navigate);
+  }
+  async function readClipboardText() {
+    try {
+      return (await navigator.clipboard.readText()).trim();
+    } catch {
+      return "";
+    }
+  }
+  async function submitSearch(value: string) {
+    const dest = await navigateMutate.mutateAsync({
+      navigate: value,
+    });
+    if (dest) return routeNavigate(dest.navigate);
+    return routeNavigate(`/search/${encodeURIComponent(value)}`);
   }
   const dispatch = useDispatch();
   useEffect(() => {
@@ -71,9 +87,8 @@ export default function InputHolder() {
     const params = new URLSearchParams(window.location.search);
     const referredLink = params.get("referredLink");
 
-    if (referredLink) 
-      analyzeUrl(referredLink);
-    
+    if (referredLink) analyzeUrl(referredLink);
+
     if (window.Environment == "desktop")
       return window.api.on("getInputUrl", async (_, url) => {
         analyzeUrl(url);
@@ -86,12 +101,13 @@ export default function InputHolder() {
         method="POST"
         autoComplete="off"
         onSubmit={handleSubmit(async (data) => {
-          const dest = await navigateMutate.mutateAsync({
-            navigate: data.search,
-          });
-          if (dest) return routeNavigate(dest.navigate);
-          else
-            return routeNavigate(`/search/${encodeURIComponent(data.search)}`);
+          let value = data.search?.trim() ?? "";
+          if (!value) {
+            value = await readClipboardText();
+            if (!value) return;
+            setValue("search", value);
+          }
+          return submitSearch(value);
         })}
       >
         <h2 className="tw-text-3xl tw-font-normal tw-text-center tw-mb-7">
@@ -103,6 +119,7 @@ export default function InputHolder() {
               type="text"
               placeholder="Search or paste link here..."
               {...register("search", {
+                
                 async onChange(e: ChangeEvent<HTMLInputElement>) {
                   const value = e.currentTarget.value;
                   const dest = await navigateMutate.mutateAsync({
@@ -116,7 +133,7 @@ export default function InputHolder() {
           </div>
           <button
             type="submit"
-            title="start"
+            title={isEmpty ? "Paste from clipboard" : "start"}
             onClick={async () => {
               const [, path, id] = window.location.pathname.split("/");
               if (path == "search") {
@@ -139,9 +156,11 @@ export default function InputHolder() {
             }}
             className="tw-text-white tw-bg-primary tw-rounded-r-3 tw-flex tw-items-center tw-gap-x-2 tw-cursor-pointer tw-p-5 sm:tw-px-6 hover:tw-bg-primary/80 tw-text-sm"
           >
-            <span className="tw-hidden sm:tw-block">Start</span>
+            <span className="tw-hidden sm:tw-block">
+              {isEmpty ? "Paste" : "Start"}
+            </span>
             <FontAwesomeIcon
-              icon={faArrowRight}
+              icon={isEmpty ? faPaste : faArrowRight}
               className="tw-font-bold tw-text-lg"
             />
           </button>
