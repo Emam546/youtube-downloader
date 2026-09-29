@@ -14,17 +14,11 @@ describe("test local", () => {
         const VideoDownloader = new FfmpegResizeBase({
           data: {
             clipped: false,
-            data: {
-              link: videoUrl,
-              editData: {
-                videoOnly: true,
-              },
+
+            link: videoUrl,
+            editData: {
+              videoOnly: true,
             },
-            PATH: "None",
-            ftype: "sds",
-            fquality: "None",
-            previewLink: "sdsf",
-            title: "asdasd",
           },
           downloadingState: {
             continued: false,
@@ -43,17 +37,10 @@ describe("test local", () => {
         const VideoDownloader = new FfmpegResizeBase({
           data: {
             clipped: false,
-            data: {
-              link: videoUrl,
-              editData: {
-                audioOnly: true,
-              },
+            link: videoUrl,
+            editData: {
+              audioOnly: true,
             },
-            PATH: "None",
-            ftype: "sds",
-            fquality: "None",
-            previewLink: "sdsf",
-            title: "asdasd",
           },
           downloadingState: {
             continued: false,
@@ -75,17 +62,11 @@ describe("test local", () => {
             clipped: true,
             start: 4,
             end: 8,
-            data: {
-              link: videoUrl,
-              editData: {
-                videoOnly: true,
-              },
+
+            link: videoUrl,
+            editData: {
+              videoOnly: true,
             },
-            PATH: "None",
-            ftype: "sds",
-            fquality: "None",
-            previewLink: "sdsf",
-            title: "asdasd",
           },
           downloadingState: {
             continued: false,
@@ -107,19 +88,14 @@ describe("test local", () => {
         const VideoDownloader = new FfmpegResizeBase({
           data: {
             clipped: true,
+
+            link: videoUrl,
+            editData: {
+              audioOnly: true,
+            },
+
             start: 4,
             end: 8,
-            data: {
-              link: videoUrl,
-              editData: {
-                audioOnly: true,
-              },
-            },
-            PATH: "None",
-            ftype: "sds",
-            fquality: "None",
-            previewLink: "sdsf",
-            title: "asdasd",
           },
           downloadingState: {
             continued: false,
@@ -145,18 +121,11 @@ describe("test local", () => {
         const VideoDownloader = new FfmpegResizeBase({
           data: {
             clipped: false,
-            data: {
-              link: videoUrl,
-              editData: {
-                videoOnly: true,
-              },
-              resize: 240,
+            link: videoUrl,
+            editData: {
+              videoOnly: true,
             },
-            PATH: "None",
-            ftype: "sds",
-            fquality: "None",
-            previewLink: "sdsf",
-            title: "asdasd",
+            resize: 240,
           },
           downloadingState: {
             continued: false,
@@ -179,20 +148,13 @@ describe("test local", () => {
         const VideoDownloader = new FfmpegResizeBase({
           data: {
             clipped: true,
+            link: videoUrl,
+            editData: {
+              videoOnly: true,
+            },
+            resize: 140,
             start: 4,
             end: 8,
-            data: {
-              link: videoUrl,
-              editData: {
-                videoOnly: true,
-              },
-              resize: 140,
-            },
-            PATH: "None",
-            ftype: "sds",
-            fquality: "None",
-            previewLink: "sdsf",
-            title: "asdasd",
           },
           downloadingState: {
             continued: false,

@@ -6,7 +6,7 @@ import { Plugins } from "../lib/plugins";
 
 export async function DownloadVideo<T>(
   e: Electron.IpcMainEvent,
-  data: VideoDataClippedType<T>
+  data: VideoDataClippedType<T>,
 ) {
   const progressBarData = Plugins.find((d) => d.PATH == data.PATH)?.download;
   if (!progressBarData) throw new Error("Undefined Window");
@@ -14,6 +14,7 @@ export async function DownloadVideo<T>(
   if (!window) throw new Error("Undefined Window");
   const state = await Downloader(data, window);
   if (!state) return;
+
   createWindow<T>(
     {
       stateData: state,
@@ -26,6 +27,10 @@ export async function DownloadVideo<T>(
         },
       },
     },
-    (args) => progressBarData({ data: data, ...args })
+    (args) =>
+      progressBarData({
+        data: { ...data.data, ...data },
+        ...args,
+      }),
   );
 }

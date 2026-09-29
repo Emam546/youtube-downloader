@@ -23,17 +23,11 @@ describe("test download", () => {
       const VideoDownloader = download({
         data: {
           clipped: false,
-          data: {
-            interfaces: {
-              video: { ...videoformat, link: videoUrl },
-              audio: { ...audioformat, link: videoUrl },
-            },
+
+          interfaces: {
+            video: { ...videoformat, link: videoUrl },
+            audio: { ...audioformat, link: videoUrl },
           },
-          PATH: "youtube",
-          ftype: videoformat.type,
-          fquality: "asdfs",
-          previewLink: "sdsf",
-          title: "asdasd",
         },
         downloadingState: {
           continued: false,
@@ -55,17 +49,10 @@ describe("test download", () => {
       const VideoDownloader = download({
         data: {
           clipped: false,
-          data: {
-            interfaces: {
-              video: { ...videoformat, link: videoUrl },
-              audio: { ...audioformat, link: videoUrl },
-            },
+          interfaces: {
+            video: { ...videoformat, link: videoUrl },
+            audio: { ...audioformat, link: videoUrl },
           },
-          PATH: "youtube",
-          ftype: videoformat.type,
-          fquality: "asdfs",
-          previewLink: "sdsf",
-          title: "asdasd",
         },
         downloadingState: {
           continued: false,

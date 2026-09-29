@@ -16,7 +16,7 @@ export class FfmpegResizeBase extends FfmpegBase {
 
   constructor(data: DownloadParams<FFmpegResizeData>) {
     super(data);
-    this.resize = data.data.data.resize;
+    this.resize = data.data.resize;
   }
   rebuildingState = false;
 

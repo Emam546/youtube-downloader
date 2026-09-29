@@ -11,14 +11,7 @@ describe("test local", () => {
     const videoDownloader = new FfmpegBase({
       data: {
         clipped: false,
-        data: {
-          link: videoUrl,
-        },
-        PATH: "youtube",
-        ftype: "sds",
-        fquality: "asdfs",
-        previewLink: "sdsf",
-        title: "asdasd",
+        link: videoUrl,
       },
       downloadingState: {
         continued: false,
@@ -32,23 +25,14 @@ describe("test local", () => {
 
     expect(videoInfo.streams[0]?.duration).toBeCloseTo(
       parseInt(orgInfo.streams[0].duration!),
-      1
+      1,
     );
   });
   test("test ffmpeg clipped", async () => {
     const videoDownloader = new FfmpegBase({
       data: {
-        clipped: true,
-        start: 4,
-        end: 10,
-        data: {
-          link: videoUrl,
-        },
-        PATH: "youtube",
-        ftype: "sds",
-        fquality: "asdfs",
-        previewLink: "sdsf",
-        title: "asdasd",
+        clipped: false,
+        link: videoUrl,
       },
       downloadingState: {
         continued: false,
@@ -60,7 +44,7 @@ describe("test local", () => {
     const videoInfo = await getVideoInfo(videoPath);
     expect(videoInfo.format.duration).toBeCloseTo(
       videoDownloader.ffmpegData!.duration,
-      0
+      0,
     );
   });
   describe("no video Condition", () => {
@@ -69,19 +53,12 @@ describe("test local", () => {
         const VideoDownloader = new FfmpegBase({
           data: {
             clipped: true,
+            link: videoUrl,
             start: 4,
             end: 8,
-            data: {
-              link: videoUrl,
-              editData: {
-                videoOnly: true,
-              },
+            editData: {
+              videoOnly: true,
             },
-            PATH: "None",
-            ftype: "sds",
-            fquality: "None",
-            previewLink: "sdsf",
-            title: "asdasd",
           },
           downloadingState: {
             continued: false,
@@ -93,29 +70,24 @@ describe("test local", () => {
         const videoInfo = await getVideoInfo(videoPath);
         expect(videoInfo.format.duration).toBeCloseTo(
           VideoDownloader.ffmpegData!.duration,
-          0
+          0,
         );
         expect(
-          videoInfo.streams.some((stream) => stream.codec_type == "audio")
+          videoInfo.streams.some((stream) => stream.codec_type == "audio"),
         ).toBeFalsy();
       });
       test("test ffmpeg audioOnly", async () => {
         const VideoDownloader = new FfmpegBase({
           data: {
             clipped: true,
+
             start: 4,
             end: 8,
-            data: {
-              link: videoUrl,
-              editData: {
-                audioOnly: true,
-              },
+
+            link: videoUrl,
+            editData: {
+              audioOnly: true,
             },
-            PATH: "None",
-            ftype: "sds",
-            fquality: "None",
-            previewLink: "sdsf",
-            title: "asdasd",
           },
           downloadingState: {
             continued: false,
@@ -127,10 +99,10 @@ describe("test local", () => {
         const videoInfo = await getVideoInfo(videoPath);
         expect(videoInfo.format.duration).toBeCloseTo(
           VideoDownloader.ffmpegData!.duration,
-          0
+          0,
         );
         expect(
-          videoInfo.streams.some((stream) => stream.codec_type == "video")
+          videoInfo.streams.some((stream) => stream.codec_type == "video"),
         ).toBeFalsy();
       });
     });

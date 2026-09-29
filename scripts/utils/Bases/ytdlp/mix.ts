@@ -17,7 +17,7 @@ export class YtdlMerge extends YtdlpBase implements YtdlpMergeData {
   constructor(data: DownloadParams<YtdlpMergeData>, cookies?: string) {
     super(data, cookies);
     this.data = data;
-    this.interfaces = data.data.data.interfaces;
+    this.interfaces = data.data.interfaces;
   }
   async download(func: (path: string) => Writable) {
     if (!this.interfaces) return await super.download(func);
@@ -31,7 +31,7 @@ export class YtdlMerge extends YtdlpBase implements YtdlpMergeData {
       fileName + "-video-part." + this.interfaces.video?.ext,
     );
     const videoBase = new YtdlpBase({
-      data: { ...this.data.data, data: { ytdlpData: this.interfaces.video } },
+      data: { ...this.data.data, ytdlpData: this.interfaces.video },
       downloadingState: { continued: false, path: videoFileName },
     });
     this.wrap(videoBase);
@@ -44,7 +44,7 @@ export class YtdlMerge extends YtdlpBase implements YtdlpMergeData {
       fileName + "-audio-part." + this.interfaces.audio?.ext,
     );
     const audioBase = new YtdlpBase({
-      data: { ...this.data.data, data: { ytdlpData: this.interfaces.audio } },
+      data: { ...this.data.data, ytdlpData: this.interfaces.audio },
       downloadingState: { continued: false, path: audioFileName },
     });
     this.wrap(audioBase);

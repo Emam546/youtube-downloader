@@ -19,7 +19,7 @@ export class FfmpegMergeBase extends FfmpegResizeBase {
   mergeData?: FFmpegMergeData["mergeData"];
   constructor(data: DownloadParams<FFmpegMergeData>) {
     super(data);
-    this.mergeData = data.data.data.mergeData;
+    this.mergeData = data.data.mergeData;
   }
   static async getEstimatedFileSize(
     data: FFmpegMergeData,

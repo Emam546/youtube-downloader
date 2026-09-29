@@ -22,7 +22,7 @@ export class YtdlpBase extends FfmpegResizeMergeBase {
   readonly cookies?: string;
   constructor(data: DownloadParams<YtdlpData>, cookies?: string) {
     super(data);
-    this.ytdlpData = data.data.data.ytdlpData;
+    this.ytdlpData = data.data.ytdlpData;
     this.cookies = cookies;
   }
   async download(func: (path: string) => Writable) {

@@ -1,4 +1,4 @@
-import { VideoDataClippedType } from "@utils/server";
+import { ClippingDataType, VideoDataClippedType } from "@utils/server";
 import EventEmitter from "events";
 import { Readable, Writable } from "stream";
 import fs from "fs";
@@ -9,7 +9,7 @@ export interface WindowData {
   };
 }
 export interface DownloadParams<T> extends WindowData {
-  data: VideoDataClippedType<T>;
+  data: ClippingDataType<T>;
 }
 export class DownloadBase<T = unknown> extends EventEmitter {
   downloadingState: DownloadParams<T>["downloadingState"];

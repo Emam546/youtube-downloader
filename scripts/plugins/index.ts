@@ -13,5 +13,5 @@ export interface PluginType {
   navigate: (val: string) => Promise<NavigateData | null> | NavigateData | null;
   search?: (val: string) => RelatedData[];
   predictInputString: (val: Record<string, any>) => string;
-  download: <T>(data: DownloadParams<T>) => DownloadBase;
+  download: <T>(data: DownloadParams<T>) => DownloadBase<T>;
 }

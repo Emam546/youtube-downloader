@@ -19,17 +19,11 @@ describe("test download", () => {
       const VideoDownloader = download({
         data: {
           clipped: false,
-          data: {
-            ytdlpData: {
-              link: videoUrl,
-              ...format,
-            },
+
+          ytdlpData: {
+            link: videoUrl,
+            ...format,
           },
-          PATH: "youtube",
-          ftype: format.type,
-          fquality: "asdfs",
-          previewLink: "sdsf",
-          title: "asdasd",
         },
         downloadingState: {
           continued: false,
@@ -46,20 +40,12 @@ describe("test download", () => {
       if (!format) return;
       const VideoDownloader = download({
         data: {
-          clipped: true,
-          start: 0,
-          end: 5,
-          data: {
-            ytdlpData: {
-              link: videoUrl,
-              ...format,
-            },
+          clipped: false,
+
+          ytdlpData: {
+            link: videoUrl,
+            ...format,
           },
-          PATH: "youtube",
-          ftype: format.type,
-          fquality: "asdfs",
-          previewLink: "sdsf",
-          title: "asdasd",
         },
         downloadingState: {
           continued: false,
@@ -88,17 +74,10 @@ test("test download a video with a problem", async () => {
   const VideoDownloader = download({
     data: {
       clipped: false,
-      data: {
-        ytdlpData: {
-          link: videoUrl,
-          ...format,
-        },
+      ytdlpData: {
+        link: videoUrl,
+        ...format,
       },
-      PATH: "youtube",
-      ftype: format.type,
-      fquality: "asdfs",
-      previewLink: "sdsf",
-      title: "asdasd",
     },
     downloadingState: {
       continued: false,

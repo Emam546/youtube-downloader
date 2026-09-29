@@ -40,13 +40,12 @@ export class FfmpegBase extends LinkDownloadBase {
 
   constructor(data: DownloadParams<FFmpegData>) {
     super(data);
-
-    this.editData = data.data.data.editData;
-    if (!data.data.clipped) return;
-    this.ffmpegData = {
-      duration: data.data.end - data.data.start,
-      start: data.data.start,
-    };
+    this.editData = data.data.editData;
+    if (data.data.clipped)
+      this.ffmpegData = {
+        duration: data.data.end - data.data.start,
+        start: data.data.start,
+      };
   }
   rebuildingState = false;
 

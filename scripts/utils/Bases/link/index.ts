@@ -45,7 +45,7 @@ export class LinkDownloadBase extends DownloadBase {
   link?: string;
   constructor(data: DownloadParams<LinkDownloadData>) {
     super(data);
-    this.link = data.data.data.link;
+    this.link = data.data.link;
   }
   static async getEstimatedFileSize(
     data: LinkDownloadData,

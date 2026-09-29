@@ -13,17 +13,11 @@ describe("test download", () => {
       const VideoDownloader = new FfmpegMergeBase({
         data: {
           clipped: false,
-          data: {
-            mergeData: {
-              videoLink: path.join(__dirname, "video.mp4"),
-              audioLink: path.join(__dirname, "audio.mp4"),
-            },
+
+          mergeData: {
+            videoLink: path.join(__dirname, "video.mp4"),
+            audioLink: path.join(__dirname, "audio.mp4"),
           },
-          PATH: "youtube",
-          ftype: "tye",
-          fquality: "asdfs",
-          previewLink: "sdsf",
-          title: "asdasd",
         },
         downloadingState: {
           continued: false,
