@@ -12,7 +12,8 @@ import internal from "stream";
 import { DownloadTray } from "./tray";
 import path from "path";
 import { convertFunc } from "@utils/app";
-import { DownloadBase, WindowData } from "../../../../scripts/utils/Bases";
+import type { DownloadBase, WindowData } from "@scripts/utils/Bases";
+import { getHistoryManager, DownloadStatus } from "../downloadHistory";
 export type FlagType = "w" | "a";
 export interface VideoData {
   link: string;
@@ -86,6 +87,8 @@ export class BaseDownloaderWindow<T> extends DownloaderWindow {
   downloadSpeed: number;
   downloadingState: StateType;
   state: ProgressBarState["status"] = "connecting";
+  private historyManager = getHistoryManager();
+  public historyId?: string;
   constructor(
     options: BrowserProps,
     downloader: (data: WindowData) => DownloadBase<T>,
@@ -141,8 +144,34 @@ export class BaseDownloaderWindow<T> extends DownloaderWindow {
     this.on("close", () => {
       if (this.curStream && !this.curStream.closed) this.curStream.destroy();
       this.downloader.close();
+      if (this.historyId) {
+        this.historyManager.untrackDownload(this.historyId);
+      }
     });
     DownloadTray.addWindow(this);
+
+    // Initialize history tracking
+    this.initializeHistoryTracking(data);
+  }
+
+  private initializeHistoryTracking(data: DownloaderData) {
+    // Extract format and quality from the data if available
+    const format = data.videoData.link.split(".").pop()?.split("?")[0];
+    const quality = data.pageData.tabs.find(
+      (t) => t.type === "Download",
+    )?.title;
+
+    this.historyId = this.historyManager.createHistoryItem(
+      this.link,
+      this.videoData.title,
+      this.videoData.previewLink,
+      format,
+      quality,
+      this.id,
+    ).id;
+
+    this.historyManager.trackDownload(this.historyId, this);
+    this.historyManager.updateStatus(this.historyId, "preparing");
   }
   public static fromWebContents(
     webContents: Electron.WebContents,
@@ -223,5 +252,83 @@ export class BaseDownloaderWindow<T> extends DownloaderWindow {
   private onSetPageData(pageData: ProgressData) {
     if (this.isDestroyed()) return;
     this.webContents.send("onSetPageData", pageData);
+  }
+
+  // Override parent methods to update history
+  changeState(state: ProgressBarState["status"]) {
+    super.changeState(state);
+    if (this.historyId) {
+      const statusMap: Record<ProgressBarState["status"], DownloadStatus> = {
+        connecting: "connecting",
+        receiving: "downloading",
+        pause: "paused",
+        completed: "completed",
+        rebuilding: "downloading",
+      };
+      this.historyManager.updateStatus(
+        this.historyId,
+        statusMap[state] || "downloading",
+      );
+    }
+  }
+
+  onGetChunk(size: number) {
+    super.onGetChunk(size);
+    if (this.historyId) {
+      const progress = this.fileSize ? (this.curSize / this.fileSize) * 100 : 0;
+      // Calculate speed and ETA for history tracking
+      const now = Date.now();
+      const elapsedSeconds = Math.ceil((now - this.startTime) / 1000);
+      const speed =
+        elapsedSeconds > 0
+          ? Math.round(this.speedTransfer / elapsedSeconds)
+          : 0;
+      const eta =
+        speed > 0 && this.fileSize
+          ? (this.fileSize - this.curSize) / speed
+          : undefined;
+      this.historyManager.updateProgress(
+        this.historyId,
+        progress,
+        this.curSize,
+        this.fileSize,
+        speed,
+        eta,
+      );
+    }
+  }
+
+  end() {
+    super.end();
+    if (this.historyId) {
+      this.historyManager.updateStatus(this.historyId, "completed");
+      this.historyManager.updateFilePath(
+        this.historyId,
+        this.downloadingState.path,
+      );
+      this.historyManager.untrackDownload(this.historyId);
+    }
+  }
+
+  setResumability(state: boolean) {
+    super.setResumability(state);
+    if (this.historyId) {
+      this.historyManager.updateResumability(this.historyId, state);
+    }
+  }
+
+  setFileSize(size?: number) {
+    super.setFileSize(size);
+    if (this.historyId && size) {
+      this.historyManager.updateProgress(this.historyId, 0, 0, size);
+    }
+  }
+
+  error(err: Error) {
+    super.error(err);
+    if (this.historyId) {
+      this.historyManager.setError(this.historyId, err.message);
+      this.historyManager.untrackDownload(this.historyId);
+    }
   }
 }

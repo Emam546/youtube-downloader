@@ -27,8 +27,41 @@ export namespace ApiRender {
   interface OnMethods {
     getInputUrl(url: string): void;
     "paste-text": (text: string) => void;
+    downloadHistoryUpdated(): void;
   }
   interface OnceMethods {}
+}
+export interface DownloadHistoryItem {
+  id: string;
+  url: string;
+  title: string;
+  thumbnail: string;
+  status:
+    | "queued"
+    | "preparing"
+    | "connecting"
+    | "downloading"
+    | "paused"
+    | "completed"
+    | "failed"
+    | "cancelled"
+    | "interrupted";
+  progress: number;
+  downloadedBytes: number;
+  totalBytes?: number;
+  downloadSpeed?: number;
+  eta?: number;
+  isCompleted: boolean;
+  isPaused: boolean;
+  isFailed: boolean;
+  isResumable: boolean;
+  error?: string;
+  createdAt: number;
+  completedAt?: number;
+  format?: string;
+  quality?: string;
+  filePath?: string;
+  windowId?: number;
 }
 export namespace ApiMain {
   interface OnMethods {
@@ -44,6 +77,15 @@ export namespace ApiMain {
     navigate: ReturnType<typeof navigate>;
 
     predictInputString: ReturnType<typeof predictInputString>;
+    getDownloadHistory(): import("@shared/api").DownloadHistoryItem[];
+    removeDownloadHistoryItem(id: string): void;
+    clearDownloadHistory(): void;
+    clearCompletedDownloads(): void;
+    clearFailedDownloads(): void;
+    pauseDownload(id: string): boolean;
+    resumeDownload(id: string): boolean;
+    cancelDownload(id: string): boolean;
+    verifyDownloadFileExists(id: string): Promise<boolean>;
   }
   interface HandleOnceMethods {}
 }

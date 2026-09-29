@@ -1,10 +1,14 @@
 {
-  
   "extends": "next/core-web-vitals",
   "rules": {
     "@next/next/no-img-element": 0,
     "react-hooks/exhaustive-deps": 0,
     "no-console": 1
   },
-  "ignorePatterns": ["server"]
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "ignorePatterns": [
+    "server"
+  ]
 }

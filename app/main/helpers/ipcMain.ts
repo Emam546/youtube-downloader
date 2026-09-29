@@ -92,15 +92,7 @@ export const OnMethods: OnMethodsType = {
 export const OnceMethods: OnceMethodsType = {};
 export const HandleMethods: HandelMethodsType = {};
 export const HandleOnceMethods: HandelOnceMethodsType = {};
+
 ObjectEntries(OnMethods).forEach(([key, val]) => {
   ipcMain.on(key, val);
 });
-// ObjectEntries(HandleMethods).forEach(([key, val]) => {
-//     ipcMain.handle(key, val);
-// });
-// ObjectEntries(OnceMethods).forEach(([key, val]) => {
-//     ipcMain.once(key, val);
-// });
-// ObjectEntries(HandleOnceMethods).forEach(([key, val]) => {
-//     ipcMain.handleOnce(key, val);
-// });

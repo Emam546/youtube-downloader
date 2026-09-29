@@ -3,12 +3,12 @@ import "./helpers/ipcMain";
 import autoUpdater from "./updater";
 import { createMainWindow } from "./lib/main";
 import { app } from "electron";
-import { electronApp } from "@electron-toolkit/utils";
 import { lunchArgs } from "./helpers/launchHelpers";
 import path from "path";
 import { MainWindow } from "./lib/main/window";
 import { fileHandler } from "./lib/FileHandeler";
 import { AfterLunch, PrePare } from "./lib/prepare";
+import { getHistoryManager } from "./lib/downloadHistory";
 
 if (process.defaultApp) {
   if (process.argv.length >= 2) {
@@ -29,12 +29,24 @@ async function createWindow(args: string[]) {
   );
 }
 app.whenReady().then(async () => {
+
   fileHandler();
   await PrePare();
+  // Initialize download history and check for interrupted downloads
+  const historyManager = getHistoryManager();
+  historyManager.initialize();
   await createWindow(process.argv);
   await AfterLunch();
 });
-electronApp.setAppUserModelId("com.youtube-downloader");
+
+// Set app user model ID after app is ready
+app.whenReady().then(() => {
+  try {
+    app.setAppUserModelId("com.youtube-downloader");
+  } catch (error) {
+    console.error("Failed to set app user model ID:", error);
+  }
+});
 
 const gotSingleInstanceLock = app.requestSingleInstanceLock();
 if (!gotSingleInstanceLock) app.quit();
@@ -52,10 +64,6 @@ else
       if (MainWindow.Window.isMinimized()) MainWindow.Window.restore();
     } else if (!autoUpdater.hasUpdate) createWindow(argv);
   });
-
-app.on("window-all-closed", () => {
-  app.quit();
-});
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();

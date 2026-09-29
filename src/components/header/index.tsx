@@ -1,8 +1,9 @@
 import { useContext, useState } from "react";
 import { UserContext } from "@src/context/info";
 import Link, { LinkProps } from "next/link";
-import { faBars } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faHistory } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import DownloadHistory from "@src/components/downloadHistory";
 interface LiProps extends LinkProps {
     children: React.ReactNode;
 }
@@ -21,6 +22,7 @@ function LiElement({ children, ...props }: LiProps) {
 export default function Header() {
     const { siteName } = useContext(UserContext);
     const [toggle, setToggle] = useState(false);
+    const [historyOpen, setHistoryOpen] = useState(false);
     return (
         <nav>
             <div className="container tw-flex tw-flex-wrap tw-justify-center tw-items-stretch tw-px-0 tw-border-b tw-border-b-[#ddd]">
@@ -36,16 +38,27 @@ export default function Header() {
                         />
                         <span className="tw-font-bold">{siteName}</span>
                     </Link>
-                    <button
-                        className="tw-block tw-leading-[0] lg:tw-hidden tw-border tw-border-primary tw-text-primary tw-rounded tw-self-center tw-p-1 tw-px-1.5"
-                        type="button"
-                        aria-controls="navbarSupportedContent"
-                        aria-expanded={toggle}
-                        onClick={() => setToggle(!toggle)}
-                        aria-label="Toggle navigation"
-                    >
-                        <FontAwesomeIcon icon={faBars} />
-                    </button>
+                    <div className="tw-flex tw-items-center tw-gap-2">
+                        <button
+                            className="tw-border tw-border-primary tw-text-primary tw-rounded tw-self-center tw-p-1 tw-px-1.5 hover:tw-bg-primary hover:tw-text-white tw-transition-colors"
+                            type="button"
+                            onClick={() => setHistoryOpen(true)}
+                            aria-label="Download History"
+                            title="Download History"
+                        >
+                            <FontAwesomeIcon icon={faHistory} />
+                        </button>
+                        <button
+                            className="tw-block tw-leading-[0] lg:tw-hidden tw-border tw-border-primary tw-text-primary tw-rounded tw-self-center tw-p-1 tw-px-1.5"
+                            type="button"
+                            aria-controls="navbarSupportedContent"
+                            aria-expanded={toggle}
+                            onClick={() => setToggle(!toggle)}
+                            aria-label="Toggle navigation"
+                        >
+                            <FontAwesomeIcon icon={faBars} />
+                        </button>
+                    </div>
                 </div>
                 <div
                     className="tw-h-0 aria-expanded:tw-h-auto lg:tw-h-auto tw-w-full lg:tw-w-auto tw-overflow-hidden aria-expanded:tw-mb-2 lg:aria-expanded:tw-mb-0 lg:tw-mb-0"
@@ -58,6 +71,7 @@ export default function Header() {
                     </ul>
                 </div>
             </div>
+            <DownloadHistory isOpen={historyOpen} onClose={() => setHistoryOpen(false)} />
         </nav>
     );
 }

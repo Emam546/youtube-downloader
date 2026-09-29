@@ -3,8 +3,8 @@ import {
   BrowserWindow,
   BrowserWindowConstructorOptions,
   dialog,
+  powerSaveBlocker,
 } from "electron";
-import { powerSaveBlocker } from "electron";
 import { logger } from "../helpers/logger";
 
 export class PowerStarter {
@@ -24,10 +24,10 @@ export class DownloadingWindow extends BrowserWindow {
   }
 }
 export class DownloaderWindow extends DownloadingWindow {
-  private startTime = Date.now();
+  public startTime = Date.now();
   public static Windows: Record<string, DownloaderWindow> = {};
   private sleepId = new PowerStarter();
-  private speedTransfer = 0;
+  public speedTransfer = 0;
 
   resumable?: boolean;
   fileSize?: number;

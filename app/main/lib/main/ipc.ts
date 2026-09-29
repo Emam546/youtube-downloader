@@ -12,6 +12,7 @@ import { predictInputString } from "../../../../scripts/plugins/predictInputStri
 import { Plugins } from "./lib/plugins";
 import { showContextMenu } from "./lib/context";
 import { logger } from "@app/main/helpers/logger";
+import { getHistoryManager } from "../downloadHistory";
 
 type OnMethodsType = {
   [K in keyof ApiMain.OnMethods]: ConvertToIpCMainFunc<ApiMain.OnMethods[K]>;
@@ -66,6 +67,42 @@ export const HandleMethods: HandelMethodsType = {
   },
   predictInputString(_, ...args) {
     return predictInputString(Plugins)(...args);
+  },
+  getDownloadHistory: () => {
+    const historyManager = getHistoryManager();
+    return historyManager.getAll();
+  },
+  removeDownloadHistoryItem: async (_, id: string) => {
+    const historyManager = getHistoryManager();
+    historyManager.remove(id);
+  },
+  clearDownloadHistory: async () => {
+    const historyManager = getHistoryManager();
+    historyManager.clear();
+  },
+  clearCompletedDownloads: async () => {
+    const historyManager = getHistoryManager();
+    historyManager.clearCompleted();
+  },
+  clearFailedDownloads: async () => {
+    const historyManager = getHistoryManager();
+    historyManager.clearFailed();
+  },
+  pauseDownload: (_, id: string) => {
+    const historyManager = getHistoryManager();
+    return historyManager.pauseDownload(id);
+  },
+  resumeDownload: (_, id: string) => {
+    const historyManager = getHistoryManager();
+    return historyManager.resumeDownload(id);
+  },
+  cancelDownload: (_, id: string) => {
+    const historyManager = getHistoryManager();
+    return historyManager.cancelDownload(id);
+  },
+  verifyDownloadFileExists: (_, id: string) => {
+    const historyManager = getHistoryManager();
+    return historyManager.verifyFileExists(id);
   },
 };
 export const HandleOnceMethods: HandelOnceMethodsType = {};

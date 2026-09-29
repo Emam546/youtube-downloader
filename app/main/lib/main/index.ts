@@ -12,7 +12,7 @@ import { Context } from "@src/types/api";
 import { MainWindow } from "@app/main/lib/main/window";
 import { isDev, isProd } from "@app/main/utils";
 
-const appServe = isProd
+const appServe = isProd()
   ? serve({
       directory: path.join(__dirname, "../renderer"),
     })
@@ -71,12 +71,12 @@ export const createMainWindow = async (
     return { action: "deny" };
   });
   win.on("close", saveState);
-  if (isProd && appServe) {
+  if (isProd() && appServe) {
     await appServe(win);
     win.webContents.on("devtools-opened", () => {
       win.webContents.closeDevTools();
     });
-  } else if (isDev) {
+  } else if (isDev()) {
     await win.loadURL(`http://localhost:3000`);
     win.webContents.openDevTools();
     win.webContents.on("did-fail-load", () => {

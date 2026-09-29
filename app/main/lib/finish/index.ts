@@ -44,7 +44,7 @@ export const createFinishWindow = async (
     shell.openExternal(details.url);
     return { action: "deny" };
   });
-  if (isDev) {
+  if (isDev()) {
     await win.loadURL(
       `${process.env["ELECTRON_RENDERER_URL"] as string}/finish`
     );

@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
@@ -12,16 +16,31 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "skipDefaultLibCheck": false,
     "jsx": "preserve",
     "incremental": true,
     "paths": {
-      "@src/*": ["./src/*"],
-      "@serv/*": ["./server/src/*"],
-      "@shared/*": ["./shared/*"],
-      "@utils/*": ["./utils/*"],
-      "@shared/renderer/*": ["./app/renderer/shared/*"],
-      "@scripts/*": ["./scripts/*"],
-      "@app/*": ["./app/*"]
+      "@src/*": [
+        "./src/*"
+      ],
+      "@serv/*": [
+        "./server/src/*"
+      ],
+      "@shared/*": [
+        "./shared/*"
+      ],
+      "@utils/*": [
+        "./utils/*"
+      ],
+      "@shared/renderer/*": [
+        "./app/renderer/shared/*"
+      ],
+      "@scripts/*": [
+        "./scripts/*"
+      ],
+      "@app/*": [
+        "./app/*"
+      ]
     },
     "plugins": [
       {
@@ -30,6 +49,17 @@
     ],
     "skipLibCheck": true
   },
-  "include": ["src", "shared", "utils", "./scripts", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", "app", "server", "dist", "out"]
+  "include": [
+    "src",
+    "shared",
+    "utils",
+    "scripts",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "server",
+    "dist",
+    "out"
+  ]
 }

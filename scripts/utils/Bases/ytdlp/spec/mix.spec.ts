@@ -45,4 +45,36 @@ describe("test download", () => {
       );
     });
   });
+  describe("test clipped", () => {
+    test("simple video", async () => {
+      const formats = await getAllFormats(videoUrl);
+      const videoformat = formats.find((v) => v.has_video && !v.has_audio);
+      const audioformat = formats.find((v) => !v.has_video && v.has_audio);
+      if (!videoformat) return;
+      if (!audioformat) return;
+      const VideoDownloader = download({
+        data: {
+          clipped: false,
+          data: {
+            interfaces: {
+              video: { ...videoformat, link: videoUrl },
+              audio: { ...audioformat, link: videoUrl },
+            },
+          },
+          PATH: "youtube",
+          ftype: videoformat.type,
+          fquality: "asdfs",
+          previewLink: "sdsf",
+          title: "asdasd",
+        },
+        downloadingState: {
+          continued: false,
+          path: videoPath,
+        },
+      });
+      console.log(
+        await VideoDownloader.download((path) => fs.createWriteStream(path)),
+      );
+    });
+  });
 });
