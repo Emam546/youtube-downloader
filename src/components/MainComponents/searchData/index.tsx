@@ -13,7 +13,7 @@ export default function SearchVideoResult() {
     queryKey: ["search", search],
     queryFn: async () => {
       const res = await getSearchData(typeof search == "string" ? search : "");
-      return res;
+      return res.filter((val) => val.data.length > 0);
     },
     retry: 0,
     enabled: search != undefined,
@@ -34,7 +34,6 @@ export default function SearchVideoResult() {
         </ErrorMessage>
       </>
     );
-  paramQuery.data = paramQuery.data?.filter((val) => val.data.length > 0);
   return (
     <section>
       {paramQuery.data?.length == 0 && <div>No results</div>}
