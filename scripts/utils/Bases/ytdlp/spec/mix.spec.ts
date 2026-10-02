@@ -6,7 +6,7 @@ import { getVideoInfo } from "../../../ffmpeg";
 import { YtdlpMergeData, YtdlMerge } from "../mix";
 import os from "os";
 import path from "path";
-const videoUrl = "https://www.youtube.com/shorts/u9dKu6HaMcw";
+const videoUrl = "https://www.youtube.com/shorts/MxyAciIEEco";
 const videoPath = path.join(process.cwd(), "./video.mp4");
 export function download(data: DownloadParams<YtdlpMergeData>) {
   return new YtdlMerge(data);
@@ -16,8 +16,20 @@ describe("test download", () => {
   describe("test unClipped", () => {
     test("simple video", async () => {
       const formats = await getAllFormats(videoUrl);
-      const videoformat = formats.find((v) => v.has_video && !v.has_audio);
-      const audioformat = formats.find((v) => !v.has_video && v.has_audio);
+      const videoformat = formats.find(
+        (v) =>
+          v.has_video &&
+          !v.has_audio &&
+          v.ext === "mp4" &&
+          v.vcodec?.startsWith("avc1"),
+      );
+      const audioformat = formats.find(
+        (v) =>
+          !v.has_video &&
+          v.has_audio &&
+          v.ext === "m4a" &&
+          v.acodec?.startsWith("mp4a"),
+      );
       if (!videoformat) return;
       if (!audioformat) return;
       const VideoDownloader = download({
@@ -42,13 +54,27 @@ describe("test download", () => {
   describe("test clipped", () => {
     test("simple video", async () => {
       const formats = await getAllFormats(videoUrl);
-      const videoformat = formats.find((v) => v.has_video && !v.has_audio);
-      const audioformat = formats.find((v) => !v.has_video && v.has_audio);
+      const videoformat = formats.find(
+        (v) =>
+          v.has_video &&
+          !v.has_audio &&
+          v.ext === "mp4" &&
+          v.vcodec?.startsWith("avc1"),
+      );
+      const audioformat = formats.find(
+        (v) =>
+          !v.has_video &&
+          v.has_audio &&
+          v.ext === "m4a" &&
+          v.acodec?.startsWith("mp4a"),
+      );
       if (!videoformat) return;
       if (!audioformat) return;
       const VideoDownloader = download({
         data: {
-          clipped: false,
+          clipped: true,
+          start: 0,
+          end: 4,
           interfaces: {
             video: { ...videoformat, link: videoUrl },
             audio: { ...audioformat, link: videoUrl },

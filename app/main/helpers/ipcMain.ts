@@ -8,6 +8,8 @@ import {
   OpenFolderSelected,
   ShutDown,
   SleepComputer,
+  getExtensionPath,
+  openBrowserExtensionsPage,
 } from "../lib/ipcmain";
 import { ApiMain } from "@shared/api";
 import { logger } from "./logger";
@@ -88,11 +90,26 @@ export const OnMethods: OnMethodsType = {
   sleepComputer: function (): void {
     SleepComputer();
   },
+  openExtensionFolder: function (): void {
+    const extensionPath = getExtensionPath();
+    OpenFolder(extensionPath);
+  },
+  openBrowserExtensionsPage: function (_, browser?: string): void {
+    openBrowserExtensionsPage(browser || "chrome");
+  },
 };
 export const OnceMethods: OnceMethodsType = {};
-export const HandleMethods: HandelMethodsType = {};
+export const HandleMethods: HandelMethodsType = {
+  getExtensionPath: function (): string {
+    return getExtensionPath();
+  },
+};
 export const HandleOnceMethods: HandelOnceMethodsType = {};
 
 ObjectEntries(OnMethods).forEach(([key, val]) => {
   ipcMain.on(key, val);
+});
+
+ObjectEntries(HandleMethods).forEach(([key, val]) => {
+  ipcMain.handle(key, val);
 });

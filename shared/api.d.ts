@@ -29,8 +29,12 @@ export namespace ApiMain {
     quitApp(): void;
     shutDownComputer(force: boolean): void;
     sleepComputer(): void;
+    openExtensionFolder(): void;
+    openBrowserExtensionsPage(browser?: string): void;
   }
   interface OnceMethods {}
-  interface HandleMethods {}
+  interface HandleMethods {
+    getExtensionPath(): string;
+  }
   interface HandleOnceMethods {}
 }

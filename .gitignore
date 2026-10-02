@@ -70,3 +70,6 @@ dist
 yt-dlp.exe
 development.env
 *.tmp
+
+# Browser extension (downloaded during build)
+resources/browser-extension/chrome-built

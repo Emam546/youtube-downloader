@@ -9,6 +9,10 @@ extraFiles:
     to: "./screenshots"
     filter:
       - "**/*"
+  - from: "./resources/browser-extension/chrome-built"
+    to: "./browser-extension"
+    filter:
+      - "**/*"
     
 directories:
   buildResources: build

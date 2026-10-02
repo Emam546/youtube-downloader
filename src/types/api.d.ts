@@ -67,6 +67,8 @@ export namespace ApiMain {
   interface OnMethods {
     downloadVideoLink: ConvertFromIpCMainFunc<typeof DownloadVideo>;
     showContextMenu: ConvertFromIpCMainFunc<typeof showContextMenu>;
+    openExtensionFolder(): void;
+    openBrowserExtensionsPage(browser?: string): void;
   }
   interface OnceMethods {}
   interface HandleMethods {
@@ -86,6 +88,7 @@ export namespace ApiMain {
     resumeDownload(id: string): boolean;
     cancelDownload(id: string): boolean;
     verifyDownloadFileExists(id: string): Promise<boolean>;
+    getExtensionPath(): string;
   }
   interface HandleOnceMethods {}
 }

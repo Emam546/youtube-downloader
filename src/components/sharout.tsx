@@ -11,9 +11,11 @@ import Loading from "./common/Loading";
 export default function SharedLayout({
   children,
   components,
+  hideInput,
 }: {
   children: ReactNode;
   components?: ReactNode;
+  hideInput?: boolean;
 }) {
   const isLoading = useAppSelector((s) => s.loading);
   useEffect(() => {
@@ -65,11 +67,14 @@ export default function SharedLayout({
       </Head>
       <UserProvider>
         <Header />
-        <main className="container downloader tw-bg-white tw-shadow lg:tw-px-12 tw-pb-10">
-          <InputHolder />
-          {isLoading && <Loading />}
-          {components}
-        </main>
+        {!hideInput && (
+          <main className="container downloader tw-bg-white tw-shadow lg:tw-px-12 tw-pb-10">
+            <InputHolder />
+            {isLoading && <Loading />}
+            {components}
+          </main>
+        )}
+
         {children}
         <Footer />
       </UserProvider>

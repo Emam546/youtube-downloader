@@ -19,6 +19,7 @@ export type NextPageWithSpecialComponent<
   IP = P,
 > = NextPage<P, IP> & {
   getLayout?: () => ReactNode;
+  hideInput?: boolean;
 };
 type AppPropsWithLayout = AppProps & {
   Component: NextPageWithSpecialComponent;
@@ -30,7 +31,10 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
   return (
     <QueryClientProvider client={queryClient}>
       <Provider store={store}>
-        <SharedLayout components={Component.getLayout?.()}>
+        <SharedLayout
+          components={Component.getLayout?.()}
+          hideInput={Component.hideInput}
+        >
           <Component {...pageProps} />
         </SharedLayout>
       </Provider>

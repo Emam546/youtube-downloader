@@ -1,0 +1,93 @@
+name: Build Desktop Application
+
+on:
+  push:
+    branches: [ main, master ]
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download extension
+        run: npm run download:extension
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify extension
+        run: |
+          if (Test-Path "resources\browser-extension\chrome-built\manifest.json") {
+            Write-Host "Extension manifest found"
+            Get-Content "resources\browser-extension\chrome-built\manifest.json"
+          } else {
+            Write-Host "ERROR: Extension manifest not found"
+            exit 1
+          }
+
+      - name: Build Electron
+        run: npm run build:electron
+
+      - name: Upload Electron build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: electron-build
+          path: out/
+          retention-days: 7
+
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download extension
+        run: npm run download:extension
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify extension
+        run: |
+          if [ -f "resources/browser-extension/chrome-built/manifest.json" ]; then
+            echo "Extension manifest found"
+            cat resources/browser-extension/chrome-built/manifest.json
+          else
+            echo "ERROR: Extension manifest not found"
+            exit 1
+          fi
+
+      - name: Build Electron
+        run: npm run build:electron
+
+      - name: Upload Electron build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: electron-build-linux
+          path: out/
+          retention-days: 7

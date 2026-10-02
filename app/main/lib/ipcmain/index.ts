@@ -2,6 +2,7 @@
 import { logger } from "@app/main/helpers/logger";
 import { exec } from "child_process";
 import path from "path";
+import { app } from "electron";
 export function OpenFile(filePath: string) {
   return new Promise((res, rej) => {
     let command: string;
@@ -111,4 +112,51 @@ export function SleepComputer() {
       logger.info(`Stdout: ${stdout}`);
     },
   );
+}
+
+export function getExtensionPath(): string {
+  if (app.isPackaged) {
+    return path.join(process.resourcesPath, "browser-extension");
+  } else {
+    return path.join(process.cwd(), "resources", "browser-extension", "chrome-built");
+  }
+}
+
+export function openBrowserExtensionsPage(browser = "chrome") {
+  return new Promise((res, rej) => {
+    let url;
+    switch (browser.toLowerCase()) {
+      case "chrome":
+        url = "chrome://extensions/";
+        break;
+      case "edge":
+        url = "edge://extensions/";
+        break;
+      case "brave":
+        url = "brave://extensions/";
+        break;
+      default:
+        return rej(new Error(`Unsupported browser: ${browser}`));
+    }
+
+    let command;
+    switch (process.platform) {
+      case "win32":
+        command = `start "" "${url}"`;
+        break;
+      case "darwin":
+        command = `open "${url}"`;
+        break;
+      case "linux":
+        command = `xdg-open "${url}"`;
+        break;
+      default:
+        return rej(new Error(`Unsupported platform: ${process.platform}`));
+    }
+
+    exec(command, (err) => {
+      if (err) return rej(err);
+      res(true);
+    });
+  });
 }
