@@ -43,12 +43,14 @@ export type TabsData = Media<unknown>[];
 export interface Props<T> {
   data: Required<ResponseData<unknown>>["video"]["medias"];
   title: string;
+  thumbnail: string;
   clippedData: ColumnProps<T>["clippedData"];
 }
 export default function TableDownload<T>({
   data,
   clippedData,
   title,
+  thumbnail,
 }: Props<T>) {
   const [state, setState] = useState<TabsType>("VIDEO");
   const { VIDEO, AUDIO, OTHERS } = data;
@@ -91,6 +93,7 @@ export default function TableDownload<T>({
                     key={`${video.id}-${i}`}
                     video={video}
                     title={title}
+                    thumbnail={thumbnail}
                     clippedData={clippedData}
                   />
                 ))}
@@ -101,6 +104,7 @@ export default function TableDownload<T>({
                     key={`${video.id}-${i}`}
                     video={video}
                     title={title}
+                    thumbnail={thumbnail}
                     clippedData={clippedData}
                   />
                 ))}
@@ -111,6 +115,7 @@ export default function TableDownload<T>({
                     key={`${video.id}-${i}`}
                     video={video}
                     title={title}
+                    thumbnail={thumbnail}
                     clippedData={clippedData}
                   />
                 ))}

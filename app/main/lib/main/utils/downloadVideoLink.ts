@@ -7,6 +7,7 @@ import { Plugins } from "../lib/plugins";
 export async function DownloadVideo<T>(
   e: Electron.IpcMainEvent,
   data: VideoDataClippedType<T>,
+  thumbnail: string,
 ) {
   const progressBarData = Plugins.find((d) => d.PATH == data.PATH)?.download;
   if (!progressBarData) throw new Error("Undefined Window");
@@ -25,6 +26,13 @@ export async function DownloadVideo<T>(
           title: data.title,
           previewLink: data.previewLink,
         },
+      },
+      historyData: {
+        format: data.ftype,
+        quality: data.fquality,
+        title: data.title,
+        url: data.previewLink,
+        thumbnail,
       },
     },
     (args) =>

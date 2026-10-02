@@ -114,6 +114,7 @@ export default function VideoResults() {
                     }
                   : undefined
               }
+              thumbnail={data.video.thumbnail || ""}
               title={data.video.title}
             />
           </div>

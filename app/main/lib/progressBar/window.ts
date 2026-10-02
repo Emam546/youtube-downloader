@@ -37,6 +37,13 @@ export interface DownloaderData {
   videoData: VideoData;
   downloadingStatus: DownloadingStatus;
   pageData: ProgressData;
+  historyData: {
+    url: string;
+    title: string;
+    thumbnail: string;
+    format: string;
+    quality: string;
+  };
 }
 export const defaultPageData: ProgressData = {
   footer: {
@@ -155,21 +162,14 @@ export class BaseDownloaderWindow<T> extends DownloaderWindow {
   }
 
   private initializeHistoryTracking(data: DownloaderData) {
-    // Extract format and quality from the data if available
-    const format = data.videoData.link.split(".").pop()?.split("?")[0];
-    const quality = data.pageData.tabs.find(
-      (t) => t.type === "Download",
-    )?.title;
-
     this.historyId = this.historyManager.createHistoryItem(
-      this.link,
-      this.videoData.title,
-      this.videoData.previewLink,
-      format,
-      quality,
+      data.historyData.url,
+      data.historyData.title,
+      data.historyData.thumbnail,
+      data.historyData.format,
+      data.historyData.quality,
       this.id,
     ).id;
-
     this.historyManager.trackDownload(this.historyId, this);
     this.historyManager.updateStatus(this.historyId, "preparing");
   }

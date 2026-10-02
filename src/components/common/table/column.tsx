@@ -12,6 +12,7 @@ import { Label } from "../label";
 export interface Props<T> {
   video: Media<T>;
   title: string;
+  thumbnail: string;
   clippedData?: {
     start: number;
     end: number;
@@ -26,7 +27,11 @@ function formatBytes(bytes: number, decimals = 2) {
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 }
-export default function MapData({ video, title, clippedData }: Props<unknown>) {
+export default function MapData({
+  video,
+  clippedData,
+  thumbnail,
+}: Props<unknown>) {
   const mutate = useMutation({
     async onMutate(data) {
       const response = await axios.post("/api/prepare-download", data);
@@ -62,16 +67,16 @@ export default function MapData({ video, title, clippedData }: Props<unknown>) {
           onClick={() => {
             const data = clippedData
               ? {
-                  clipped: true,
+                  clipped: true as const,
                   ...clippedData,
                   ...video.data,
                 }
               : {
-                  clipped: false,
+                  clipped: false as const,
                   ...video.data,
                 };
             if (window.Environment == "desktop")
-              window.api.send("downloadVideoLink", data as never);
+              window.api.send("downloadVideoLink", data, thumbnail);
             else if (window.Environment == "web") {
               mutate.mutate(data as any);
             }

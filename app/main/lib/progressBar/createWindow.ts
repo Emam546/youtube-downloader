@@ -14,11 +14,18 @@ export interface Props {
   preloadData: Omit<ProgressBarState, "status">;
   stateData: StateType;
   downloadingStatus?: DownloadingStatus;
+  historyData: {
+    url: string;
+    title: string;
+    thumbnail: string;
+    format: string;
+    quality: string;
+  };
 }
 export const createWindow = async <T>(
   vars: Props,
   downloader: (args: WindowData) => DownloadBase<T>,
-  options?: BrowserWindowConstructorOptions
+  options?: BrowserWindowConstructorOptions,
 ): Promise<BaseDownloaderWindow<T>> => {
   const stateData = vars.preloadData;
 
@@ -43,7 +50,8 @@ export const createWindow = async <T>(
       },
       videoData: { link: preloadData.link, video: preloadData.video },
       pageData: preloadData.pageData,
-    }
+      historyData: vars.historyData,
+    },
   );
 
   win.webContents.setWindowOpenHandler((details) => {
@@ -52,7 +60,7 @@ export const createWindow = async <T>(
   });
   if (isDev()) {
     await win.loadURL(
-      `${process.env["ELECTRON_RENDERER_URL"] as string}/progress`
+      `${process.env["ELECTRON_RENDERER_URL"] as string}/progress`,
     );
   } else await win.loadFile(path.join(__dirname, "../windows/progress.html"));
   await win.download();
