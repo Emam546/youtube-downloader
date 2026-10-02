@@ -21,8 +21,10 @@ export class DownloadBase<T = unknown> extends EventEmitter {
     super();
     this.downloadingState = downloadingState;
 
-    this.curSize = fs.existsSync(this.downloadingState.path)
-      ? fs.statSync(this.downloadingState.path).size
+    this.curSize = this.downloadingState.path
+      ? fs.existsSync(this.downloadingState.path)
+        ? fs.statSync(this.downloadingState.path).size
+        : 0
       : 0;
     this.setCurSize(this.curSize);
   }

@@ -27,14 +27,14 @@ export class YtdlpBase extends FfmpegResizeMergeBase {
   }
   async download(func: (path: string) => Writable) {
     if (!this.ytdlpData) return await super.download(func);
-
     const ytdlpStream = ytdlp.stream(this.ytdlpData.link, {
       ...this.ytdlpData.args,
       abortOnError: true,
       noKeepFragments: true,
-      noContinue: true,
+      noContinue: !this.downloadingState.continued,
       cookies: this.cookies,
       paths: `TEMP:${os.tmpdir()}`,
+
       downloadSections:
         this.ffmpegData &&
         `*${convertSecondsToHHMMSS(
@@ -46,6 +46,7 @@ export class YtdlpBase extends FfmpegResizeMergeBase {
     ytdlpStream.on("progress", (p) => {
       this.setFileSize(p.total);
     });
+
     await ytdlpStream.pipeAsync(func(this.downloadingState.path));
     return this.downloadingState.path;
     // return new Promise<void>((res, rej) => {
