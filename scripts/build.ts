@@ -6,10 +6,11 @@ import fs from "fs";
 
 const folderPath = path.join(__dirname, "../out/scripts");
 
-const folders = ["youtube", "link", "Local", "facebook", "ytdlp"];
+const folders = ["youtube", "link", "Local", "facebook", "ytdlp", "spotify"];
 
 export const order = {
   apps: {
+    spotify: 4,
     facebook: 3,
     youtube: 2,
     local: 1,
@@ -17,7 +18,7 @@ export const order = {
     custom: -1000,
   },
   appVersion: "2.0.4",
-  version: "v1.0.14",
+  version: "v1.0.15",
 };
 async function Process() {
   if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath, { recursive: true });
