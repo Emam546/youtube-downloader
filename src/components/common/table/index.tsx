@@ -52,8 +52,13 @@ export default function TableDownload<T>({
   title,
   thumbnail,
 }: Props<T>) {
-  const [state, setState] = useState<TabsType>("VIDEO");
   const { VIDEO, AUDIO, OTHERS } = data;
+  const [state, setState] = useState<TabsType>(() => {
+    if (![VIDEO, AUDIO, OTHERS].find((e) => e && e.length > 0)) return "VIDEO";
+    return (["VIDEO", "AUDIO", "OTHERS"] as TabsType[])[
+      [VIDEO, AUDIO, OTHERS].findIndex((e) => e && e.length > 0)
+    ];
+  });
   const NoData = tabs.every((v) => data[v.type]?.length == 0);
   return (
     <>
