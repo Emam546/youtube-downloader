@@ -1,111 +1,11 @@
-import { v4 } from "uuid";
-import { Media, ResponseData } from "../types/types";
-import { FormatResult } from "../utils/Bases/ytdlp";
+import { ResponseData, Media } from "../types/types";
 import { YtdlpData } from "../utils/Bases/ytdlp";
-import { getYtdlpStreams } from "../utils/func";
 import { fetchSpotifyPage, SpotifyPage, SpotifyTrack } from "./metadata";
-import { findYoutubeMatch } from "./match";
+import { findAudioSources, mediaForSource } from "./sources";
 import { PATH, SpotifyKind, SPOTIFY_KINDS } from "./valid";
 
 function isKind(value: string): value is SpotifyKind {
   return (SPOTIFY_KINDS as readonly string[]).includes(value);
-}
-
-function audioFormats(formats: FormatResult[]) {
-  return formats
-    .filter((format) => format.has_audio && !format.has_video)
-    .sort((a, b) => (b.abr || b.tbr || 0) - (a.abr || a.tbr || 0));
-}
-
-function media(options: {
-  link: string;
-  title: string;
-  text: string;
-  container: string;
-  quality: number;
-  id: string;
-  size?: number | null;
-  ytdlp: FormatResult & { link: string };
-  label?: string;
-}): Media<YtdlpData> {
-  return {
-    previewLink: options.link,
-    container: options.container,
-    environment: ["desktop", "web"],
-    size: options.size || undefined,
-    data: {
-      data: { ytdlpData: options.ytdlp },
-      fquality: String(options.quality),
-      ftype: options.container,
-      PATH,
-      previewLink: options.link,
-      title: options.title,
-    },
-    text: {
-      str: options.text,
-      label: options.label ? { color: "green", str: options.label } : undefined,
-    },
-    quality: options.quality,
-    id: options.id,
-  };
-}
-
-async function audioChoices(
-  track: SpotifyTrack,
-  link: string,
-  title: string,
-): Promise<Media<YtdlpData>[]> {
-  let formats: FormatResult[] = [];
-  try {
-    const info = await getYtdlpStreams(link);
-    formats = (info.formats || []).map((format) => {
-      return {
-        ...format,
-        has_video: format.height != undefined || format.vcodec != "none",
-        has_audio: format.acodec != "none",
-        type: format.ext,
-        args: { format: format.format_id },
-      } as FormatResult;
-    });
-  } catch {
-    formats = [];
-  }
-
-  const specific = audioFormats(formats).map((format) => {
-    const codec = format.acodec ? format.acodec.toUpperCase() : "AUDIO";
-    const bitrate = format.abr || format.tbr;
-    return media({
-      link,
-      title,
-      container: format.ext || "m4a",
-      quality: Math.round(bitrate || 0),
-      id: `${track.id}_${format.format_id}_${v4()}`,
-      size: format.filesize || format.filesize_approx,
-      text: `${(format.ext || "audio").toUpperCase()} - (${codec})${
-        bitrate ? ` ${Math.round(bitrate)}kbps` : ""
-      }`,
-      ytdlp: { ...format, link },
-    });
-  });
-
-  const best = media({
-    link,
-    title,
-    container: "m4a",
-    quality: (specific[0]?.quality || 0) + 1,
-    id: `${track.id}_bestaudio`,
-    text: "Best audio",
-    label: "YouTube",
-    ytdlp: {
-      link,
-      ext: "m4a",
-      type: "m4a",
-      has_audio: true,
-      has_video: false,
-      args: { format: "bestaudio/best" },
-    } as FormatResult & { link: string },
-  });
-  return [best, ...specific];
 }
 
 function related(page: SpotifyPage) {
@@ -136,6 +36,32 @@ function related(page: SpotifyPage) {
   ];
 }
 
+function shortError(error?: string) {
+  if (!error) return "";
+  const clean = error.replace(/\s+/g, " ").trim();
+  return clean.length > 140 ? `${clean.slice(0, 137)}...` : clean;
+}
+
+function noSourceError(
+  track: SpotifyTrack,
+  attempts: { source: string; error?: string }[],
+) {
+  const displayTitle = track.artists
+    ? `${track.artists} - ${track.title}`
+    : track.title;
+  const tried = attempts
+    .map((attempt) => {
+      const error = shortError(attempt.error);
+      return error ? `${attempt.source} (${error})` : attempt.source;
+    })
+    .join(", ");
+  return new Error(
+    `No full-length audio source found for "${displayTitle}" on ${tried}. ` +
+      "Spotify streams are DRM-protected and only its 30-second preview is public. " +
+      "This resolver looks for a downloadable copy on Bandcamp, SoundCloud, and Audius.",
+  );
+}
+
 export async function getData(
   query: Record<string, unknown>,
 ): Promise<ResponseData<YtdlpData> | null> {
@@ -145,21 +71,25 @@ export async function getData(
 
   const page = await fetchSpotifyPage(requested, id);
   const requestedTrack = typeof query.track === "string" ? query.track : "";
-  const track =
-    page.tracks.find((item) => item.id === requestedTrack) || page.tracks[0];
+  const track = requestedTrack
+    ? page.tracks.find((item) => item.id === requestedTrack) || page.tracks[0]
+    : page.tracks[0];
   if (!track) return null;
 
-  const match = await findYoutubeMatch(track);
   const displayTitle = track.artists
     ? `${track.artists} - ${track.title}`
     : track.title;
-  if (!match) {
-    throw new Error(`No YouTube audio match for ${displayTitle}`);
-  }
 
+  const { resolved, attempts } = await findAudioSources(track);
+  if (!resolved.length) throw noSourceError(track, attempts);
+
+  const medias: Media<YtdlpData>[] = resolved.map((source) =>
+    mediaForSource(track, source),
+  );
   const duration = track.durationMs
     ? Math.round(track.durationMs / 1000)
-    : match.duration;
+    : undefined;
+
   return {
     video: {
       title: displayTitle,
@@ -167,11 +97,9 @@ export async function getData(
       duration,
       start: 0,
       end: duration,
-      viewerUrl: `https://open.spotify.com/${
-        page.kind === "episode" ? "episode" : "track"
-      }/${track.id}`,
+      viewerUrl: resolved[0].format.url || resolved[0].candidate.url,
       medias: {
-        AUDIO: await audioChoices(track, match.url, displayTitle),
+        AUDIO: medias,
       },
     },
     relatedData: related(page),

@@ -17,7 +17,7 @@ export interface YoutubeMatch {
   duration?: number;
 }
 
-function normalize(value: string) {
+export function normalize(value: string) {
   return value
     .toLowerCase()
     .normalize("NFKD")
@@ -80,7 +80,7 @@ function resolveYtdlp(explicit?: string) {
   return explicit || process.env.ytdlp_binDir || "yt-dlp";
 }
 
-function runYtdlp(args: string[], binaryPath?: string) {
+export function runYtdlp(args: string[], binaryPath?: string) {
   const bin = resolveYtdlp(binaryPath);
   return new Promise<string>((resolve, reject) => {
     const proc = spawn(bin, args);

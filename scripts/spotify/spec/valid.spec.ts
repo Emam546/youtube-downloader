@@ -41,6 +41,9 @@ test("reads a track list from an embed payload", () => {
                     subtitle: "Rick Astley",
                     duration: 213573,
                     isPlayable: true,
+                    audioPreview: {
+                      url: "https://p.scdn.co/mp3-preview/example",
+                    },
                   },
                   {
                     uri: "spotify:track:hidden",
@@ -66,6 +69,7 @@ test("reads a track list from an embed payload", () => {
       artists: "Rick Astley",
       durationMs: 213573,
       thumbnail: "https://images.example/cover.jpg",
+      previewUrl: "https://p.scdn.co/mp3-preview/example",
     },
   ]);
 });

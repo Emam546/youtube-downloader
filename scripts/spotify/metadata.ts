@@ -7,6 +7,7 @@ export interface SpotifyTrack {
   durationMs: number;
   thumbnail?: string;
   releaseDate?: string;
+  previewUrl?: string;
 }
 
 export interface SpotifyPage {
@@ -76,6 +77,12 @@ function releaseDateFrom(entity: Record<string, unknown>): string | undefined {
   return undefined;
 }
 
+function previewFrom(entity: Record<string, unknown>): string | undefined {
+  const preview = entity.audioPreview as { url?: string } | undefined;
+  if (preview?.url) return preview.url;
+  return typeof entity.preview_url === "string" ? entity.preview_url : undefined;
+}
+
 function trackFromEntity(
   entity: Record<string, unknown>,
   thumbnail?: string,
@@ -88,6 +95,7 @@ function trackFromEntity(
     "";
   if (!id || !title) return null;
   const releaseDate = releaseDateFrom(entity);
+  const previewUrl = previewFrom(entity);
   return {
     id,
     title,
@@ -95,6 +103,7 @@ function trackFromEntity(
     durationMs: typeof entity.duration === "number" ? entity.duration : 0,
     thumbnail: thumbnail || coverFrom(entity),
     ...(releaseDate ? { releaseDate } : {}),
+    ...(previewUrl ? { previewUrl } : {}),
   };
 }
 
